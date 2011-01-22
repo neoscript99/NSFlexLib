@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:ComboBox xmlns:mx="http://www.adobe.com/2006/mxml">
+	<mx:Script>
+		<![CDATA[
+			private var _defaultLabel:String;
+			
+			override protected function commitProperties():void
+			{
+				super.commitProperties();
+				selectDefaultLabel();
+			}
+			
+			private function selectDefaultLabel():void
+			{
+				for (var i:int=dataProvider.length - 1; i >= 0; i--)
+				{
+					var label:String=itemToLabel(dataProvider[i]);
+					
+					if (label == _defaultLabel)
+					{
+						selectedIndex=i;
+						break;
+					}
+					//如果没有完全相等的，查找包含的
+					else if (label.indexOf(_defaultLabel) > -1)
+					{
+						selectedIndex=i;
+					}
+				}
+			}
+			
+			public function set defaultLabel(value:String):void
+			{
+				this._defaultLabel=value;
+				selectDefaultLabel();
+			}
+		]]>
+	</mx:Script>
+</mx:ComboBox>

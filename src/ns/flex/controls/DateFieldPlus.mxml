@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:DateField xmlns:mx="http://www.adobe.com/2006/mxml" yearNavigationEnabled="true" firstDayOfWeek="1" width="100"
+			  monthNames="['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月']"
+			  formatString="YYYYMMDD" dayNames="[日,一,二,三,四,五,六]" initialize="init()">
+	<mx:Script>
+		<![CDATA[
+			[Inspectable(category="General")]
+			public var selectToday:Boolean=true;
+			[Inspectable(category="General")]
+			public var selectYesterday:Boolean=false;
+
+			private var today:Date=new Date();
+
+			private function init():void
+			{
+				this.maxYear=today.getFullYear()+1;
+				this.minYear=today.getFullYear()-1;
+				setDefault();
+			}
+
+			public function setDefault():void
+			{
+				if (selectToday)
+					this.selectedDate=today;
+				if (selectYesterday)
+				{
+					var millisecondsPerDay:int=1000 * 60 * 60 * 24;
+					this.selectedDate=new Date(today.getTime() - millisecondsPerDay);
+				}
+			}
+		]]>
+	</mx:Script>
+</mx:DateField>

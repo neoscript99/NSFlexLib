@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TextInput xmlns:mx="http://www.adobe.com/2006/mxml" change="changeHandle()"
+			  keyDown="onKeyDown(event)">
+	<mx:Metadata>
+		[Event(name="enterKeyDown")]
+	</mx:Metadata>
+	<mx:Script>
+		<![CDATA[
+			[Inspectable(category="General")]
+			public var noSpace:Boolean=false;
+			[Inspectable(enumeration="true,false", defaultValue="true",
+				category="General")]
+			public var imeDisabled:Boolean=false;
+			private static var spacePattern:RegExp=/\s/g;
+			public var ignorePattern:RegExp;
+			
+			private function onKeyDown(evt:KeyboardEvent):void
+			{
+				if (evt.keyCode == Keyboard.ENTER)
+					this.dispatchEvent(new Event('enterKeyDown'));
+			}
+			
+			override protected function focusInHandler(event:FocusEvent):void
+			{
+				super.focusInHandler(event);
+				IME.enabled=!imeDisabled;
+			}
+			
+			override protected function focusOutHandler(event:FocusEvent):void
+			{
+				super.focusOutHandler(event);
+				IME.enabled=true;
+			}
+			
+			private function changeHandle():void
+			{
+				trace('TextInputPlus changeHandle');
+				
+				if (noSpace)
+					this.text=this.text.replace(spacePattern, '');
+				
+				if (ignorePattern)
+					this.text=this.text.replace(ignorePattern, '');
+			}
+		]]>
+	</mx:Script>
+</mx:TextInput>

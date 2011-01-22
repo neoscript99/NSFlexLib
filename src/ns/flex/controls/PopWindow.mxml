@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" showCloseButton="true"
+				keyDown="onKeyDown(event)" creationComplete="cc()"
+				close="popWindow_close()" added="setFocus()" doubleClick="maximize(event)"
+				doubleClickEnabled="true" horizontalAlign="center">
+	<mx:Metadata>
+		[Event(name="enterKeyDown")]
+	</mx:Metadata>
+	<mx:Script>
+		<![CDATA[
+			import ns.flex.support.MenuSupport;
+			import mx.core.UITextField;
+			import mx.core.IFlexDisplayObject;
+			import mx.managers.PopUpManager;
+			import mx.events.CloseEvent;
+			import mx.validators.Validator;
+			private var validatorArr:Array=new Array();
+			private var originWidth:int;
+			private var originHeight:int;
+			public var menuSupport:MenuSupport;
+			
+			protected function pushValidator(... args):void
+			{
+				for each (var arg:* in args)
+					validatorArr.push(arg);
+			}
+			
+			public function validate():Boolean
+			{
+				return Validator.validateAll(validatorArr).length == 0;
+			}
+			
+			private function maximize(event:MouseEvent):void
+			{
+				trace(event.target);
+				
+				if (event.target is UITextField &&
+					(event.target as UITextField).text == title)
+				{
+					if (originWidth == width && originHeight == height)
+					{
+						width=parent.width;
+						height=parent.height;
+						x=0;
+						y=0;
+						trace('maximize: ', parent, width, height);
+					}
+					else
+					{
+						width=originWidth;
+						height=originHeight;
+						PopUpManager.centerPopUp(this);
+					}
+				}
+			}
+			
+			private function cc():void
+			{
+				PopUpManager.centerPopUp(this);
+				originWidth=width;
+				originHeight=height;
+				menuSupport=new MenuSupport();
+				this.contextMenu=menuSupport.contextMenu;
+				menuSupport.createMenuItem('关闭', popWindow_close, false, true);
+			}
+			
+			private function onKeyDown(evt:KeyboardEvent):void
+			{
+				if (evt.keyCode == Keyboard.ESCAPE)
+					closePop();
+				else if (evt.keyCode == Keyboard.ENTER)
+					this.dispatchEvent(new Event('enterKeyDown'));
+			}
+			
+			private function popWindow_close(evt:Event=null):void
+			{
+				PopUpManager.removePopUp(this);
+			}
+			
+			public function closePop():void
+			{
+				this.dispatchEvent(new CloseEvent(CloseEvent.CLOSE));
+				trace('CloseEvent');
+			}
+		]]>
+	</mx:Script>
+	<!--失败SHAKE特效-->
+	<mx:Sequence id="shake" target="{this}" duration="100" repeatCount="2">
+		<mx:Move xBy="10"/>
+		<mx:Move xBy="-10"/>
+	</mx:Sequence>
+</mx:TitleWindow>
