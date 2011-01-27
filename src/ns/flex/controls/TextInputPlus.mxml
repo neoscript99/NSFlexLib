@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:TextInput xmlns:mx="http://www.adobe.com/2006/mxml" change="changeHandle()"
-			  keyDown="onKeyDown(event)">
+			  keyDown="onKeyDown(event)" creationComplete="cc()">
 	<mx:Metadata>
 		[Event(name="enterKeyDown")]
 	</mx:Metadata>
 	<mx:Script>
 		<![CDATA[
+			import mx.events.ValidationResultEvent;
+			import mx.validators.Validator;
+			import mx.validators.RegExpValidator;
+			static public const phoneExp:String='^[\-\+\.\(\)\d]{5,32}$';
 			[Inspectable(category="General")]
 			public var noSpace:Boolean=false;
 			[Inspectable(enumeration="true,false", defaultValue="true",
@@ -13,6 +17,45 @@
 			public var imeDisabled:Boolean=false;
 			private static var spacePattern:RegExp=/\s/g;
 			public var ignorePattern:RegExp;
+			private var validator:RegExpValidator;
+			public var noMatchError:String="格式错误";
+			public var requiredFieldError:String="不能为空";
+			public var flags:String;
+			public var expression:String;
+			[Inspectable(category="General")]
+			public var required:Boolean=false;
+			
+			public function resetValidator():void
+			{
+				if (validator)
+					validator.enabled=false;
+				
+				if (expression)
+				{
+					validator=new RegExpValidator();
+					validator.expression=expression;
+					validator.flags=flags;
+					validator.required=required;
+					validator.noMatchError=noMatchError;
+					validator.requiredFieldError=requiredFieldError;
+					validator.source=this;
+					validator.property='text';
+					validator.trigger=this;
+					validator.triggerEvent="change";
+				}
+			}
+			
+			[Bindable("change")]
+			public function get validated():Boolean
+			{
+				return validator ? (validator.validate().type == ValidationResultEvent.VALID) : true;
+			}
+			
+			private function cc():void
+			{
+				this.maxChars=32;
+				resetValidator();
+			}
 			
 			private function onKeyDown(evt:KeyboardEvent):void
 			{
