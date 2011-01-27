@@ -8,6 +8,11 @@ package ns.flex.util
 			return str ? str.replace(/^\s*/, '').replace(/\s*$/, '') : str;
 		}
 		
+		static public function removeSpace(str:String):String
+		{
+			return str ? str.replace(/\s/g, '') : str;
+		}
+		
 		static public function toLine(str:String):String
 		{
 			return str ? trim(str.replace(/[\t\r\n]/g, ' ')) : str;
@@ -53,6 +58,5 @@ package ns.flex.util
 			else
 				return value;
 		}
-		;
 	}
 }

@@ -6,16 +6,18 @@
 	</mx:Metadata>
 	<mx:Script>
 		<![CDATA[
+			import ns.flex.util.StringUtil;
 			import mx.events.ValidationResultEvent;
 			import mx.validators.Validator;
 			import mx.validators.RegExpValidator;
-			static public const phoneExp:String='^[\-\+\.\(\)\d]{5,32}$';
+			static public const phoneExp:String='^[\-\+\.\(\)\\d]{5,32}$';
 			[Inspectable(category="General")]
 			public var noSpace:Boolean=false;
+			[Inspectable(category="General")]
+			public var autoTrim:Boolean=true;
 			[Inspectable(enumeration="true,false", defaultValue="true",
 				category="General")]
 			public var imeDisabled:Boolean=false;
-			private static var spacePattern:RegExp=/\s/g;
 			public var ignorePattern:RegExp;
 			private var validator:RegExpValidator;
 			public var noMatchError:String="格式错误";
@@ -36,7 +38,9 @@
 					validator.expression=expression;
 					validator.flags=flags;
 					validator.required=required;
-					validator.noMatchError=noMatchError;
+					validator.noMatchError=
+						noMatchError.concat('(', expression, flags ? ' ' + flags : '',
+						')');
 					validator.requiredFieldError=requiredFieldError;
 					validator.source=this;
 					validator.property='text';
@@ -48,7 +52,7 @@
 			[Bindable("change")]
 			public function get validated():Boolean
 			{
-				return validator ? (validator.validate().type == ValidationResultEvent.VALID) : true;
+				return validator ? (validator.validate().type == ValidationResultEvent.VALID) : !required;
 			}
 			
 			private function cc():void
@@ -77,13 +81,13 @@
 			
 			private function changeHandle():void
 			{
-				trace('TextInputPlus changeHandle');
-				
 				if (noSpace)
-					this.text=this.text.replace(spacePattern, '');
+					text=StringUtil.removeSpace(text);
+				else if (autoTrim)
+					text=StringUtil.trim(text);
 				
 				if (ignorePattern)
-					this.text=this.text.replace(ignorePattern, '');
+					text=text.replace(ignorePattern, '');
 			}
 		]]>
 	</mx:Script>
