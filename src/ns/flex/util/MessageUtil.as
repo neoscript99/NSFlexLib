@@ -29,15 +29,21 @@ package ns.flex.util
 		}
 		
 		static public function showProgressBox(parent:DisplayObject,
-			closeTrigger:IEventDispatcher, triggerEvent:String):void
+			closeTrigger:IEventDispatcher, triggerEventArray:Array):void
 		{
 			var pBar:ProgressBar=new ProgressBar();
+			pBar.label='';
+			pBar.height=10;
+			pBar.setStyle('trackHeight', 10);
+			pBar.width=200;
 			var pop:IFlexDisplayObject=
 				ContainerUtil.showPopUP('处理中，请稍等......', parent, pBar, -1, -1, false);
-			closeTrigger.addEventListener(triggerEvent, function(e:Event):void
-				{
-					PopUpManager.removePopUp(pop);
-				});
+			
+			for each (var triggerEvent:String in triggerEventArray)
+				closeTrigger.addEventListener(triggerEvent, function(e:Event):void
+					{
+						PopUpManager.removePopUp(pop);
+					});
 		}
 		
 		static public function print(... objs):void

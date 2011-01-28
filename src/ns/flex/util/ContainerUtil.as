@@ -52,6 +52,7 @@ package ns.flex.util
 			if (height > -1)
 				pop.height=height;
 			PopUpManager.addPopUp(pop, parent, true);
+			PopUpManager.centerPopUp(pop);
 			pop.addChild(child);
 			return pop;
 		}
