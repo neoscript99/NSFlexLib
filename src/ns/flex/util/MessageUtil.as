@@ -1,7 +1,11 @@
 package ns.flex.util
 {
-	import mx.controls.dataGridClasses.DataGridColumn;
-	import mx.formatters.DateFormatter;
+	import flash.display.DisplayObject;
+	import flash.events.Event;
+	import flash.events.IEventDispatcher;
+	import mx.controls.ProgressBar;
+	import mx.core.IFlexDisplayObject;
+	import mx.managers.PopUpManager;
 	
 	/**
 	 * 消息显示工具类
@@ -22,6 +26,18 @@ package ns.flex.util
 		static public function showMessage(message:String, title:String='Message'):void
 		{
 			Alert.show(message, title);
+		}
+		
+		static public function showProgressBox(parent:DisplayObject,
+			closeTrigger:IEventDispatcher, triggerEvent:String):void
+		{
+			var pBar:ProgressBar=new ProgressBar();
+			var pop:IFlexDisplayObject=
+				ContainerUtil.showPopUP('处理中，请稍等......', parent, pBar, -1, -1, false);
+			closeTrigger.addEventListener(triggerEvent, function(e:Event):void
+				{
+					PopUpManager.removePopUp(pop);
+				});
 		}
 		
 		static public function print(... objs):void

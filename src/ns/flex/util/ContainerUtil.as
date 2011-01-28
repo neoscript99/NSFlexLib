@@ -1,10 +1,11 @@
 package ns.flex.util
 {
-	import ns.flex.controls.PopWindow;
 	import flash.display.DisplayObject;
+	import mx.containers.Panel;
 	import mx.core.ClassFactory;
 	import mx.core.Container;
 	import mx.managers.PopUpManager;
+	import ns.flex.controls.PopWindow;
 	
 	/**
 	 * 显示容器工具类
@@ -39,9 +40,10 @@ package ns.flex.util
 		 * @param height 高
 		 */
 		static public function showPopUP(title:String, parent:DisplayObject,
-			child:DisplayObject, width:int=-1, height:int=-1):void
+			child:DisplayObject, width:int=-1, height:int=-1, closeAble:Boolean=
+			true):Panel
 		{
-			var pop:PopWindow=new PopWindow();
+			var pop:Panel=closeAble ? new PopWindow() : new Panel();
 			pop.title=title;
 			
 			if (width > -1)
@@ -51,6 +53,7 @@ package ns.flex.util
 				pop.height=height;
 			PopUpManager.addPopUp(pop, parent, true);
 			pop.addChild(child);
+			return pop;
 		}
 	}
 }
