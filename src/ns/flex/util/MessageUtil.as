@@ -28,8 +28,15 @@ package ns.flex.util
 			Alert.show(message, title);
 		}
 		
+		/**
+		 * 进度条弹框
+		 * @param parent 父对象
+		 * @param closeTrigger 进度条消失事件触发宿主
+		 * @param triggerEventArray 消失触发事件列表，默认使用远程调用事件'result', 'fault'
+		 * @param title 弹框标题
+		 */
 		static public function showProgressBox(parent:DisplayObject,
-			closeTrigger:IEventDispatcher, triggerEventArray:Array, title:String=
+			closeTrigger:IEventDispatcher, triggerEventArray:Array=null, title:String=
 			'处理中，请稍等......'):void
 		{
 			var pBar:ProgressBar=new ProgressBar();
@@ -41,6 +48,7 @@ package ns.flex.util
 			var pop:IFlexDisplayObject=
 				ContainerUtil.showPopUP(title, parent, pBar, -1, -1, false);
 			closeTrigger=closeTrigger ? closeTrigger : pop;
+			triggerEventArray=triggerEventArray ? triggerEventArray : ['result', 'fault'];
 			
 			for each (var triggerEvent:String in triggerEventArray)
 				closeTrigger.addEventListener(triggerEvent, function(e:Event):void
