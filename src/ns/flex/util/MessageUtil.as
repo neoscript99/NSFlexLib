@@ -29,15 +29,18 @@ package ns.flex.util
 		}
 		
 		static public function showProgressBox(parent:DisplayObject,
-			closeTrigger:IEventDispatcher, triggerEventArray:Array):void
+			closeTrigger:IEventDispatcher, triggerEventArray:Array, title:String=
+			'处理中，请稍等......'):void
 		{
 			var pBar:ProgressBar=new ProgressBar();
-			pBar.label='';
+			pBar.indeterminate=true;
 			pBar.height=10;
-			pBar.setStyle('trackHeight', 10);
 			pBar.width=200;
+			pBar.setStyle('trackHeight', 10);
+			pBar.label='';
 			var pop:IFlexDisplayObject=
-				ContainerUtil.showPopUP('处理中，请稍等......', parent, pBar, -1, -1, false);
+				ContainerUtil.showPopUP(title, parent, pBar, -1, -1, false);
+			closeTrigger=closeTrigger ? closeTrigger : pop;
 			
 			for each (var triggerEvent:String in triggerEventArray)
 				closeTrigger.addEventListener(triggerEvent, function(e:Event):void
