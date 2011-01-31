@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:TextInput xmlns:mx="http://www.adobe.com/2006/mxml" change="changeHandle()"
+<mx:TextInput xmlns:mx="http://www.adobe.com/2006/mxml" valueCommit="changeHandle()"
 			  keyDown="onKeyDown(event)" creationComplete="cc()">
 	<mx:Metadata>
 		[Event(name="enterKeyDown")]
@@ -45,11 +45,11 @@
 					validator.source=this;
 					validator.property='text';
 					validator.trigger=this;
-					validator.triggerEvent="change";
+					validator.triggerEvent="valueCommit";
 				}
 			}
 			
-			[Bindable("change")]
+			[Bindable("valueCommit")]
 			public function get validated():Boolean
 			{
 				return validator ? (validator.validate().type == ValidationResultEvent.VALID) : !required;

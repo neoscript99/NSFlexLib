@@ -82,6 +82,11 @@
 				this.dispatchEvent(new CloseEvent(CloseEvent.CLOSE));
 				trace('CloseEvent');
 			}
+			
+			public function showPop(p:DisplayObject, modal:Boolean=true):void
+			{
+				PopUpManager.addPopUp(this, p, modal);
+			}
 		]]>
 	</mx:Script>
 	<!--失败SHAKE特效-->
