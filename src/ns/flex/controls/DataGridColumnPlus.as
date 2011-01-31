@@ -2,6 +2,7 @@ package ns.flex.controls
 {
 	import mx.controls.dataGridClasses.DataGridColumn;
 	import mx.core.ClassFactory;
+	import ns.flex.util.DateUtil;
 	import ns.flex.util.StringUtil;
 	
 	/**
@@ -29,6 +30,13 @@ package ns.flex.controls
 			this.setStyle('textAlign', 'right');
 		}
 		
+		[Inspectable(category="General")]
+		public function set asDate(b:Boolean):void
+		{
+			if (b)
+				labelFunction=DateUtil.getDateLabel;
+		}
+		
 		public function getNumberLabel(item:Object, column:DataGridColumn):String
 		{
 			return StringUtil.formatNumber(Number(item[column.dataField]), _percision,
@@ -38,11 +46,11 @@ package ns.flex.controls
 		static public function getLabel(item:Object, column:DataGridColumn):String
 		{
 			column.dataField.split('.').every(function(it:*, index:int, arr:Array):Boolean
-				{
-					//返回为false时停止every
-					item=item[it]
-					return (item != null);
-				});
+			{
+				//返回为false时停止every
+				item=item[it]
+				return (item != null);
+			});
 			
 			if (item == null)
 				return '';
