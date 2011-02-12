@@ -36,8 +36,8 @@ package ns.flex.util
 		 * @param title 弹框标题
 		 */
 		static public function showProgressBox(parent:DisplayObject,
-			closeTrigger:IEventDispatcher, triggerEventArray:Array=null, title:String=
-			'处理中，请稍等......'):void
+			closeTrigger:IEventDispatcher, callback:Function=null,
+			triggerEventArray:Array=null, title:String='处理中，请稍等......'):void
 		{
 			var pBar:ProgressBar=new ProgressBar();
 			pBar.indeterminate=true;
@@ -52,9 +52,10 @@ package ns.flex.util
 			
 			for each (var triggerEvent:String in triggerEventArray)
 				closeTrigger.addEventListener(triggerEvent, function(e:Event):void
-					{
-						PopUpManager.removePopUp(pop);
-					});
+				{
+					PopUpManager.removePopUp(pop);
+					callback(e);
+				});
 		}
 		
 		static public function print(... objs):void

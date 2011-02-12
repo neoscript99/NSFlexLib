@@ -37,6 +37,13 @@ package ns.flex.controls
 				labelFunction=DateUtil.getDateLabel;
 		}
 		
+		[Inspectable(category="General")]
+		public function set asTime(b:Boolean):void
+		{
+			if (b)
+				labelFunction=DateUtil.getTimeLabel;
+		}
+		
 		public function getNumberLabel(item:Object, column:DataGridColumn):String
 		{
 			return StringUtil.formatNumber(Number(item[column.dataField]), _percision,
