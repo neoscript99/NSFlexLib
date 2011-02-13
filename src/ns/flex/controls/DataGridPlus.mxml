@@ -120,23 +120,27 @@
 				contextMenu.addEventListener(ContextMenuEvent.MENU_SELECT,
 					contextMenu_menuSelect);
 				
-				if (copyToExcelEnabled)
-					enableCopyToExcel();
-				
 				if (this.cmdMenu)
 				{
 					if (createEnabled)
 						menuSupport.createMenuItem("新增", createItem, false, true, true);
 					
 					if (modifyEnabled)
+					{
+						this.doubleClickEnabled=true;
+						this.addEventListener(MouseEvent.DOUBLE_CLICK, modifyItem);
 						menuSupport.createMenuItem("修改", modifyItem);
+					}
 					
 					if (deleteEnabled)
-						menuSupport.createMenuItem("删除", deleteItemSelect);
+						menuSupport.createMenuItem("删除选中", deleteItemSelect);
 					
 					if (deleteAllEnabled)
 						menuSupport.createMenuItem("删除全部", deleteAllItemSelect);
 				}
+				
+				if (copyToExcelEnabled)
+					enableCopyToExcel(true);
 			}
 			
 			public function enableCopyToExcel(separatorBefore:Boolean=false):void
@@ -168,7 +172,7 @@
 				dispatchEvent(new Event('createItem'));
 			}
 			
-			private function modifyItem(evt:ContextMenuEvent):void
+			private function modifyItem(evt:Event):void
 			{
 				dispatchEvent(new Event('modifyItem'));
 			}
