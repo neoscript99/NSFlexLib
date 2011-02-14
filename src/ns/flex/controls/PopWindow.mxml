@@ -83,9 +83,9 @@
 				trace('CloseEvent');
 			}
 			
-			public function showPop(p:DisplayObject, modal:Boolean=true):void
+			public function showPop(parent:DisplayObject, modal:Boolean=true):void
 			{
-				PopUpManager.addPopUp(this, p, modal);
+				PopUpManager.addPopUp(this, parent, modal);
 			}
 		]]>
 	</mx:Script>

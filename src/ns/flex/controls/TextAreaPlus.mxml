@@ -10,6 +10,12 @@
 			[Inspectable(category="General")]
 			public var autoTrim:Boolean=true;
 			
+			[Bindable("textChanged")]
+			public function get remainSize():int
+			{
+				return maxChars - text.length;
+			}
+			
 			private function onKeyDown(evt:KeyboardEvent):void
 			{
 				if (evt.keyCode == Keyboard.ENTER)

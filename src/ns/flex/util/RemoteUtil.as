@@ -15,8 +15,8 @@ package ns.flex.util
 		 * @return
 		 */
 		static public function createRemoteObject(destination:String,
-			resultListeners:Array=null, showBusyCursor:Boolean=true, concurrency:String=
-			'multiple', faultListener:Function=null):RemoteObject
+			resultListeners:Array=null, faultListener:Function=null,
+			showBusyCursor:Boolean=true, concurrency:String='multiple'):RemoteObject
 		{
 			var ro:RemoteObject=new RemoteObject(destination);
 			ro.showBusyCursor=showBusyCursor;
@@ -26,10 +26,10 @@ package ns.flex.util
 			
 			if (resultListeners)
 				resultListeners.forEach(function(item:*, index:int, array:Array):void
-				{
-					ro.getOperation(item.method).addEventListener(ResultEvent.RESULT,
-						item.listener);
-				});
+					{
+						ro.getOperation(item.method).addEventListener(ResultEvent.RESULT,
+							item.listener);
+					});
 			return ro;
 		}
 	}

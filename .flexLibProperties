@@ -1,31 +1,32 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <flexLibProperties version="1">
   <includeClasses>
-    <classEntry path="ns.flex.util.DateValidatorPlus"/>
-    <classEntry path="com.arcadiocarballares.ComboCheckDropDownFactory"/>
-    <classEntry path="ns.flex.controls.DataGridColumnRenderer"/>
-    <classEntry path="ns.flex.util.RemoteUtil"/>
-    <classEntry path="ns.flex.controls.PopWindow"/>
-    <classEntry path="ns.flex.controls.ComboBoxPlus"/>
-    <classEntry path="ns.flex.support.MenuSupport"/>
-    <classEntry path="ns.flex.controls.TextInputPlus"/>
-    <classEntry path="ns.flex.util.StringUtil"/>
-    <classEntry path="ns.flex.util.ChartUtil"/>
-    <classEntry path="ns.flex.util.SQLUtil"/>
-    <classEntry path="ns.flex.util.ContainerUtil"/>
-    <classEntry path="ns.flex.controls.TextAreaPlus"/>
-    <classEntry path="ns.flex.controls.Paging"/>
-    <classEntry path="ns.flex.util.DateUtil"/>
-    <classEntry path="com.arcadiocarballares.ComboCheckItemRenderer"/>
-    <classEntry path="ns.flex.controls.DataGridColumnPlus"/>
-    <classEntry path="ns.flex.util.MessageUtil"/>
-    <classEntry path="ns.flex.controls.DataGridPlus"/>
     <classEntry path="com.arcadiocarballares.ComboCheck"/>
+    <classEntry path="com.arcadiocarballares.ComboCheckDropDownFactory"/>
     <classEntry path="com.arcadiocarballares.ComboCheckEvent"/>
-    <classEntry path="ns.flex.util.ArrayCollectionPlus"/>
-    <classEntry path="ns.flex.util.NetUtil"/>
+    <classEntry path="com.arcadiocarballares.ComboCheckItemRenderer"/>
+    <classEntry path="ns.flex.controls.ComboBoxPlus"/>
+    <classEntry path="ns.flex.controls.DataGridColumnPlus"/>
+    <classEntry path="ns.flex.controls.DataGridColumnRenderer"/>
+    <classEntry path="ns.flex.controls.DataGridPlus"/>
     <classEntry path="ns.flex.controls.DateFieldPlus"/>
+    <classEntry path="ns.flex.controls.Paging"/>
+    <classEntry path="ns.flex.controls.PopWindow"/>
+    <classEntry path="ns.flex.controls.ProgressBox"/>
+    <classEntry path="ns.flex.controls.TextAreaPlus"/>
+    <classEntry path="ns.flex.controls.TextInputPlus"/>
     <classEntry path="ns.flex.event.PageChangeEvent"/>
+    <classEntry path="ns.flex.support.MenuSupport"/>
+    <classEntry path="ns.flex.util.ArrayCollectionPlus"/>
+    <classEntry path="ns.flex.util.ChartUtil"/>
+    <classEntry path="ns.flex.util.ContainerUtil"/>
+    <classEntry path="ns.flex.util.DateUtil"/>
+    <classEntry path="ns.flex.util.DateValidatorPlus"/>
+    <classEntry path="ns.flex.util.MessageUtil"/>
+    <classEntry path="ns.flex.util.NetUtil"/>
+    <classEntry path="ns.flex.util.RemoteUtil"/>
+    <classEntry path="ns.flex.util.SQLUtil"/>
+    <classEntry path="ns.flex.util.StringUtil"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>

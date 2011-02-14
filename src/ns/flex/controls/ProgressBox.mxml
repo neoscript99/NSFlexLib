@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Panel xmlns:mx="http://www.adobe.com/2006/mxml" creationComplete="cc();"
+		  title="处理中，请稍等......">
+	<mx:Script>
+		<![CDATA[
+			import mx.managers.PopUpManager;
+			
+			private function cc():void
+			{
+				PopUpManager.centerPopUp(this);
+			}
+			
+			public function show(parent:DisplayObject):void
+			{
+				PopUpManager.addPopUp(this, parent);
+			}
+			
+			public function hide():void
+			{
+				if (this.isPopUp)
+					PopUpManager.removePopUp(this);
+			}
+		]]>
+	</mx:Script>
+	<mx:ProgressBar indeterminate="true" height="10" trackHeight="10" width="200" label=""/>
+</mx:Panel>
