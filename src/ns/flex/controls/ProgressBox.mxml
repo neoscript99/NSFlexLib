@@ -12,7 +12,7 @@
 			
 			public function show(parent:DisplayObject):void
 			{
-				PopUpManager.addPopUp(this, parent);
+				PopUpManager.addPopUp(this, parent, true);
 			}
 			
 			public function hide():void

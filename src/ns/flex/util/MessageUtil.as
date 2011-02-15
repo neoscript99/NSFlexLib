@@ -29,7 +29,7 @@ package ns.flex.util
 		}
 		
 		/**
-		 * 进度条弹框
+		 * 进度条弹框,触发事件多次增加，方法不可行
 		 * @param parent 父对象
 		 * @param closeTrigger 进度条消失事件触发宿主
 		 * @param triggerEventArray 消失触发事件列表，默认使用远程调用事件'result', 'fault'
@@ -52,10 +52,10 @@ package ns.flex.util
 			
 			for each (var triggerEvent:String in triggerEventArray)
 				closeTrigger.addEventListener(triggerEvent, function(e:Event):void
-				{
-					PopUpManager.removePopUp(pop);
-					callback(e);
-				});
+					{
+						PopUpManager.removePopUp(pop);
+						callback(e);
+					});
 		}
 		
 		static public function print(... objs):void
