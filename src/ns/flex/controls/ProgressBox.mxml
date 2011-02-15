@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:Panel xmlns:mx="http://www.adobe.com/2006/mxml" creationComplete="cc();"
+<mx:Panel xmlns:mx="http://www.adobe.com/2006/mxml" creationComplete="cc()"
 		  title="处理中，请稍等......">
 	<mx:Script>
 		<![CDATA[
