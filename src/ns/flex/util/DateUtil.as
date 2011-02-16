@@ -6,7 +6,7 @@ package ns.flex.util
 	public class DateUtil
 	{
 		static private var _timeFormatter:DateFormatter=new DateFormatter();
-		_timeFormatter.formatString='YYYY-MM-DD HH:NN';
+		_timeFormatter.formatString='YYYY-MM-DD HH:NN:SS';
 		static private var _dateFormatter:DateFormatter=new DateFormatter();
 		_dateFormatter.formatString='YYYYMMDD';
 		static private var millisecondsPerDay:int=1000 * 60 * 60 * 24;
