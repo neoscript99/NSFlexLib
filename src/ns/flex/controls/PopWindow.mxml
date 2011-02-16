@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" showCloseButton="true"
-				keyDown="onKeyDown(event)" creationComplete="cc()"
-				close="popWindow_close()" added="setFocus()" doubleClick="maximize(event)"
-				doubleClickEnabled="true" horizontalAlign="center">
+				keyDown="onKeyDown(event)" creationComplete="cc()" close="onClose()"
+				added="setFocus()" doubleClick="maximize(event)" doubleClickEnabled="true"
+				horizontalAlign="center">
 	<mx:Metadata>
 		[Event(name="enterKeyDown")]
 	</mx:Metadata>
@@ -61,29 +61,30 @@
 				originHeight=height;
 				menuSupport=new MenuSupport();
 				this.contextMenu=menuSupport.contextMenu;
-				menuSupport.createMenuItem('关闭', popWindow_close, false, true);
+				menuSupport.createMenuItem('关闭', onClose, false, true);
 			}
 			
 			private function onKeyDown(evt:KeyboardEvent):void
 			{
 				if (evt.keyCode == Keyboard.ESCAPE)
-					closePop();
+					close();
 				else if (evt.keyCode == Keyboard.ENTER)
 					this.dispatchEvent(new Event('enterKeyDown'));
 			}
 			
-			private function popWindow_close(evt:Event=null):void
+			private function onClose(evt:Event=null):void
 			{
-				PopUpManager.removePopUp(this);
+				if (this.isPopUp)
+					PopUpManager.removePopUp(this);
 			}
 			
-			public function closePop():void
+			public function close():void
 			{
 				this.dispatchEvent(new CloseEvent(CloseEvent.CLOSE));
 				trace('CloseEvent');
 			}
 			
-			public function showPop(parent:DisplayObject, modal:Boolean=true):void
+			public function show(parent:DisplayObject, modal:Boolean=true):void
 			{
 				PopUpManager.addPopUp(this, parent, modal);
 			}
