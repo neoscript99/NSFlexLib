@@ -140,5 +140,14 @@ package ns.flex.util
 			}
 			return acp;
 		}
+		
+		[Bindable("listChanged")]
+		public function withAll(labelField:String, label:String='全部'):ArrayCollectionPlus
+		{
+			var all:Object={};
+			all[labelField]=label;
+			addFirst(all);
+			return this;
+		}
 	}
 }

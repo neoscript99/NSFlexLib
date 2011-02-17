@@ -1,22 +1,35 @@
 package ns.flex.controls
 {
 	import flash.events.ContextMenuEvent;
+	import flash.events.Event;
 	import flash.system.System;
 	import flash.ui.ContextMenuItem;
+	import mx.binding.utils.BindingUtils;
+	import mx.binding.utils.ChangeWatcher;
+	import mx.containers.Form;
+	import mx.containers.FormItem;
+	import mx.containers.HBox;
 	import mx.controls.Alert;
+	import mx.controls.Button;
 	import mx.controls.DataGrid;
 	import mx.controls.dataGridClasses.DataGridColumn;
+	import mx.core.UIComponent;
 	import mx.events.CloseEvent;
 	import mx.events.DataGridEvent;
 	import mx.events.FlexEvent;
 	import mx.events.ListEvent;
+	import mx.utils.ObjectProxy;
+	import ns.flex.event.SaveItemEvent;
 	import ns.flex.support.MenuSupport;
 	import ns.flex.util.ArrayCollectionPlus;
+	import ns.flex.util.ContainerUtil;
+	import ns.flex.util.MessageUtil;
 	import ns.flex.util.StringUtil;
 	
 	[Event(name="createItem")]
+	[Event(name="saveItem")]
 	[Event(name="modifyItem")]
-	[Event(name="deleteItem")]
+	[Event(name="deleteItems")]
 	[Event(name="deleteAll")]
 	[Event(name="changeOrder")]
 	public class DataGridPlus extends DataGrid
@@ -27,6 +40,9 @@ package ns.flex.controls
 		public var multiSort:Boolean=false;
 		[Inspectable(enumeration="asc,desc", defaultValue="desc", category="General")]
 		public var defaultOrder:String='desc';
+		[Inspectable(enumeration="none,read,write", defaultValue="read",
+			category="General")]
+		public var showDetail:String='read';
 		[Bindable]
 		private var lastRollOverIndex:Number;
 		private var orderList:ArrayCollectionPlus=new ArrayCollectionPlus();
@@ -43,6 +59,8 @@ package ns.flex.controls
 		[Inspectable(category="General")]
 		public var copyToExcelEnabled:Boolean=true;
 		public var menuSupport:MenuSupport;
+		[Bindable]
+		public var dataItemProxy:ObjectProxy;
 		
 		public function DataGridPlus()
 		{
@@ -125,23 +143,42 @@ package ns.flex.controls
 			contextMenu.addEventListener(ContextMenuEvent.MENU_SELECT,
 				contextMenu_menuSelect);
 			
+			if (showDetail != 'none')
+			{
+				enableMenu('查看', function(evt:Event):void
+					{
+						showItemDetail(selectedItem, false);
+					}, true, false, true);
+				
+				if (showDetail == 'write')
+				{
+					if (!(cmdMenu && modifyEnabled))
+						enableMenu("修改", function(evt:Event):void
+							{
+								showItemDetail(selectedItem, true);
+							});
+					
+					if (!(cmdMenu && createEnabled))
+						enableMenu("新增", function(evt:Event):void
+							{
+								showItemDetail(null, true);
+							}, false, true);
+				}
+			}
+			
 			if (this.cmdMenu)
 			{
 				if (createEnabled)
-					menuSupport.createMenuItem("新增", createItem, false, true, true);
+					enableMenu("新增", createItem, false, true);
 				
 				if (modifyEnabled)
-				{
-					this.doubleClickEnabled=true;
-					this.addEventListener(ListEvent.ITEM_DOUBLE_CLICK, modifyItem);
-					menuSupport.createMenuItem("修改", modifyItem);
-				}
+					enableMenu("修改", modifyItem);
 				
 				if (deleteEnabled)
-					menuSupport.createMenuItem("删除选中", deleteItemSelect);
+					enableMenu("删除选中", deleteItems);
 				
 				if (deleteAllEnabled)
-					menuSupport.createMenuItem("删除全部", deleteAllItemSelect);
+					enableMenu("删除全部", deleteAll);
 			}
 			
 			if (copyToExcelEnabled)
@@ -150,7 +187,20 @@ package ns.flex.controls
 		
 		public function enableCopyToExcel(separatorBefore:Boolean=false):void
 		{
-			menuSupport.createMenuItem("复制到Excel", copyToExcel, separatorBefore);
+			enableMenu("复制到Excel", copyToExcel, separatorBefore);
+		}
+		
+		private function enableMenu(menuLabel:String, action:Function,
+			separatorBefore:Boolean=false, alwaysEnabled:Boolean=false,
+			withDoubleClick:Boolean=false):void
+		{
+			menuSupport.createMenuItem(menuLabel, action, separatorBefore, alwaysEnabled);
+			
+			if (withDoubleClick && !doubleClickEnabled)
+			{
+				this.doubleClickEnabled=true;
+				this.addEventListener(ListEvent.ITEM_DOUBLE_CLICK, action);
+			}
 		}
 		
 		private function contextMenu_menuSelect(evt:ContextMenuEvent):void
@@ -172,7 +222,7 @@ package ns.flex.controls
 				menu.enabled=menuSupport.isAlwaysEnabled(menu);
 		}
 		
-		private function createItem(evt:ContextMenuEvent):void
+		private function createItem(evt:Event):void
 		{
 			dispatchEvent(new Event('createItem'));
 		}
@@ -182,12 +232,113 @@ package ns.flex.controls
 			dispatchEvent(new Event('modifyItem'));
 		}
 		
-		private function deleteItemSelect(evt:ContextMenuEvent):void
+		private function deleteItems(evt:Event):void
 		{
-			Alert.show("确认删除？", null, Alert.YES | Alert.NO, this, deleteItem)
+			Alert.show("确认删除？", null, Alert.YES | Alert.NO, this,
+				function(evt:CloseEvent):void
+				{
+					if (evt.detail == Alert.YES)
+					{
+						dispatchEvent(new Event('deleteItems'));
+					}
+				})
 		}
 		
-		private function copyToExcel(evt:ContextMenuEvent):void
+		/**
+		 * 生成默认的详细对话框
+		 * @param evt
+		 */
+		private function showItemDetail(dataItem:*, editable:Boolean=false):void
+		{
+			dataItemProxy=new ObjectProxy(dataItem);
+			var form:Form=new Form();
+			
+			for each (var col:DataGridColumn in columns)
+			{
+				if (col.dataField)
+				{
+					var formItem:FormItem=new FormItem();
+					formItem.label=col.headerText;
+					var textInput:UIComponent;
+					
+					if (col.wordWrap)
+					{
+						var tap:TextAreaPlus=new TextAreaPlus();
+						
+						if (col is DataGridColumnPlus)
+						{
+							tap.maxChars=col['maxChars'];
+						}
+						textInput=tap;
+					}
+					else
+					{
+						var tip:TextInputPlus=new TextInputPlus();
+						
+						if (col is DataGridColumnPlus)
+						{
+							var colp:DataGridColumnPlus=DataGridColumnPlus(col);
+							tip.maxChars=colp.maxChars;
+							
+							if (editable)
+							{
+								tip.imeDisabled=colp.imeDisabled;
+								tip.noSpace=colp.noSpace;
+								tip.autoTrim=colp.autoTrim;
+								tip.required=colp.required;
+								tip.expression=colp.expression;
+								tip.flags=colp.flags;
+							}
+						}
+						textInput=tip;
+					}
+					textInput['editable']=editable;
+					ChangeWatcher.watch(textInput, 'text', function(e:Event):void
+						{
+							formItem.label=
+								col.headerText.concat('(', textInput['remainSize'], ')');
+						//dataItemProxy[col.dataField]=textInput['text'];
+						//trace(MessageUtil.seesee(dataItemProxy));
+						});
+					BindingUtils.bindProperty(textInput, 'text', dataItemProxy,
+						col.dataField);
+					BindingUtils.bindProperty(dataItemProxy, col.dataField, textInput,
+						'text');
+					//if (dataItem)
+					//	textInput['text']=dataItem[col.dataField];
+					formItem.addChild(textInput);
+					form.addChild(formItem);
+				}
+			}
+			var pop:PopWindow=
+				ContainerUtil.showPopUP(editable ? (dataItem ? '修改' : '新增') : '查看', this,
+				form, -1, -1, 600, 480);
+			
+			if (editable)
+			{
+				var buttonItem:FormItem=new FormItem();
+				var hbox:HBox=new HBox;
+				var saveButton:Button=new Button();
+				saveButton.label='保存';
+				saveButton.addEventListener('click', function(e:Event):void
+					{
+						pop.close();
+						dispatchEvent(new SaveItemEvent(dataItemProxy));
+					});
+				var resetButton:Button=new Button();
+				resetButton.label='重置';
+				resetButton.addEventListener('click', function(e:Event):void
+					{
+						dataItemProxy=new ObjectProxy(dataItem);
+					});
+				hbox.addChild(saveButton);
+				hbox.addChild(resetButton);
+				buttonItem.addChild(hbox);
+				form.addChild(buttonItem);
+			}
+		}
+		
+		private function copyToExcel(evt:Event):void
 		{
 			var spiltor:String='	';
 			var ss:String='';
@@ -214,25 +365,16 @@ package ns.flex.controls
 			System.setClipboard(ss);
 		}
 		
-		private function deleteAllItemSelect(evt:ContextMenuEvent):void
+		private function deleteAll(evt:Event):void
 		{
-			Alert.show("确认全部删除？", null, Alert.YES | Alert.NO, this, deleteAllItem)
-		}
-		
-		private function deleteItem(evt:CloseEvent):void
-		{
-			if (evt.detail == Alert.YES)
-			{
-				dispatchEvent(new Event('deleteItem'));
-			}
-		}
-		
-		private function deleteAllItem(evt:CloseEvent):void
-		{
-			if (evt.detail == Alert.YES)
-			{
-				dispatchEvent(new Event('deleteAll'));
-			}
+			Alert.show("确认全部删除？", null, Alert.YES | Alert.NO, this,
+				function(evt:CloseEvent):void
+				{
+					if (evt.detail == Alert.YES)
+					{
+						dispatchEvent(new Event('deleteAll'));
+					}
+				})
 		}
 	}
 }

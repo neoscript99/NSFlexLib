@@ -56,9 +56,10 @@
 			
 			private function cc():void
 			{
-				PopUpManager.centerPopUp(this);
 				originWidth=width;
 				originHeight=height;
+				move(mouseX > width / 2 ? mouseX - width / 2 : 0,
+					mouseY > height / 2 ? mouseY - height / 2 : 0);
 				menuSupport=new MenuSupport();
 				this.contextMenu=menuSupport.contextMenu;
 				menuSupport.createMenuItem('关闭', onClose, false, true);

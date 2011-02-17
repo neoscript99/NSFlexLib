@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:TextArea xmlns:mx="http://www.adobe.com/2006/mxml" change="changeHandle()"
-			 keyDown="onKeyDown(event)">
+			 keyDown="onKeyDown(event)" maxChars="255">
 	<mx:Metadata>
 		[Event(name="enterKeyDown")]
 	</mx:Metadata>

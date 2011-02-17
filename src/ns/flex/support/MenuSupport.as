@@ -23,11 +23,10 @@ package ns.flex.support
 		}
 		
 		public function createMenuItem(caption:String, listener:Function,
-			separatorBefore:Boolean=false, enabled:Boolean=false, alwaysEnabled:Boolean=
-			false):ContextMenuItem
+			separatorBefore:Boolean=false, alwaysEnabled:Boolean=false):ContextMenuItem
 		{
 			var menuItem:ContextMenuItem=
-				new ContextMenuItem(caption, separatorBefore, enabled);
+				new ContextMenuItem(caption, separatorBefore, alwaysEnabled);
 			menuItem.addEventListener(ContextMenuEvent.MENU_ITEM_SELECT, listener);
 			alwaysEnabledMap[getMenuCode(menuItem)]=alwaysEnabled;
 			pushMenuItems(menuItem);

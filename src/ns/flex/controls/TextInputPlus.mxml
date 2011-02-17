@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:TextInput xmlns:mx="http://www.adobe.com/2006/mxml" valueCommit="changeHandle()"
-			  keyDown="onKeyDown(event)" creationComplete="cc()">
+			  keyDown="onKeyDown(event)" creationComplete="cc()" maxChars="32">
 	<mx:Metadata>
 		[Event(name="enterKeyDown")]
 	</mx:Metadata>
@@ -32,10 +32,10 @@
 				if (validator)
 					validator.enabled=false;
 				
-				if (expression)
+				if (expression || required)
 				{
 					validator=new RegExpValidator();
-					validator.expression=expression;
+					validator.expression=expression ? expression : '.';
 					validator.flags=flags;
 					validator.required=required;
 					validator.noMatchError=
@@ -49,10 +49,16 @@
 				}
 			}
 			
+			[Bindable("textChanged")]
+			public function get remainSize():int
+			{
+				return maxChars - text.length;
+			}
+			
 			[Bindable("valueCommit")]
 			public function get validated():Boolean
 			{
-				return validator ? (validator.validate().type == ValidationResultEvent.VALID) : !required;
+				return validator ? (validator.validate().type == ValidationResultEvent.VALID) : true;
 			}
 			
 			private function cc():void
