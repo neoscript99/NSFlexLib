@@ -5,7 +5,6 @@ package ns.flex.controls
 	import flash.system.System;
 	import flash.ui.ContextMenuItem;
 	import mx.binding.utils.BindingUtils;
-	import mx.binding.utils.ChangeWatcher;
 	import mx.containers.Form;
 	import mx.containers.FormItem;
 	import mx.containers.HBox;
@@ -252,6 +251,7 @@ package ns.flex.controls
 		{
 			dataItemProxy=new ObjectProxy(ObjectUtil.copy(dataItem));
 			var form:Form=new Form();
+			var watcher:Object={}
 			
 			for each (var col:DataGridColumn in columns)
 			{
@@ -293,6 +293,7 @@ package ns.flex.controls
 					}
 					col.headerText=col.headerText;
 					textInput['editable']=editable;
+					//					watcher[String(textInput)]={col: col, formItem: formItem}
 					//					BindingUtils.bindSetter(function(str:String):void
 					//					{
 					//						trace(formItem);
@@ -300,12 +301,13 @@ package ns.flex.controls
 					//							col.headerText.concat('(', textInput['remainSize'], ')');
 					//						dataItemProxy[col.dataField]=str;
 					//					}, textInput, 'text');
-					//BindingUtils.bindSetter(function(value:Object):void
-					//{
-					//	textInput['text']=col.itemToLabel(value);
-					//}, this, 'dataItemProxy');
-					BindingUtils.bindProperty(textInput, 'text', dataItemProxy,
-						col.dataField);
+					watcher[String(dataItemProxy)]={col: col, formItem: formItem}
+					BindingUtils.bindSetter(function(value:Object):void
+					{
+						textInput['text']=col.itemToLabel(value);
+					}, this, 'dataItemProxy');
+					//					BindingUtils.bindProperty(textInput, 'text', dataItemProxy,
+					//						col.dataField);
 					BindingUtils.bindProperty(dataItemProxy, col.dataField, textInput,
 						'text');
 					
