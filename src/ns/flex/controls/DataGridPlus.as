@@ -19,11 +19,11 @@ package ns.flex.controls
 	import mx.events.FlexEvent;
 	import mx.events.ListEvent;
 	import mx.utils.ObjectProxy;
+	import mx.utils.ObjectUtil;
 	import ns.flex.event.SaveItemEvent;
 	import ns.flex.support.MenuSupport;
 	import ns.flex.util.ArrayCollectionPlus;
 	import ns.flex.util.ContainerUtil;
-	import ns.flex.util.MessageUtil;
 	import ns.flex.util.StringUtil;
 	
 	[Event(name="createItem")]
@@ -146,23 +146,23 @@ package ns.flex.controls
 			if (showDetail != 'none')
 			{
 				enableMenu('查看', function(evt:Event):void
-					{
-						showItemDetail(selectedItem, false);
-					}, true, false, true);
+				{
+					showItemDetail(selectedItem, false);
+				}, true, false, true);
 				
 				if (showDetail == 'write')
 				{
 					if (!(cmdMenu && modifyEnabled))
 						enableMenu("修改", function(evt:Event):void
-							{
-								showItemDetail(selectedItem, true);
-							});
+						{
+							showItemDetail(selectedItem, true);
+						});
 					
 					if (!(cmdMenu && createEnabled))
 						enableMenu("新增", function(evt:Event):void
-							{
-								showItemDetail(null, true);
-							}, false, true);
+						{
+							showItemDetail(null, true);
+						}, false, true);
 				}
 			}
 			
@@ -236,21 +236,21 @@ package ns.flex.controls
 		{
 			Alert.show("确认删除？", null, Alert.YES | Alert.NO, this,
 				function(evt:CloseEvent):void
+			{
+				if (evt.detail == Alert.YES)
 				{
-					if (evt.detail == Alert.YES)
-					{
-						dispatchEvent(new Event('deleteItems'));
-					}
-				})
+					dispatchEvent(new Event('deleteItems'));
+				}
+			})
 		}
 		
 		/**
 		 * 生成默认的详细对话框
 		 * @param evt
 		 */
-		private function showItemDetail(dataItem:*, editable:Boolean=false):void
+		private function showItemDetail(dataItem:Object, editable:Boolean=false):void
 		{
-			dataItemProxy=new ObjectProxy(dataItem);
+			dataItemProxy=new ObjectProxy(ObjectUtil.copy(dataItem));
 			var form:Form=new Form();
 			
 			for each (var col:DataGridColumn in columns)
@@ -258,7 +258,6 @@ package ns.flex.controls
 				if (col.dataField)
 				{
 					var formItem:FormItem=new FormItem();
-					formItem.label=col.headerText;
 					var textInput:UIComponent;
 					
 					if (col.wordWrap)
@@ -292,20 +291,26 @@ package ns.flex.controls
 						}
 						textInput=tip;
 					}
+					col.headerText=col.headerText;
 					textInput['editable']=editable;
-					ChangeWatcher.watch(textInput, 'text', function(e:Event):void
-						{
-							formItem.label=
-								col.headerText.concat('(', textInput['remainSize'], ')');
-						//dataItemProxy[col.dataField]=textInput['text'];
-						//trace(MessageUtil.seesee(dataItemProxy));
-						});
+					//					BindingUtils.bindSetter(function(str:String):void
+					//					{
+					//						trace(formItem);
+					//						formItem.label=
+					//							col.headerText.concat('(', textInput['remainSize'], ')');
+					//						dataItemProxy[col.dataField]=str;
+					//					}, textInput, 'text');
+					//BindingUtils.bindSetter(function(value:Object):void
+					//{
+					//	textInput['text']=col.itemToLabel(value);
+					//}, this, 'dataItemProxy');
 					BindingUtils.bindProperty(textInput, 'text', dataItemProxy,
 						col.dataField);
 					BindingUtils.bindProperty(dataItemProxy, col.dataField, textInput,
 						'text');
-					//if (dataItem)
-					//	textInput['text']=dataItem[col.dataField];
+					
+					if (dataItem)
+						textInput['text']=col.itemToLabel(dataItem);
 					formItem.addChild(textInput);
 					form.addChild(formItem);
 				}
@@ -321,16 +326,16 @@ package ns.flex.controls
 				var saveButton:Button=new Button();
 				saveButton.label='保存';
 				saveButton.addEventListener('click', function(e:Event):void
-					{
-						pop.close();
-						dispatchEvent(new SaveItemEvent(dataItemProxy));
-					});
+				{
+					pop.close();
+					dispatchEvent(new SaveItemEvent(dataItemProxy));
+				});
 				var resetButton:Button=new Button();
 				resetButton.label='重置';
 				resetButton.addEventListener('click', function(e:Event):void
-					{
-						dataItemProxy=new ObjectProxy(dataItem);
-					});
+				{
+					dataItemProxy=new ObjectProxy(ObjectUtil.copy(dataItem));
+				});
 				hbox.addChild(saveButton);
 				hbox.addChild(resetButton);
 				buttonItem.addChild(hbox);
@@ -369,12 +374,12 @@ package ns.flex.controls
 		{
 			Alert.show("确认全部删除？", null, Alert.YES | Alert.NO, this,
 				function(evt:CloseEvent):void
+			{
+				if (evt.detail == Alert.YES)
 				{
-					if (evt.detail == Alert.YES)
-					{
-						dispatchEvent(new Event('deleteAll'));
-					}
-				})
+					dispatchEvent(new Event('deleteAll'));
+				}
+			})
 		}
 	}
 }
