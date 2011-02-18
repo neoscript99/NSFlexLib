@@ -6,6 +6,7 @@
     <classEntry path="ns.flex.controls.DataGridColumnRenderer"/>
     <classEntry path="ns.flex.controls.PopWindow"/>
     <classEntry path="ns.flex.util.RemoteUtil"/>
+    <classEntry path="ns.flex.controls.TitleWindowPlus"/>
     <classEntry path="ns.flex.controls.ComboBoxPlus"/>
     <classEntry path="ns.flex.support.MenuSupport"/>
     <classEntry path="ns.flex.controls.TextInputPlus"/>
@@ -24,6 +25,7 @@
     <classEntry path="com.arcadiocarballares.ComboCheckEvent"/>
     <classEntry path="ns.flex.util.ArrayCollectionPlus"/>
     <classEntry path="ns.flex.util.NetUtil"/>
+    <classEntry path="ns.flex.controls.DataColumnFormItem"/>
     <classEntry path="ns.flex.controls.ProgressBox"/>
     <classEntry path="ns.flex.controls.DateFieldPlus"/>
     <classEntry path="ns.flex.event.PageChangeEvent"/>

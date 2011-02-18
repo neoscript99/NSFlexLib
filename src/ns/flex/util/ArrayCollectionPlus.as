@@ -142,12 +142,12 @@ package ns.flex.util
 		}
 		
 		[Bindable("listChanged")]
-		public function withAll(labelField:String, label:String='全部'):ArrayCollectionPlus
+		static public function withAll(source:Object, labelField:String, label:String=
+			'全部'):ArrayCollectionPlus
 		{
 			var all:Object={};
 			all[labelField]=label;
-			addFirst(all);
-			return this;
+			return new ArrayCollectionPlus(source).addFirst(all);
 		}
 	}
 }

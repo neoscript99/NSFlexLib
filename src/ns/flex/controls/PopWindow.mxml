@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" showCloseButton="true"
-				keyDown="onKeyDown(event)" creationComplete="cc()" close="onClose()"
-				added="setFocus()" doubleClick="maximize(event)" doubleClickEnabled="true"
-				horizontalAlign="center">
+<TitleWindowPlus xmlns="ns.flex.controls.*" xmlns:mx="http://www.adobe.com/2006/mxml"
+				 showCloseButton="true" keyDown="onKeyDown(event)" creationComplete="cc()"
+				 close="onClose()" added="setFocus()" horizontalAlign="center"
+				 titleDoubleClick="switchSize()">
 	<mx:Metadata>
 		[Event(name="enterKeyDown")]
 	</mx:Metadata>
@@ -30,27 +30,20 @@
 				return Validator.validateAll(validatorArr).length == 0;
 			}
 			
-			private function maximize(event:MouseEvent):void
+			private function switchSize():void
 			{
-				trace(event.target);
-				
-				if (event.target is UITextField &&
-					(event.target as UITextField).text == title)
+				if (originWidth == width && originHeight == height)
 				{
-					if (originWidth == width && originHeight == height)
-					{
-						width=parent.width;
-						height=parent.height;
-						x=0;
-						y=0;
-						trace('maximize: ', parent, width, height);
-					}
-					else
-					{
-						width=originWidth;
-						height=originHeight;
-						PopUpManager.centerPopUp(this);
-					}
+					width=parent.width;
+					height=parent.height;
+					x=0;
+					y=0;
+				}
+				else
+				{
+					width=originWidth;
+					height=originHeight;
+					PopUpManager.centerPopUp(this);
 				}
 			}
 			
@@ -58,8 +51,13 @@
 			{
 				originWidth=width;
 				originHeight=height;
-				move(mouseX > width / 2 ? mouseX - width / 2 : 0,
-					mouseY > height / 2 ? mouseY - height / 2 : 0);
+				var moveToX:Number=mouseX > width / 2 ? mouseX - width / 2 : 0;
+				var moveToY:Number=mouseY > height / 2 ? mouseY - height / 2 : 0;
+				if(moveToX+width>stage.stageWidth)
+				moveToX=stage.stageWidth-width;
+				if(moveToY+height>stage.stageHeight)
+				moveToY=stage.stageHeight-height;
+				move(moveToX,moveToY);
 				menuSupport=new MenuSupport();
 				this.contextMenu=menuSupport.contextMenu;
 				menuSupport.createMenuItem('关闭', onClose, false, true);
@@ -96,4 +94,4 @@
 		<mx:Move xBy="10"/>
 		<mx:Move xBy="-10"/>
 	</mx:Sequence>
-</mx:TitleWindow>
+</TitleWindowPlus>

@@ -4,7 +4,6 @@ package ns.flex.controls
 	import flash.events.Event;
 	import flash.system.System;
 	import flash.ui.ContextMenuItem;
-	import mx.binding.utils.BindingUtils;
 	import mx.containers.Form;
 	import mx.containers.FormItem;
 	import mx.containers.HBox;
@@ -12,7 +11,6 @@ package ns.flex.controls
 	import mx.controls.Button;
 	import mx.controls.DataGrid;
 	import mx.controls.dataGridClasses.DataGridColumn;
-	import mx.core.UIComponent;
 	import mx.events.CloseEvent;
 	import mx.events.DataGridEvent;
 	import mx.events.FlexEvent;
@@ -26,7 +24,7 @@ package ns.flex.controls
 	import ns.flex.util.StringUtil;
 	
 	[Event(name="createItem")]
-	[Event(name="saveItem")]
+	[Event(name="saveItem", type="ns.flex.event.SaveItemEvent")]
 	[Event(name="modifyItem")]
 	[Event(name="deleteItems")]
 	[Event(name="deleteAll")]
@@ -59,7 +57,7 @@ package ns.flex.controls
 		public var copyToExcelEnabled:Boolean=true;
 		public var menuSupport:MenuSupport;
 		[Bindable]
-		public var dataItemProxy:ObjectProxy;
+		public var editingItem:ObjectProxy;
 		
 		public function DataGridPlus()
 		{
@@ -145,23 +143,23 @@ package ns.flex.controls
 			if (showDetail != 'none')
 			{
 				enableMenu('查看', function(evt:Event):void
-				{
-					showItemDetail(selectedItem, false);
-				}, true, false, true);
+					{
+						showItemDetail(selectedItem, false);
+					}, true, false, true);
 				
 				if (showDetail == 'write')
 				{
 					if (!(cmdMenu && modifyEnabled))
 						enableMenu("修改", function(evt:Event):void
-						{
-							showItemDetail(selectedItem, true);
-						});
+							{
+								showItemDetail(selectedItem, true);
+							});
 					
 					if (!(cmdMenu && createEnabled))
 						enableMenu("新增", function(evt:Event):void
-						{
-							showItemDetail(null, true);
-						}, false, true);
+							{
+								showItemDetail(null, true);
+							}, false, true);
 				}
 			}
 			
@@ -202,6 +200,11 @@ package ns.flex.controls
 			}
 		}
 		
+		override public function set doubleClickEnabled(value:Boolean):void
+		{
+			super.doubleClickEnabled=value;
+		}
+		
 		private function contextMenu_menuSelect(evt:ContextMenuEvent):void
 		{
 			this.selectedIndex=lastRollOverIndex;
@@ -235,90 +238,29 @@ package ns.flex.controls
 		{
 			Alert.show("确认删除？", null, Alert.YES | Alert.NO, this,
 				function(evt:CloseEvent):void
-			{
-				if (evt.detail == Alert.YES)
 				{
-					dispatchEvent(new Event('deleteItems'));
-				}
-			})
+					if (evt.detail == Alert.YES)
+					{
+						dispatchEvent(new Event('deleteItems'));
+					}
+				})
 		}
 		
 		/**
 		 * 生成默认的详细对话框
 		 * @param evt
 		 */
-		private function showItemDetail(dataItem:Object, editable:Boolean=false):void
+		private function showItemDetail(showItem:Object, editable:Boolean=false):void
 		{
-			dataItemProxy=new ObjectProxy(ObjectUtil.copy(dataItem));
+			editingItem=new ObjectProxy(ObjectUtil.copy(showItem));
 			var form:Form=new Form();
-			var watcher:Object={}
 			
 			for each (var col:DataGridColumn in columns)
 			{
-				if (col.dataField)
-				{
-					var formItem:FormItem=new FormItem();
-					var textInput:UIComponent;
-					
-					if (col.wordWrap)
-					{
-						var tap:TextAreaPlus=new TextAreaPlus();
-						
-						if (col is DataGridColumnPlus)
-						{
-							tap.maxChars=col['maxChars'];
-						}
-						textInput=tap;
-					}
-					else
-					{
-						var tip:TextInputPlus=new TextInputPlus();
-						
-						if (col is DataGridColumnPlus)
-						{
-							var colp:DataGridColumnPlus=DataGridColumnPlus(col);
-							tip.maxChars=colp.maxChars;
-							
-							if (editable)
-							{
-								tip.imeDisabled=colp.imeDisabled;
-								tip.noSpace=colp.noSpace;
-								tip.autoTrim=colp.autoTrim;
-								tip.required=colp.required;
-								tip.expression=colp.expression;
-								tip.flags=colp.flags;
-							}
-						}
-						textInput=tip;
-					}
-					col.headerText=col.headerText;
-					textInput['editable']=editable;
-					//					watcher[String(textInput)]={col: col, formItem: formItem}
-					//					BindingUtils.bindSetter(function(str:String):void
-					//					{
-					//						trace(formItem);
-					//						formItem.label=
-					//							col.headerText.concat('(', textInput['remainSize'], ')');
-					//						dataItemProxy[col.dataField]=str;
-					//					}, textInput, 'text');
-					watcher[String(dataItemProxy)]={col: col, formItem: formItem}
-					BindingUtils.bindSetter(function(value:Object):void
-					{
-						textInput['text']=col.itemToLabel(value);
-					}, this, 'dataItemProxy');
-					//					BindingUtils.bindProperty(textInput, 'text', dataItemProxy,
-					//						col.dataField);
-					BindingUtils.bindProperty(dataItemProxy, col.dataField, textInput,
-						'text');
-					
-					if (dataItem)
-						textInput['text']=col.itemToLabel(dataItem);
-					formItem.addChild(textInput);
-					form.addChild(formItem);
-				}
+				form.addChild(new DataColumnFormItem(this, col, editable));
 			}
 			var pop:PopWindow=
-				ContainerUtil.showPopUP(editable ? (dataItem ? '修改' : '新增') : '查看', this,
+				ContainerUtil.showPopUP(editable ? (showItem ? '修改' : '新增') : '查看', this,
 				form, -1, -1, 600, 480);
 			
 			if (editable)
@@ -328,16 +270,23 @@ package ns.flex.controls
 				var saveButton:Button=new Button();
 				saveButton.label='保存';
 				saveButton.addEventListener('click', function(e:Event):void
-				{
-					pop.close();
-					dispatchEvent(new SaveItemEvent(dataItemProxy));
-				});
+					{
+						for each (var it:FormItem in form.getChildren())
+							if (it is DataColumnFormItem)
+								if (!(it as DataColumnFormItem).validated)
+								{
+									pop.shake.play();
+									return;
+								}
+						pop.close();
+						dispatchEvent(new SaveItemEvent(editingItem));
+					});
 				var resetButton:Button=new Button();
 				resetButton.label='重置';
 				resetButton.addEventListener('click', function(e:Event):void
-				{
-					dataItemProxy=new ObjectProxy(ObjectUtil.copy(dataItem));
-				});
+					{
+						editingItem=new ObjectProxy(ObjectUtil.copy(showItem));
+					});
 				hbox.addChild(saveButton);
 				hbox.addChild(resetButton);
 				buttonItem.addChild(hbox);
@@ -376,12 +325,12 @@ package ns.flex.controls
 		{
 			Alert.show("确认全部删除？", null, Alert.YES | Alert.NO, this,
 				function(evt:CloseEvent):void
-			{
-				if (evt.detail == Alert.YES)
 				{
-					dispatchEvent(new Event('deleteAll'));
-				}
-			})
+					if (evt.detail == Alert.YES)
+					{
+						dispatchEvent(new Event('deleteAll'));
+					}
+				})
 		}
 	}
 }
