@@ -27,6 +27,9 @@ package ns.flex.controls
 		public var maxChars:int=32;
 		public var expression:String;
 		public var flags:String;
+		[Inspectable(enumeration="Text,CheckBox", defaultValue="Text",
+			category="General")]
+		public var asControl:String='Text';
 		
 		public function DataGridColumnPlus(columnName:String=null)
 		{
@@ -66,11 +69,11 @@ package ns.flex.controls
 		static public function getLabel(item:Object, column:DataGridColumn):String
 		{
 			column.dataField.split('.').every(function(it:*, index:int, arr:Array):Boolean
-				{
-					//返回为false时停止every
-					item=item[it]
-					return (item != null);
-				});
+			{
+				//返回为false时停止every
+				item=item[it]
+				return (item != null);
+			});
 			
 			if (item == null)
 				return '';

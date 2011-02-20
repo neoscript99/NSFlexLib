@@ -31,17 +31,17 @@ package ns.flex.util
 		{
 			var array:Array=[];
 			toArray().forEach(function(item:*, index:int, ar:Array):void
-				{
-					var innerArray:Array=[];
-					
-					if (fields.length > 0)
-						for each (var field:String in fields)
-							innerArray.push(item[field]);
-					else
-						for each (var prop:* in item)
-							innerArray.push(prop);
-					array.push(innerArray);
-				});
+			{
+				var innerArray:Array=[];
+				
+				if (fields.length > 0)
+					for each (var field:String in fields)
+						innerArray.push(item[field]);
+				else
+					for each (var prop:* in item)
+						innerArray.push(prop);
+				array.push(innerArray);
+			});
 			return array;
 		}
 		
@@ -141,7 +141,6 @@ package ns.flex.util
 			return acp;
 		}
 		
-		[Bindable("listChanged")]
 		static public function withAll(source:Object, labelField:String, label:String=
 			'全部'):ArrayCollectionPlus
 		{

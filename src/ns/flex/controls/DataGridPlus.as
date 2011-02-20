@@ -140,28 +140,25 @@ package ns.flex.controls
 			contextMenu.addEventListener(ContextMenuEvent.MENU_SELECT,
 				contextMenu_menuSelect);
 			
-			if (showDetail != 'none')
+			if (showDetail == 'write')
 			{
-				enableMenu('查看', function(evt:Event):void
+				if (!(cmdMenu && createEnabled))
+					enableMenu("新增", function(evt:Event):void
 					{
-						showItemDetail(selectedItem, false);
-					}, true, false, true);
+						showItemDetail(null, true);
+					}, true, true);
 				
-				if (showDetail == 'write')
-				{
-					if (!(cmdMenu && modifyEnabled))
-						enableMenu("修改", function(evt:Event):void
-							{
-								showItemDetail(selectedItem, true);
-							});
-					
-					if (!(cmdMenu && createEnabled))
-						enableMenu("新增", function(evt:Event):void
-							{
-								showItemDetail(null, true);
-							}, false, true);
-				}
+				if (!(cmdMenu && modifyEnabled))
+					enableMenu("修改", function(evt:Event):void
+					{
+						showItemDetail(selectedItem, true);
+					}, false, false, true);
 			}
+			else if (showDetail == 'read')
+				enableMenu('查看', function(evt:Event):void
+				{
+					showItemDetail(selectedItem, false);
+				}, true, false, true);
 			
 			if (this.cmdMenu)
 			{
@@ -200,11 +197,6 @@ package ns.flex.controls
 			}
 		}
 		
-		override public function set doubleClickEnabled(value:Boolean):void
-		{
-			super.doubleClickEnabled=value;
-		}
-		
 		private function contextMenu_menuSelect(evt:ContextMenuEvent):void
 		{
 			this.selectedIndex=lastRollOverIndex;
@@ -238,12 +230,12 @@ package ns.flex.controls
 		{
 			Alert.show("确认删除？", null, Alert.YES | Alert.NO, this,
 				function(evt:CloseEvent):void
+			{
+				if (evt.detail == Alert.YES)
 				{
-					if (evt.detail == Alert.YES)
-					{
-						dispatchEvent(new Event('deleteItems'));
-					}
-				})
+					dispatchEvent(new Event('deleteItems'));
+				}
+			})
 		}
 		
 		/**
@@ -270,23 +262,23 @@ package ns.flex.controls
 				var saveButton:Button=new Button();
 				saveButton.label='保存';
 				saveButton.addEventListener('click', function(e:Event):void
-					{
-						for each (var it:FormItem in form.getChildren())
-							if (it is DataColumnFormItem)
-								if (!(it as DataColumnFormItem).validated)
-								{
-									pop.shake.play();
-									return;
-								}
-						pop.close();
-						dispatchEvent(new SaveItemEvent(editingItem));
-					});
+				{
+					for each (var it:FormItem in form.getChildren())
+						if (it is DataColumnFormItem)
+							if (!(it as DataColumnFormItem).validated)
+							{
+								pop.shake.play();
+								return;
+							}
+					pop.close();
+					dispatchEvent(new SaveItemEvent(editingItem));
+				});
 				var resetButton:Button=new Button();
 				resetButton.label='重置';
 				resetButton.addEventListener('click', function(e:Event):void
-					{
-						editingItem=new ObjectProxy(ObjectUtil.copy(showItem));
-					});
+				{
+					editingItem=new ObjectProxy(ObjectUtil.copy(showItem));
+				});
 				hbox.addChild(saveButton);
 				hbox.addChild(resetButton);
 				buttonItem.addChild(hbox);
@@ -325,12 +317,12 @@ package ns.flex.controls
 		{
 			Alert.show("确认全部删除？", null, Alert.YES | Alert.NO, this,
 				function(evt:CloseEvent):void
+			{
+				if (evt.detail == Alert.YES)
 				{
-					if (evt.detail == Alert.YES)
-					{
-						dispatchEvent(new Event('deleteAll'));
-					}
-				})
+					dispatchEvent(new Event('deleteAll'));
+				}
+			})
 		}
 	}
 }
