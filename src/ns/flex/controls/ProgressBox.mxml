@@ -15,7 +15,7 @@
 				PopUpManager.addPopUp(this, parent, true);
 			}
 			
-			public function hide():void
+			public function close():void
 			{
 				if (this.isPopUp)
 					PopUpManager.removePopUp(this);

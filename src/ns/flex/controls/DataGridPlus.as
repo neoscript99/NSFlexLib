@@ -21,6 +21,7 @@ package ns.flex.controls
 	import ns.flex.support.MenuSupport;
 	import ns.flex.util.ArrayCollectionPlus;
 	import ns.flex.util.ContainerUtil;
+	import ns.flex.util.MessageUtil;
 	import ns.flex.util.StringUtil;
 	
 	[Event(name="createItem")]
@@ -58,6 +59,8 @@ package ns.flex.controls
 		public var menuSupport:MenuSupport;
 		[Bindable]
 		public var editingItem:ObjectProxy;
+		private var popEditing:PopWindow;
+		private var popProgress:ProgressBox=new ProgressBox();
 		
 		public function DataGridPlus()
 		{
@@ -144,21 +147,21 @@ package ns.flex.controls
 			{
 				if (!(cmdMenu && createEnabled))
 					enableMenu("新增", function(evt:Event):void
-					{
-						showItemDetail(null, true);
-					}, true, true);
+						{
+							showItemDetail(null, true);
+						}, true, true);
 				
 				if (!(cmdMenu && modifyEnabled))
 					enableMenu("修改", function(evt:Event):void
-					{
-						showItemDetail(selectedItem, true);
-					}, false, false, true);
+						{
+							showItemDetail(selectedItem, true);
+						}, false, false, true);
 			}
 			else if (showDetail == 'read')
 				enableMenu('查看', function(evt:Event):void
-				{
-					showItemDetail(selectedItem, false);
-				}, true, false, true);
+					{
+						showItemDetail(selectedItem, false);
+					}, true, false, true);
 			
 			if (this.cmdMenu)
 			{
@@ -230,12 +233,25 @@ package ns.flex.controls
 		{
 			Alert.show("确认删除？", null, Alert.YES | Alert.NO, this,
 				function(evt:CloseEvent):void
-			{
-				if (evt.detail == Alert.YES)
 				{
-					dispatchEvent(new Event('deleteItems'));
-				}
-			})
+					if (evt.detail == Alert.YES)
+					{
+						dispatchEvent(new Event('deleteItems'));
+					}
+				})
+		}
+		
+		public function closePopEditing():void
+		{
+			popProgress.close();
+			
+			if (popEditing)
+				popEditing.close();
+		}
+		
+		public function closePopProgress():void
+		{
+			popProgress.close();
 		}
 		
 		/**
@@ -251,7 +267,7 @@ package ns.flex.controls
 			{
 				form.addChild(new DataColumnFormItem(this, col, editable));
 			}
-			var pop:PopWindow=
+			popEditing=
 				ContainerUtil.showPopUP(editable ? (showItem ? '修改' : '新增') : '查看', this,
 				form, -1, -1, 600, 480);
 			
@@ -262,23 +278,23 @@ package ns.flex.controls
 				var saveButton:Button=new Button();
 				saveButton.label='保存';
 				saveButton.addEventListener('click', function(e:Event):void
-				{
-					for each (var it:FormItem in form.getChildren())
-						if (it is DataColumnFormItem)
-							if (!(it as DataColumnFormItem).validated)
-							{
-								pop.shake.play();
-								return;
-							}
-					pop.close();
-					dispatchEvent(new SaveItemEvent(editingItem));
-				});
+					{
+						for each (var it:FormItem in form.getChildren())
+							if (it is DataColumnFormItem)
+								if (!(it as DataColumnFormItem).validated)
+								{
+									popEditing.shake.play();
+									return;
+								}
+						popProgress.show(popEditing);
+						dispatchEvent(new SaveItemEvent(editingItem));
+					});
 				var resetButton:Button=new Button();
 				resetButton.label='重置';
 				resetButton.addEventListener('click', function(e:Event):void
-				{
-					editingItem=new ObjectProxy(ObjectUtil.copy(showItem));
-				});
+					{
+						editingItem=new ObjectProxy(ObjectUtil.copy(showItem));
+					});
 				hbox.addChild(saveButton);
 				hbox.addChild(resetButton);
 				buttonItem.addChild(hbox);
@@ -317,12 +333,12 @@ package ns.flex.controls
 		{
 			Alert.show("确认全部删除？", null, Alert.YES | Alert.NO, this,
 				function(evt:CloseEvent):void
-			{
-				if (evt.detail == Alert.YES)
 				{
-					dispatchEvent(new Event('deleteAll'));
-				}
-			})
+					if (evt.detail == Alert.YES)
+					{
+						dispatchEvent(new Event('deleteAll'));
+					}
+				})
 		}
 	}
 }
