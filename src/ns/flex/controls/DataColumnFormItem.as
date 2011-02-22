@@ -34,13 +34,13 @@ package ns.flex.controls
 			if (editable && col.dataField)
 			{
 				BindingUtils.bindSetter(function(value:Object):void
-					{
-						cb.selected=dgp.editingItem[col.dataField];
-					}, dgp, 'editingItem');
+				{
+					cb.selected=dgp.editingItem[col.dataField];
+				}, dgp, 'editingItem');
 				BindingUtils.bindSetter(function(value:String):void
-					{
-						dgp.editingItem[col.dataField]=value;
-					}, cb, 'selected');
+				{
+					dgp.editingItem[col.dataField]=value;
+				}, cb, 'selected');
 			}
 			else if (dgp.editingItem)
 				cb.selected=dgp.editingItem[col.dataField];
@@ -95,6 +95,9 @@ package ns.flex.controls
 						tip.required=colp.required;
 						tip.expression=colp.expression;
 						tip.flags=colp.flags;
+						
+						if ('Password' == colp.asControl)
+							tip.displayAsPassword=true;
 					}
 				}
 				textInput=tip;
@@ -105,14 +108,14 @@ package ns.flex.controls
 			if (editable && col.dataField)
 			{
 				BindingUtils.bindSetter(function(value:Object):void
-					{
-						textInput['text']=col.itemToLabel(dgp.editingItem);
-					}, dgp, 'editingItem');
+				{
+					textInput['text']=col.itemToLabel(dgp.editingItem);
+				}, dgp, 'editingItem');
 				BindingUtils.bindSetter(function(value:String):void
-					{
-						dgp.editingItem[col.dataField]=value
-						label=col.headerText.concat('(', textInput['remainSize'], ')');
-					}, textInput, 'text');
+				{
+					dgp.editingItem[col.dataField]=value
+					label=col.headerText.concat('(', textInput['remainSize'], ')');
+				}, textInput, 'text');
 			}
 			else if (dgp.editingItem)
 				textInput['text']=col.itemToLabel(dgp.editingItem);

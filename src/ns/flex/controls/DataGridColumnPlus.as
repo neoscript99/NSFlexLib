@@ -27,7 +27,7 @@ package ns.flex.controls
 		public var maxChars:int=32;
 		public var expression:String;
 		public var flags:String;
-		[Inspectable(enumeration="Text,CheckBox", defaultValue="Text",
+		[Inspectable(enumeration="Text,CheckBox,Password", defaultValue="Text",
 			category="General")]
 		public var asControl:String='Text';
 		

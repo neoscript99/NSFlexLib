@@ -39,10 +39,12 @@ package ns.flex.util
 		 * @param height 高
 		 */
 		static public function showPopUP(title:String, parent:DisplayObject,
-			child:DisplayObject, width:int=-1, height:int=-1):PopWindow
+			child:DisplayObject, width:int=-1, height:int=-1, goCenter:Boolean=
+			true):PopWindow
 		{
 			var pop:PopWindow=new PopWindow();
 			pop.title=title;
+			pop.goCenter=goCenter;
 			
 			if (width > -1)
 				pop.width=width;
