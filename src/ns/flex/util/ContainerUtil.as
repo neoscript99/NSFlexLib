@@ -39,8 +39,7 @@ package ns.flex.util
 		 * @param height 高
 		 */
 		static public function showPopUP(title:String, parent:DisplayObject,
-			child:DisplayObject, width:int=-1, height:int=-1, maxWidth:int=-1,
-			maxHeight:int=-1):PopWindow
+			child:DisplayObject, width:int=-1, height:int=-1):PopWindow
 		{
 			var pop:PopWindow=new PopWindow();
 			pop.title=title;
@@ -50,12 +49,6 @@ package ns.flex.util
 			
 			if (height > -1)
 				pop.height=height;
-			
-			if (maxHeight > -1)
-				pop.maxHeight=maxHeight;
-			
-			if (maxWidth > -1)
-				pop.maxWidth=maxWidth;
 			PopUpManager.addPopUp(pop, parent, true);
 			pop.addChild(child);
 			return pop;

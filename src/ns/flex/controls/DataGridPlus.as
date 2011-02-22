@@ -41,6 +41,8 @@ package ns.flex.controls
 		[Inspectable(enumeration="none,read,write", defaultValue="read",
 			category="General")]
 		public var showDetail:String='read';
+		[Inspectable(category="General")]
+		public var showDetailPopWidth:int=-1;
 		[Bindable]
 		private var lastRollOverIndex:Number;
 		private var orderList:ArrayCollectionPlus=new ArrayCollectionPlus();
@@ -60,7 +62,6 @@ package ns.flex.controls
 		[Bindable]
 		public var editingItem:ObjectProxy;
 		private var popEditing:PopWindow;
-		private var popProgress:ProgressBox=new ProgressBox();
 		
 		public function DataGridPlus()
 		{
@@ -243,15 +244,8 @@ package ns.flex.controls
 		
 		public function closePopEditing():void
 		{
-			popProgress.close();
-			
 			if (popEditing)
 				popEditing.close();
-		}
-		
-		public function closePopProgress():void
-		{
-			popProgress.close();
 		}
 		
 		/**
@@ -269,7 +263,7 @@ package ns.flex.controls
 			}
 			popEditing=
 				ContainerUtil.showPopUP(editable ? (showItem ? '修改' : '新增') : '查看', this,
-				form, -1, -1, 600, 480);
+				form, showDetailPopWidth, -1);
 			
 			if (editable)
 			{
@@ -286,7 +280,7 @@ package ns.flex.controls
 									popEditing.shake.play();
 									return;
 								}
-						popProgress.show(popEditing);
+						popEditing.showProgress();
 						dispatchEvent(new SaveItemEvent(editingItem));
 					});
 				var resetButton:Button=new Button();
