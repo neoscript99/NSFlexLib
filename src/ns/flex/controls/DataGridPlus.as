@@ -180,12 +180,7 @@ package ns.flex.controls
 			}
 			
 			if (copyToExcelEnabled)
-				enableCopyToExcel(true);
-		}
-		
-		public function enableCopyToExcel(separatorBefore:Boolean=false):void
-		{
-			enableMenu("复制到Excel", copyToExcel, separatorBefore);
+				enableMenu("复制到Excel", copyToExcel, true);
 		}
 		
 		private function enableMenu(menuLabel:String, action:Function,
