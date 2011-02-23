@@ -16,18 +16,13 @@ package ns.flex.controls
 		[Inspectable(category="General")]
 		public var isSeparateThousands:Boolean=true;
 		//以下属性用来自动生成编辑对话框
-		[Inspectable(category="General")]
-		public var imeDisabled:Boolean=false;
-		[Inspectable(category="General")]
-		public var noSpace:Boolean=false;
-		[Inspectable(category="General")]
-		public var autoTrim:Boolean=true;
-		[Inspectable(category="General")]
-		public var required:Boolean=false;
 		public var maxChars:int=32;
-		public var expression:String;
-		public var flags:String;
-		[Inspectable(enumeration="Text,CheckBox,Password", defaultValue="Text",
+		// @see TextInputPlus
+		public var constraints:Object;
+		public var comboBoxDataProvider:Object; //for ComboBox dataProvider
+		public var comboBoxLabelField:String;
+		public var comboBoxDataField:String;
+		[Inspectable(enumeration="Text,ComboBox,CheckBox,Password", defaultValue="Text",
 			category="General")]
 		public var asControl:String='Text';
 		

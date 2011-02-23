@@ -10,7 +10,6 @@
 			import mx.events.ValidationResultEvent;
 			import mx.validators.Validator;
 			import mx.validators.RegExpValidator;
-			static public const phoneExp:String='^[\-\+\.\(\)\\d]{5,32}$';
 			[Inspectable(category="General")]
 			public var noSpace:Boolean=false;
 			[Inspectable(category="General")]
@@ -26,6 +25,13 @@
 			public var expression:String;
 			[Inspectable(category="General")]
 			public var required:Boolean=false;
+			
+			public function set constraints(value:Object):void
+			{
+				for (var prop:String in value)
+					if (hasOwnProperty(prop))
+						this[prop]=value[prop];
+			}
 			
 			public function resetValidator():void
 			{
@@ -50,6 +56,7 @@
 			}
 			
 			[Bindable("textChanged")]
+			[Bindable("maxCharsChanged")]
 			public function get remainSize():int
 			{
 				return maxChars - text.length;
@@ -63,7 +70,6 @@
 			
 			private function cc():void
 			{
-				this.maxChars=32;
 				resetValidator();
 			}
 			

@@ -18,20 +18,48 @@ package ns.flex.controls
 			var uic:UIComponent;
 			label=col.headerText;
 			
-			if (col is DataGridColumnPlus && 'CheckBox' == col['asControl'])
-				uic=asCheckBox(dgp, col, editable);
+			if (col is DataGridColumnPlus && col.dataField)
+			{
+				var colp:DataGridColumnPlus=DataGridColumnPlus(col)
+				
+				if ('CheckBox' == colp.asControl)
+					uic=asCheckBox(dgp, col, editable);
+				else if ('ComboBox' == colp.asControl && editable &&
+					colp.comboBoxDataProvider && colp.comboBoxDataField &&
+					colp.comboBoxLabelField)
+					uic=asComboBox(dgp, colp);
+				else
+					uic=asText(dgp, col, editable);
+			}
 			else
 				uic=asText(dgp, col, editable);
 			addChild(uic);
+		}
+		
+		private function asComboBox(dgp:DataGridPlus, colp:DataGridColumnPlus):UIComponent
+		{
+			var cbp:ComboBoxPlus=new ComboBoxPlus();
+			cbp.labelField=colp.comboBoxLabelField;
+			cbp.dataProvider=colp.comboBoxDataProvider;
+			BindingUtils.bindSetter(function(value:Object):void
+			{
+				if (value[colp.dataField])
+					cbp.defaultLabel=colp.itemToLabel(value);
+			}, dgp, 'editingItem');
+			BindingUtils.bindSetter(function(value:Object):void
+			{
+				dgp.editingItem[colp.dataField]=value[colp.comboBoxDataField];
+			}, cbp, 'selectedItem');
+			return cbp;
 		}
 		
 		private function asCheckBox(dgp:DataGridPlus, col:DataGridColumn,
 			editable:Boolean):UIComponent
 		{
 			var cb:CheckBox=new CheckBox();
-			cb.enabled=(editable && col.dataField);
+			cb.enabled=editable;
 			
-			if (editable && col.dataField)
+			if (editable)
 			{
 				BindingUtils.bindSetter(function(value:Object):void
 				{
@@ -88,13 +116,13 @@ package ns.flex.controls
 					
 					if (editable)
 					{
+						if (colp.constraints && colp.constraints.maxChars &&
+							colp.constraints.maxChars != colp.maxChars)
+							trace('Warning: DataGridColumnPlus[maxChars] is conflicted with constraints[maxChars], constraints is priority.',
+								colp.dataField, colp.headerText, colp.maxChars,
+								colp.constraints.maxChars)
 						tip.maxChars=colp.maxChars;
-						tip.imeDisabled=colp.imeDisabled;
-						tip.noSpace=colp.noSpace;
-						tip.autoTrim=colp.autoTrim;
-						tip.required=colp.required;
-						tip.expression=colp.expression;
-						tip.flags=colp.flags;
+						tip.constraints=colp.constraints;
 						
 						if ('Password' == colp.asControl)
 							tip.displayAsPassword=true;
@@ -109,7 +137,7 @@ package ns.flex.controls
 			{
 				BindingUtils.bindSetter(function(value:Object):void
 				{
-					textInput['text']=col.itemToLabel(dgp.editingItem);
+					textInput['text']=col.itemToLabel(value);
 				}, dgp, 'editingItem');
 				BindingUtils.bindSetter(function(value:String):void
 				{
