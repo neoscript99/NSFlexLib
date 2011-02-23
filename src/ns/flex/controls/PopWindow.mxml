@@ -79,8 +79,7 @@
 						moveToY=0;
 					move(moveToX, moveToY);
 				}
-				menuSupport=new MenuSupport();
-				this.contextMenu=menuSupport.contextMenu;
+				menuSupport=new MenuSupport(this);
 				menuSupport.createMenuItem('关闭', onClose, false, true);
 			}
 			

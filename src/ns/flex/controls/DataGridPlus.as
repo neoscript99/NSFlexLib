@@ -21,7 +21,6 @@ package ns.flex.controls
 	import ns.flex.support.MenuSupport;
 	import ns.flex.util.ArrayCollectionPlus;
 	import ns.flex.util.ContainerUtil;
-	import ns.flex.util.MessageUtil;
 	import ns.flex.util.StringUtil;
 	
 	[Event(name="createItem")]
@@ -137,50 +136,55 @@ package ns.flex.controls
 			}
 		}
 		
-		private function cc(event:FlexEvent):void
+		public function resetMenu():void
 		{
-			menuSupport=new MenuSupport();
-			this.contextMenu=menuSupport.contextMenu;
-			contextMenu.addEventListener(ContextMenuEvent.MENU_SELECT,
-				contextMenu_menuSelect);
+			menuSupport=new MenuSupport(this, contextMenu_menuSelect);
+			var separatorCount:int=0;
 			
 			if (showDetail == 'write')
 			{
 				if (!(cmdMenu && createEnabled))
 					enableMenu("新增", function(evt:Event):void
-					{
-						showItemDetail(null, true);
-					}, true, true);
+						{
+							showItemDetail(null, true);
+						}, (separatorCount++ == 0), true);
 				
 				if (!(cmdMenu && modifyEnabled))
 					enableMenu("修改", function(evt:Event):void
-					{
-						showItemDetail(selectedItem, true);
-					}, false, false, true);
+						{
+							showItemDetail(selectedItem, true);
+						}, (separatorCount++ == 0), false, true);
 			}
 			else if (showDetail == 'read')
-				enableMenu('查看', function(evt:Event):void
-				{
-					showItemDetail(selectedItem, false);
-				}, true, false, true);
+				if (!(cmdMenu && modifyEnabled))
+					enableMenu('查看', function(evt:Event):void
+						{
+							showItemDetail(selectedItem, false);
+						}, (separatorCount++ == 0), false, true);
 			
 			if (this.cmdMenu)
 			{
 				if (createEnabled)
-					enableMenu("新增", createItem, false, true);
+					menuSupport.createMenuItem("新增", createItem, (separatorCount++ == 0),
+						true, 0);
 				
 				if (modifyEnabled)
-					enableMenu("修改", modifyItem);
+					enableMenu("修改", modifyItem, (separatorCount++ == 0));
 				
 				if (deleteEnabled)
-					enableMenu("删除选中", deleteItems);
+					enableMenu("删除选中", deleteItems, (separatorCount++ == 0));
 				
 				if (deleteAllEnabled)
-					enableMenu("删除全部", deleteAll);
+					enableMenu("删除全部", deleteAll, (separatorCount++ == 0));
 			}
 			
 			if (copyToExcelEnabled)
 				enableMenu("复制到Excel", copyToExcel, true);
+		}
+		
+		private function cc(event:FlexEvent):void
+		{
+			resetMenu();
 		}
 		
 		private function enableMenu(menuLabel:String, action:Function,
@@ -229,12 +233,12 @@ package ns.flex.controls
 		{
 			Alert.show("确认删除？", null, Alert.YES | Alert.NO, this,
 				function(evt:CloseEvent):void
-			{
-				if (evt.detail == Alert.YES)
 				{
-					dispatchEvent(new Event('deleteItems'));
-				}
-			})
+					if (evt.detail == Alert.YES)
+					{
+						dispatchEvent(new Event('deleteItems'));
+					}
+				})
 		}
 		
 		public function closePopEditing():void
@@ -242,6 +246,7 @@ package ns.flex.controls
 			if (popEditing)
 				popEditing.close();
 		}
+		
 		public function closeProgress():void
 		{
 			if (popEditing)
@@ -272,23 +277,23 @@ package ns.flex.controls
 				var saveButton:Button=new Button();
 				saveButton.label='保存';
 				saveButton.addEventListener('click', function(e:Event):void
-				{
-					for each (var it:FormItem in form.getChildren())
-						if (it is DataColumnFormItem)
-							if (!(it as DataColumnFormItem).validated)
-							{
-								popEditing.shake.play();
-								return;
-							}
-					popEditing.showProgress();
-					dispatchEvent(new SaveItemEvent(editingItem));
-				});
+					{
+						for each (var it:FormItem in form.getChildren())
+							if (it is DataColumnFormItem)
+								if (!(it as DataColumnFormItem).validated)
+								{
+									popEditing.shake.play();
+									return;
+								}
+						popEditing.showProgress();
+						dispatchEvent(new SaveItemEvent(editingItem));
+					});
 				var resetButton:Button=new Button();
 				resetButton.label='重置';
 				resetButton.addEventListener('click', function(e:Event):void
-				{
-					editingItem=new ObjectProxy(ObjectUtil.copy(showItem));
-				});
+					{
+						editingItem=new ObjectProxy(ObjectUtil.copy(showItem));
+					});
 				hbox.addChild(saveButton);
 				hbox.addChild(resetButton);
 				buttonItem.addChild(hbox);
@@ -327,12 +332,12 @@ package ns.flex.controls
 		{
 			Alert.show("确认全部删除？", null, Alert.YES | Alert.NO, this,
 				function(evt:CloseEvent):void
-			{
-				if (evt.detail == Alert.YES)
 				{
-					dispatchEvent(new Event('deleteAll'));
-				}
-			})
+					if (evt.detail == Alert.YES)
+					{
+						dispatchEvent(new Event('deleteAll'));
+					}
+				})
 		}
 	}
 }
