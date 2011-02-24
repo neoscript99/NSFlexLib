@@ -165,8 +165,7 @@ package ns.flex.controls
 			if (this.cmdMenu)
 			{
 				if (createEnabled)
-					menuSupport.createMenuItem("新增", createItem, (separatorCount++ == 0),
-						true, 0);
+					enableMenu("新增", createItem, (separatorCount++ == 0), true);
 				
 				if (modifyEnabled)
 					enableMenu("修改", modifyItem, (separatorCount++ == 0));

@@ -53,7 +53,7 @@
 			private function cc():void
 			{
 				//height最大时，出现横竖滚动条，加大width，去除横向滚动
-				if (height == maxHeight)
+				if (height == maxHeight && this.verticalScrollBar)
 					width+=this.verticalScrollBar.width * 2;
 				originWidth=width;
 				originHeight=height;
