@@ -25,6 +25,8 @@ package ns.flex.controls
 		[Inspectable(enumeration="Text,ComboBox,CheckBox,Password", defaultValue="Text",
 			category="General")]
 		public var asControl:String='Text';
+		[Inspectable(category="General")]
+		public var readonly:Boolean=false;
 		
 		public function DataGridColumnPlus(columnName:String=null)
 		{

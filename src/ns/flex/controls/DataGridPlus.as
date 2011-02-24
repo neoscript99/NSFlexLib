@@ -37,7 +37,7 @@ package ns.flex.controls
 		public var multiSort:Boolean=false;
 		[Inspectable(enumeration="asc,desc", defaultValue="desc", category="General")]
 		public var defaultOrder:String='desc';
-		[Inspectable(enumeration="none,read,write", defaultValue="none",
+		[Inspectable(enumeration="none,read,write,read-write", defaultValue="none",
 			category="General")]
 		public var showDetail:String='none';
 		[Inspectable(category="General")]
@@ -48,13 +48,13 @@ package ns.flex.controls
 		[Inspectable(category="General")]
 		public var cmdMenu:Boolean=false;
 		[Inspectable(category="General")]
-		public var deleteEnabled:Boolean=true;
+		public var deleteEnabled:Boolean=false;
 		[Inspectable(category="General")]
-		public var deleteAllEnabled:Boolean=true;
+		public var deleteAllEnabled:Boolean=false;
 		[Inspectable(category="General")]
-		public var createEnabled:Boolean=true;
+		public var createEnabled:Boolean=false;
 		[Inspectable(category="General")]
-		public var modifyEnabled:Boolean=true;
+		public var modifyEnabled:Boolean=false;
 		[Inspectable(category="General")]
 		public var copyToExcelEnabled:Boolean=true;
 		public var menuSupport:MenuSupport;
@@ -141,41 +141,33 @@ package ns.flex.controls
 			menuSupport=new MenuSupport(this, contextMenu_menuSelect);
 			var separatorCount:int=0;
 			
-			if (showDetail == 'write')
-			{
-				if (!(cmdMenu && createEnabled))
-					enableMenu("新增", function(evt:Event):void
-						{
-							showItemDetail(null, true);
-						}, (separatorCount++ == 0), true);
-				
-				if (!(cmdMenu && modifyEnabled))
-					enableMenu("修改", function(evt:Event):void
-						{
-							showItemDetail(selectedItem, true);
-						}, (separatorCount++ == 0), false, true);
-			}
-			else if (showDetail == 'read')
-				if (!(cmdMenu && modifyEnabled))
-					enableMenu('查看', function(evt:Event):void
-						{
-							showItemDetail(selectedItem, false);
-						}, (separatorCount++ == 0), false, true);
+			if (showDetail.indexOf('read') > -1)
+				enableMenu('查看', function(evt:Event):void
+				{
+					showItemDetail(selectedItem, false);
+				}, (separatorCount++ == 0), false, true);
 			
-			if (this.cmdMenu)
-			{
-				if (createEnabled)
-					enableMenu("新增", createItem, (separatorCount++ == 0), true);
-				
-				if (modifyEnabled)
-					enableMenu("修改", modifyItem, (separatorCount++ == 0));
-				
-				if (deleteEnabled)
-					enableMenu("删除选中", deleteItems, (separatorCount++ == 0));
-				
-				if (deleteAllEnabled)
-					enableMenu("删除全部", deleteAll, (separatorCount++ == 0));
-			}
+			if (this.cmdMenu && modifyEnabled)
+				enableMenu("修改", modifyItem, (separatorCount++ == 0), false, true);
+			else if (showDetail.indexOf('write') > -1)
+				enableMenu("修改", function(evt:Event):void
+				{
+					showItemDetail(selectedItem, true);
+				}, (separatorCount++ == 0), false, true);
+			
+			if (this.cmdMenu && createEnabled)
+				enableMenu("新增", createItem, (separatorCount++ == 0), true);
+			else if (showDetail.indexOf('write') > -1)
+				enableMenu("新增", function(evt:Event):void
+				{
+					showItemDetail(null, true);
+				}, (separatorCount++ == 0), true);
+			
+			if (this.cmdMenu && deleteEnabled)
+				enableMenu("删除选中", deleteItems, (separatorCount++ == 0));
+			
+			if (this.cmdMenu && deleteAllEnabled)
+				enableMenu("删除全部", deleteAll, (separatorCount++ == 0));
 			
 			if (copyToExcelEnabled)
 				enableMenu("复制到Excel", copyToExcel, true);
@@ -232,12 +224,12 @@ package ns.flex.controls
 		{
 			Alert.show("确认删除？", null, Alert.YES | Alert.NO, this,
 				function(evt:CloseEvent):void
+			{
+				if (evt.detail == Alert.YES)
 				{
-					if (evt.detail == Alert.YES)
-					{
-						dispatchEvent(new Event('deleteItems'));
-					}
-				})
+					dispatchEvent(new Event('deleteItems'));
+				}
+			})
 		}
 		
 		public function closePopEditing():void
@@ -263,6 +255,9 @@ package ns.flex.controls
 			
 			for each (var col:DataGridColumn in columns)
 			{
+				if (col is DataGridColumnPlus)
+					if (DataGridColumnPlus(col).readonly && editable)
+						break;
 				form.addChild(new DataColumnFormItem(this, col, editable));
 			}
 			popEditing=
@@ -276,23 +271,23 @@ package ns.flex.controls
 				var saveButton:Button=new Button();
 				saveButton.label='保存';
 				saveButton.addEventListener('click', function(e:Event):void
-					{
-						for each (var it:FormItem in form.getChildren())
-							if (it is DataColumnFormItem)
-								if (!(it as DataColumnFormItem).validated)
-								{
-									popEditing.shake.play();
-									return;
-								}
-						popEditing.showProgress();
-						dispatchEvent(new SaveItemEvent(editingItem));
-					});
+				{
+					for each (var it:FormItem in form.getChildren())
+						if (it is DataColumnFormItem)
+							if (!(it as DataColumnFormItem).validated)
+							{
+								popEditing.shake.play();
+								return;
+							}
+					popEditing.showProgress();
+					dispatchEvent(new SaveItemEvent(editingItem));
+				});
 				var resetButton:Button=new Button();
 				resetButton.label='重置';
 				resetButton.addEventListener('click', function(e:Event):void
-					{
-						editingItem=new ObjectProxy(ObjectUtil.copy(showItem));
-					});
+				{
+					editingItem=new ObjectProxy(ObjectUtil.copy(showItem));
+				});
 				hbox.addChild(saveButton);
 				hbox.addChild(resetButton);
 				buttonItem.addChild(hbox);
@@ -331,12 +326,12 @@ package ns.flex.controls
 		{
 			Alert.show("确认全部删除？", null, Alert.YES | Alert.NO, this,
 				function(evt:CloseEvent):void
+			{
+				if (evt.detail == Alert.YES)
 				{
-					if (evt.detail == Alert.YES)
-					{
-						dispatchEvent(new Event('deleteAll'));
-					}
-				})
+					dispatchEvent(new Event('deleteAll'));
+				}
+			})
 		}
 	}
 }

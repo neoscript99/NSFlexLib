@@ -1,6 +1,9 @@
 package ns.flex.util
 {
 	import flash.display.DisplayObject;
+	import mx.controls.ComboBox;
+	import mx.controls.TextArea;
+	import mx.controls.TextInput;
 	import mx.core.ClassFactory;
 	import mx.core.Container;
 	import mx.managers.PopUpManager;
@@ -12,6 +15,25 @@ package ns.flex.util
 	 */
 	public class ContainerUtil
 	{
+		/**
+		 * 级联清空容器内输入对象的输入内容
+		 * @param container
+		 */
+		static public function clearInput(container:Container):void
+		{
+			for each (var diso:DisplayObject in container.getChildren())
+			{
+				if (diso is Container)
+					clearInput(Container(diso));
+				else if (diso is TextInput)
+					TextInput(diso).text='';
+				else if (diso is TextArea)
+					TextArea(diso).text='';
+				else if (diso is ComboBox)
+					ComboBox(diso).selectedIndex=0;
+			}
+		}
+		
 		/**
 		 * 生产容器
 		 * @param childClass 容器类
