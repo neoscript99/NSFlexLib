@@ -37,9 +37,9 @@ package ns.flex.controls
 		public var multiSort:Boolean=false;
 		[Inspectable(enumeration="asc,desc", defaultValue="desc", category="General")]
 		public var defaultOrder:String='desc';
-		[Inspectable(enumeration="none,read,write", defaultValue="read",
+		[Inspectable(enumeration="none,read,write", defaultValue="none",
 			category="General")]
-		public var showDetail:String='read';
+		public var showDetail:String='none';
 		[Inspectable(category="General")]
 		public var showDetailPopWidth:int=-1;
 		[Bindable]
