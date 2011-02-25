@@ -46,8 +46,6 @@ package ns.flex.controls
 		private var lastRollOverIndex:Number;
 		private var orderList:ArrayCollectionPlus=new ArrayCollectionPlus();
 		[Inspectable(category="General")]
-		public var cmdMenu:Boolean=false;
-		[Inspectable(category="General")]
 		public var deleteEnabled:Boolean=false;
 		[Inspectable(category="General")]
 		public var deleteAllEnabled:Boolean=false;
@@ -71,6 +69,12 @@ package ns.flex.controls
 			addEventListener(ListEvent.ITEM_ROLL_OUT, dgItemRollOut);
 			addEventListener(FlexEvent.CREATION_COMPLETE, cc);
 			addEventListener(DataGridEvent.HEADER_RELEASE, onHeaderRelease);
+		}
+		
+		[Inspectable(category="General")]
+		public function set cmdMenu(enabled:Boolean):void
+		{
+			deleteEnabled=deleteAllEnabled=createEnabled=modifyEnabled=true;
 		}
 		
 		public function get orders():Array
@@ -143,30 +147,30 @@ package ns.flex.controls
 			
 			if (showDetail.indexOf('read') > -1)
 				enableMenu('查看', function(evt:Event):void
-				{
-					showItemDetail(selectedItem, false);
-				}, (separatorCount++ == 0), false, true);
+					{
+						showItemDetail(selectedItem, false);
+					}, (separatorCount++ == 0), false, true);
 			
-			if (this.cmdMenu && modifyEnabled)
+			if (modifyEnabled)
 				enableMenu("修改", modifyItem, (separatorCount++ == 0), false, true);
 			else if (showDetail.indexOf('write') > -1)
 				enableMenu("修改", function(evt:Event):void
-				{
-					showItemDetail(selectedItem, true);
-				}, (separatorCount++ == 0), false, true);
+					{
+						showItemDetail(selectedItem, true);
+					}, (separatorCount++ == 0), false, true);
 			
-			if (this.cmdMenu && createEnabled)
+			if (createEnabled)
 				enableMenu("新增", createItem, (separatorCount++ == 0), true);
 			else if (showDetail.indexOf('write') > -1)
 				enableMenu("新增", function(evt:Event):void
-				{
-					showItemDetail(null, true);
-				}, (separatorCount++ == 0), true);
+					{
+						showItemDetail(null, true);
+					}, (separatorCount++ == 0), true);
 			
-			if (this.cmdMenu && deleteEnabled)
+			if (deleteEnabled)
 				enableMenu("删除选中", deleteItems, (separatorCount++ == 0));
 			
-			if (this.cmdMenu && deleteAllEnabled)
+			if (deleteAllEnabled)
 				enableMenu("删除全部", deleteAll, (separatorCount++ == 0));
 			
 			if (copyToExcelEnabled)
@@ -224,12 +228,12 @@ package ns.flex.controls
 		{
 			Alert.show("确认删除？", null, Alert.YES | Alert.NO, this,
 				function(evt:CloseEvent):void
-			{
-				if (evt.detail == Alert.YES)
 				{
-					dispatchEvent(new Event('deleteItems'));
-				}
-			})
+					if (evt.detail == Alert.YES)
+					{
+						dispatchEvent(new Event('deleteItems'));
+					}
+				})
 		}
 		
 		public function closePopEditing():void
@@ -271,23 +275,23 @@ package ns.flex.controls
 				var saveButton:Button=new Button();
 				saveButton.label='保存';
 				saveButton.addEventListener('click', function(e:Event):void
-				{
-					for each (var it:FormItem in form.getChildren())
-						if (it is DataColumnFormItem)
-							if (!(it as DataColumnFormItem).validated)
-							{
-								popEditing.shake.play();
-								return;
-							}
-					popEditing.showProgress();
-					dispatchEvent(new SaveItemEvent(editingItem));
-				});
+					{
+						for each (var it:FormItem in form.getChildren())
+							if (it is DataColumnFormItem)
+								if (!(it as DataColumnFormItem).validated)
+								{
+									popEditing.shake.play();
+									return;
+								}
+						popEditing.showProgress();
+						dispatchEvent(new SaveItemEvent(editingItem));
+					});
 				var resetButton:Button=new Button();
 				resetButton.label='重置';
 				resetButton.addEventListener('click', function(e:Event):void
-				{
-					editingItem=new ObjectProxy(ObjectUtil.copy(showItem));
-				});
+					{
+						editingItem=new ObjectProxy(ObjectUtil.copy(showItem));
+					});
 				hbox.addChild(saveButton);
 				hbox.addChild(resetButton);
 				buttonItem.addChild(hbox);
@@ -326,12 +330,12 @@ package ns.flex.controls
 		{
 			Alert.show("确认全部删除？", null, Alert.YES | Alert.NO, this,
 				function(evt:CloseEvent):void
-			{
-				if (evt.detail == Alert.YES)
 				{
-					dispatchEvent(new Event('deleteAll'));
-				}
-			})
+					if (evt.detail == Alert.YES)
+					{
+						dispatchEvent(new Event('deleteAll'));
+					}
+				})
 		}
 	}
 }
