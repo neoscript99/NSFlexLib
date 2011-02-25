@@ -19,8 +19,6 @@
 			private var originHeight:int;
 			public var menuSupport:MenuSupport;
 			private var popProgress:ProgressBox;
-			[Inspectable(category="General")]
-			public var goCenter:Boolean=true;
 			
 			protected function pushValidator(... args):void
 			{
@@ -57,30 +55,29 @@
 					width+=this.verticalScrollBar.width * 2;
 				originWidth=width;
 				originHeight=height;
-				
-				if (goCenter)
-					PopUpManager.centerPopUp(this);
-				else
-				{
-					var moveToX:Number=mouseX - width / 2;
-					var moveToY:Number=mouseY - height / 2;
-					
-					if (moveToX < 0)
-						moveToX=0;
-					
-					if (moveToX + width > stage.stageWidth)
-						moveToX=stage.stageWidth - width;
-					
-					if (moveToY + height > stage.stageHeight)
-						moveToY=stage.stageHeight - height;
-					
-					//顺序不能改变，保证关闭按钮显示
-					if (moveToY < 0)
-						moveToY=0;
-					move(moveToX, moveToY);
-				}
+				PopUpManager.centerPopUp(this);
 				menuSupport=new MenuSupport(this);
 				menuSupport.createMenuItem('关闭', onClose, false, true);
+			}
+			
+			public function followMouse():void
+			{
+				var moveToX:Number=mouseX - width / 2;
+				var moveToY:Number=mouseY - height / 2;
+				
+				if (moveToX < 0)
+					moveToX=0;
+				
+				if (moveToX + width > stage.stageWidth)
+					moveToX=stage.stageWidth - width;
+				
+				if (moveToY + height > stage.stageHeight)
+					moveToY=stage.stageHeight - height;
+				
+				//顺序不能改变，保证关闭按钮显示
+				if (moveToY < 0)
+					moveToY=0;
+				move(moveToX, moveToY);
 			}
 			
 			private function onKeyDown(evt:KeyboardEvent):void

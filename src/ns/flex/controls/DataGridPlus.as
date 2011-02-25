@@ -260,7 +260,7 @@ package ns.flex.controls
 			}
 			popEditing=
 				ContainerUtil.showPopUP(editable ? (showItem ? '修改' : '新增') : '查看', this,
-				form, showDetailPopWidth, -1, false);
+				form, showDetailPopWidth, -1);
 			
 			if (editable)
 			{

@@ -89,20 +89,19 @@ package ns.flex.util
 		 * @param height 高
 		 */
 		static public function showPopUP(title:String, parent:DisplayObject,
-			child:DisplayObject, width:int=-1, height:int=-1, goCenter:Boolean=
-			true):PopWindow
+			child:DisplayObject, width:int=-1, height:int=-1):PopWindow
 		{
 			var pop:PopWindow=new PopWindow();
 			pop.title=title;
-			pop.goCenter=goCenter;
 			
 			if (width > -1)
 				pop.width=width;
 			
 			if (height > -1)
 				pop.height=height;
-			PopUpManager.addPopUp(pop, parent, true);
 			pop.addChild(child);
+			PopUpManager.addPopUp(pop, parent, true);
+			pop.followMouse();
 			return pop;
 		}
 	}
