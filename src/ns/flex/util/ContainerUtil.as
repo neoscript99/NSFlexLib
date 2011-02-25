@@ -8,6 +8,7 @@ package ns.flex.util
 	import mx.core.Container;
 	import mx.managers.PopUpManager;
 	import ns.flex.controls.PopWindow;
+	import ns.flex.controls.TextInputPlus;
 	
 	/**
 	 * 显示容器工具类
@@ -32,6 +33,33 @@ package ns.flex.util
 				else if (diso is ComboBox)
 					ComboBox(diso).selectedIndex=0;
 			}
+		}
+		
+		/**
+		 * 级联验证容器内输入对象的输入内容
+		 * @param container
+		 */
+		static public function validate(container:Container):Boolean
+		{
+			for each (var diso:DisplayObject in container.getChildren())
+			{
+				if (diso is Container)
+				{
+					if (!validate(Container(diso)))
+						return false;
+				}
+				else if (diso is TextInputPlus)
+				{
+					if (!TextInputPlus(diso).validated)
+						return false;
+				}
+				else if (diso is ComboBox)
+				{
+					if (!ComboBox(diso).selectedItem)
+						return false;
+				}
+			}
+			return true;
 		}
 		
 		/**

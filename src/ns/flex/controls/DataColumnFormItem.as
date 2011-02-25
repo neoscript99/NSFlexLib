@@ -149,13 +149,5 @@ package ns.flex.controls
 				textInput['text']=col.itemToLabel(dgp.editingItem);
 			return textInput;
 		}
-		
-		public function get validated():Boolean
-		{
-			if (this.getChildAt(0) is TextInputPlus)
-				return (this.getChildAt(0) as TextInputPlus).validated;
-			else
-				return true;
-		}
 	}
 }
