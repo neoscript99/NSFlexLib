@@ -101,7 +101,6 @@ package ns.flex.util
 				pop.height=height;
 			pop.addChild(child);
 			PopUpManager.addPopUp(pop, parent, true);
-			pop.followMouse();
 			return pop;
 		}
 	}

@@ -6,6 +6,7 @@
 	</mx:Metadata>
 	<mx:Script>
 		<![CDATA[
+			import mx.events.FlexEvent;
 			import ns.flex.util.StringUtil;
 			import mx.events.ValidationResultEvent;
 			import mx.validators.Validator;
@@ -31,6 +32,7 @@
 				for (var prop:String in value)
 					if (hasOwnProperty(prop))
 						this[prop]=value[prop];
+				dispatchEvent(new FlexEvent(FlexEvent.VALUE_COMMIT));
 			}
 			
 			public function resetValidator():void
@@ -53,6 +55,7 @@
 					validator.trigger=this;
 					validator.triggerEvent="valueCommit";
 				}
+				dispatchEvent(new FlexEvent(FlexEvent.VALUE_COMMIT));
 			}
 			
 			[Bindable("textChanged")]
