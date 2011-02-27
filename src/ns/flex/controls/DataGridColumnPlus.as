@@ -1,7 +1,10 @@
 package ns.flex.controls
 {
+	import mx.controls.Label;
+	import mx.controls.Text;
 	import mx.controls.dataGridClasses.DataGridColumn;
 	import mx.core.ClassFactory;
+	
 	import ns.flex.util.DateUtil;
 	import ns.flex.util.StringUtil;
 	
@@ -32,7 +35,14 @@ package ns.flex.controls
 		{
 			super(columnName);
 			headerWordWrap=true;
-			itemRenderer=new ClassFactory(DataGridColumnRenderer);
+			itemRenderer=new ClassFactory(Text);
+		}
+		
+		[Inspectable(category="General")]
+		public function set truncateToFit(value:Boolean):void
+		{
+			if (value)
+				itemRenderer=new ClassFactory(SelectableLabel);
 		}
 		
 		public function set nestDataField(field:String):void

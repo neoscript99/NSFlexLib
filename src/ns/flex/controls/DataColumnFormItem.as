@@ -12,7 +12,7 @@ package ns.flex.controls
 		private const AREA_THRESHOLD_SIZE:int=64;
 		
 		public function DataColumnFormItem(dgp:DataGridPlus, col:DataGridColumn,
-			editable:Boolean)
+										   editable:Boolean)
 		{
 			super();
 			var uic:UIComponent;
@@ -25,8 +25,7 @@ package ns.flex.controls
 				if ('CheckBox' == colp.asControl)
 					uic=asCheckBox(dgp, col, editable);
 				else if ('ComboBox' == colp.asControl && editable &&
-					colp.comboBoxDataProvider && colp.comboBoxDataField &&
-					colp.comboBoxLabelField)
+					colp.comboBoxDataField && colp.comboBoxLabelField)
 					uic=asComboBox(dgp, colp);
 				else
 					uic=asText(dgp, col, editable);
@@ -43,18 +42,21 @@ package ns.flex.controls
 			cbp.dataProvider=colp.comboBoxDataProvider;
 			BindingUtils.bindSetter(function(value:Object):void
 			{
+				trace(colp.dataField, colp.itemToLabel(value));
+				
 				if (value[colp.dataField])
 					cbp.defaultLabel=colp.itemToLabel(value);
 			}, dgp, 'editingItem');
 			BindingUtils.bindSetter(function(value:Object):void
 			{
-				dgp.editingItem[colp.dataField]=value[colp.comboBoxDataField];
+				if (value)
+					dgp.editingItem[colp.dataField]=value[colp.comboBoxDataField];
 			}, cbp, 'selectedItem');
 			return cbp;
 		}
 		
 		private function asCheckBox(dgp:DataGridPlus, col:DataGridColumn,
-			editable:Boolean):UIComponent
+									editable:Boolean):UIComponent
 		{
 			var cb:CheckBox=new CheckBox();
 			cb.enabled=editable;
@@ -76,7 +78,7 @@ package ns.flex.controls
 		}
 		
 		private function asText(dgp:DataGridPlus, col:DataGridColumn,
-			editable:Boolean):UIComponent
+								editable:Boolean):UIComponent
 		{
 			var colp:DataGridColumnPlus;
 			var textInput:UIComponent;
@@ -119,8 +121,8 @@ package ns.flex.controls
 						if (colp.constraints && colp.constraints.maxChars &&
 							colp.constraints.maxChars != colp.maxChars)
 							trace('Warning: DataGridColumnPlus[maxChars] is conflicted with constraints[maxChars], constraints is priority.',
-								colp.dataField, colp.headerText, colp.maxChars,
-								colp.constraints.maxChars)
+								  colp.dataField, colp.headerText, colp.maxChars,
+								  colp.constraints.maxChars)
 						tip.maxChars=colp.maxChars;
 						tip.constraints=colp.constraints;
 						
