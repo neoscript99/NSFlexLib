@@ -37,8 +37,8 @@ package ns.flex.controls
 		public var multiSort:Boolean=false;
 		[Inspectable(enumeration="asc,desc", defaultValue="desc", category="General")]
 		public var defaultOrder:String='desc';
-		[Inspectable(enumeration="none,read,write,read-write", defaultValue="none",
-			category="General")]
+		[Inspectable(enumeration="none,new,view,edit,new-edit,view-edit,new-view-edit",
+			defaultValue="none", category="General")]
 		public var showDetail:String='none';
 		[Inspectable(category="General")]
 		public var showDetailPopWidth:int=-1;
@@ -141,13 +141,13 @@ package ns.flex.controls
 			
 			if (createEnabled)
 				enableMenu("新增", createItem, (separatorCount++ == 0), true);
-			else if (showDetail.indexOf('write') > -1)
+			else if (showDetail.indexOf('new') > -1)
 				enableMenu("新增", function(evt:Event):void
 				{
 					showItemDetail(null, true);
 				}, (separatorCount++ == 0), true);
 			
-			if (showDetail.indexOf('read') > -1)
+			if (showDetail.indexOf('view') > -1)
 				enableMenu('查看', function(evt:Event):void
 				{
 					showItemDetail(selectedItem, false);
@@ -155,7 +155,7 @@ package ns.flex.controls
 			
 			if (modifyEnabled)
 				enableMenu("修改", modifyItem, (separatorCount++ == 0), false, true);
-			else if (showDetail.indexOf('write') > -1)
+			else if (showDetail.indexOf('edit') > -1)
 				enableMenu("修改", function(evt:Event):void
 				{
 					showItemDetail(selectedItem, true);
@@ -255,7 +255,7 @@ package ns.flex.controls
 			{
 				if (col is DataGridColumnPlus)
 					if (DataGridColumnPlus(col).readonly && editable)
-						break;
+						continue;
 				form.addChild(new DataColumnFormItem(this, col, editable));
 			}
 			popEditing=

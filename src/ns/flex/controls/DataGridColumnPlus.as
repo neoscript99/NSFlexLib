@@ -31,9 +31,15 @@ package ns.flex.controls
 		public function DataGridColumnPlus(columnName:String=null)
 		{
 			super(columnName);
-			labelFunction=DataGridColumnPlus.getLabel;
 			headerWordWrap=true;
 			itemRenderer=new ClassFactory(DataGridColumnRenderer);
+		}
+		
+		public function set nestDataField(field:String):void
+		{
+			dataField=field;
+			labelFunction=DataGridColumnPlus.getLabel;
+			sortable=false;
 		}
 		
 		public function set percision(p:int):void

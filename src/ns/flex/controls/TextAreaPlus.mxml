@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:TextArea xmlns:mx="http://www.adobe.com/2006/mxml" change="changeHandle()"
+<mx:TextArea xmlns:mx="http://www.adobe.com/2006/mxml" valueCommit="changeHandle()"
 			 keyDown="onKeyDown(event)" maxChars="255">
 	<mx:Metadata>
 		[Event(name="enterKeyDown")]
@@ -9,11 +9,19 @@
 			import ns.flex.util.StringUtil;
 			[Inspectable(category="General")]
 			public var autoTrim:Boolean=true;
+			[Inspectable(category="General")]
+			public var required:Boolean=false;
 			
 			[Bindable("textChanged")]
 			public function get remainSize():int
 			{
 				return maxChars - text.length;
+			}
+			
+			[Bindable("valueCommit")]
+			public function get validated():Boolean
+			{
+				return (!required || text);
 			}
 			
 			private function onKeyDown(evt:KeyboardEvent):void

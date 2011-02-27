@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:DateField xmlns:mx="http://www.adobe.com/2006/mxml" yearNavigationEnabled="true"
-			  firstDayOfWeek="1" width="100"
+			  firstDayOfWeek="1" width="100" yearSymbol="年"
 			  monthNames="['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月']"
 			  formatString="YYYYMMDD" dayNames="[日,一,二,三,四,五,六]" initialize="init()">
 	<mx:Script>

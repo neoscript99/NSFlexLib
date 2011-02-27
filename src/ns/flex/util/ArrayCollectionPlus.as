@@ -23,7 +23,7 @@ package ns.flex.util
 		}
 		
 		/**
-		 * 将集合转化为二维数组，如：[{a:1,b:2}]-->[[1,2]]
+		 * 将集合转化为二维数组，如：[{a:1,b:2},{a:3,b:4}]-->[[1,2],[3,4]]
 		 * @param fields 包含字段，如为空，包含所有字段
 		 * @return
 		 */
@@ -101,6 +101,12 @@ package ns.flex.util
 				if (f(item))
 					this.removeItemAt(i);
 			}
+		}
+		
+		public function each(f:Function):void
+		{
+			for (var i:int=0; i < this.length; i++)
+				f(getItemAt(i))
 		}
 		
 		/**

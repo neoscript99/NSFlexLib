@@ -2,12 +2,14 @@ package ns.flex.util
 {
 	import flash.display.DisplayObject;
 	import mx.controls.ComboBox;
+	import mx.controls.DateField;
 	import mx.controls.TextArea;
 	import mx.controls.TextInput;
 	import mx.core.ClassFactory;
 	import mx.core.Container;
 	import mx.managers.PopUpManager;
 	import ns.flex.controls.PopWindow;
+	import ns.flex.controls.TextAreaPlus;
 	import ns.flex.controls.TextInputPlus;
 	
 	/**
@@ -32,6 +34,8 @@ package ns.flex.util
 					TextArea(diso).text='';
 				else if (diso is ComboBox)
 					ComboBox(diso).selectedIndex=0;
+				else if (diso is DateField)
+					DateField(diso).selectedDate=null;
 			}
 		}
 		
@@ -51,6 +55,11 @@ package ns.flex.util
 				else if (diso is TextInputPlus)
 				{
 					if (!TextInputPlus(diso).validated)
+						return false;
+				}
+				else if (diso is TextAreaPlus)
+				{
+					if (!TextAreaPlus(diso).validated)
 						return false;
 				}
 				else if (diso is ComboBox)

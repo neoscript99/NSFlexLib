@@ -193,8 +193,6 @@
 		]]>
 	</mx:Script>
 	<mx:Binding destination="totalPage" source="{(totalNumber-1)/offset.value+1}"/>
-	<!--
-		 <mx:Text text="{totalNumber}" valueCommit="reGenerate()" visible="false"/>-->
 	<mx:Label text="每页："/>
 	<mx:NumericStepper id="offset" minimum="5" maximum="95" stepSize="5" value="15"
 					   width="50" change="go(0)"/>
