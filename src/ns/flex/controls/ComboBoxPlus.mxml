@@ -3,21 +3,21 @@
 	<mx:Script>
 		<![CDATA[
 			private var _defaultLabel:String;
-			
+
 			override protected function commitProperties():void
 			{
 				super.commitProperties();
 				selectDefaultLabel();
 			}
-			
+
 			private function selectDefaultLabel():void
 			{
 				var tempIndex:int=-1;
-				
+
 				for (var i:int=dataProvider.length - 1; i >= 0; i--)
 				{
 					var label:String=itemToLabel(dataProvider[i]);
-					
+
 					if (label == _defaultLabel)
 					{
 						tempIndex=i;
@@ -29,20 +29,20 @@
 						tempIndex=i;
 					}
 				}
-				
+
 				if (tempIndex > -1)
 					selectedIndex=tempIndex;
 			}
-			
+
 			public function get defaultLabel():String
 			{
 				return _defaultLabel;
 			}
-			
+
 			public function set defaultLabel(value:String):void
 			{
 				this._defaultLabel=value;
-				selectDefaultLabel();
+				invalidateProperties();
 			}
 		]]>
 	</mx:Script>

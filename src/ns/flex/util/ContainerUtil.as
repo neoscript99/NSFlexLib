@@ -30,33 +30,32 @@ package ns.flex.util
 				if (diso is Container)
 					clearInput(Container(diso));
 				else if (diso is TextInput)
-					TextInput(diso).text = '';
+					TextInput(diso).text='';
 				else if (diso is TextArea)
-					TextArea(diso).text = '';
+					TextArea(diso).text='';
 				else if (diso is ComboBox)
-					ComboBox(diso).selectedIndex = 0;
+					ComboBox(diso).selectedIndex=0;
 				else if (diso is DateField)
-					DateField(diso).selectedDate = null;
+					DateField(diso).selectedDate=null;
 			}
 		}
 
 		static public function findContainerChild(container:Container, type:Class,
-												  property:String,
-												  value:Object):DisplayObject
+			property:String, value:Object):DisplayObject
 		{
 			var result:DisplayObject;
 			for each (var diso:DisplayObject in container.getChildren())
 			{
-				if (diso is Container)
-				{
-					result = findContainerChild(Container(diso), type, property, value);
-					if (result)
-						return result;
-				}
-				else if (diso is type)
+				if (diso is type)
 				{
 					if (ObjectUtil.compare(diso[property], value) == 0)
 						return diso;
+				}
+				else if (diso is Container)
+				{
+					result=findContainerChild(Container(diso), type, property, value);
+					if (result)
+						return result;
 				}
 			}
 			return null;
@@ -101,10 +100,10 @@ package ns.flex.util
 		 * @return
 		 */
 		static public function generateContainer(childClass:ClassFactory,
-												 ... children):Container
+			... children):Container
 		{
-			var container:Container = Container(childClass.newInstance());
-			container.percentHeight = container.percentWidth = 100;
+			var container:Container=Container(childClass.newInstance());
+			container.percentHeight=container.percentWidth=100;
 			container.setStyle('horizontalAlign', 'center');
 			for each (var child:* in children)
 				container.addChild(child);
@@ -120,15 +119,14 @@ package ns.flex.util
 		 * @param height 高
 		 */
 		static public function showPopUP(title:String, parent:DisplayObject,
-										 child:DisplayObject, width:int = -1,
-										 height:int = -1):PopWindow
+			child:DisplayObject, width:int=-1, height:int=-1):PopWindow
 		{
-			var pop:PopWindow = new PopWindow();
-			pop.title = title;
+			var pop:PopWindow=new PopWindow();
+			pop.title=title;
 			if (width > -1)
-				pop.width = width;
+				pop.width=width;
 			if (height > -1)
-				pop.height = height;
+				pop.height=height;
 			pop.addChild(child);
 			PopUpManager.addPopUp(pop, parent, true);
 			return pop;
