@@ -4,7 +4,6 @@ package ns.flex.controls
 	import mx.controls.Text;
 	import mx.controls.dataGridClasses.DataGridColumn;
 	import mx.core.ClassFactory;
-	
 	import ns.flex.util.DateUtil;
 	import ns.flex.util.StringUtil;
 	
@@ -45,9 +44,9 @@ package ns.flex.controls
 				itemRenderer=new ClassFactory(SelectableLabel);
 		}
 		
-		public function set nestDataField(field:String):void
+		public function set nestDataField(nestField:String):void
 		{
-			dataField=field;
+			dataField=nestField;
 			labelFunction=DataGridColumnPlus.getLabel;
 			sortable=false;
 		}
@@ -82,11 +81,11 @@ package ns.flex.controls
 		static public function getLabel(item:Object, column:DataGridColumn):String
 		{
 			column.dataField.split('.').every(function(it:*, index:int, arr:Array):Boolean
-			{
-				//返回为false时停止every
-				item=item[it]
-				return (item != null);
-			});
+				{
+					//返回为false时停止every
+					item=item[it]
+					return (item != null);
+				});
 			
 			if (item == null)
 				return '';

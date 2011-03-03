@@ -4,6 +4,7 @@ package ns.flex.support
 	import flash.events.ContextMenuEvent;
 	import flash.ui.ContextMenu;
 	import flash.ui.ContextMenuItem;
+	import ns.flex.util.ArrayUtil;
 	
 	public class MenuSupport
 	{
@@ -39,6 +40,12 @@ package ns.flex.support
 			alwaysEnabledMap[getMenuCode(menuItem)]=alwaysEnabled;
 			addMenuItem(menuItem, position);
 			return menuItem;
+		}
+		
+		public function removeMenuItem(property:String, value:*):void
+		{
+			ArrayUtil.removeItem(contextMenu.customItems,
+				ArrayUtil.findByProperty(contextMenu.customItems, property, value));
 		}
 		
 		public function addMenuItem(item:ContextMenuItem, position:int=-1):void
