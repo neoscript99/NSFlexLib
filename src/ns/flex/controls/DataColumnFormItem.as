@@ -27,12 +27,29 @@ package ns.flex.controls
 				else if ('ComboBox' == colp.asControl && editable &&
 					colp.comboBoxDataField && colp.comboBoxLabelField)
 					uic=asComboBox(dgp, colp);
+				else if ('DateField' == colp.asControl && editable)
+					uic=asDateField(dgp, colp);
 				else
 					uic=asText(dgp, col, editable);
 			}
 			else
 				uic=asText(dgp, col, editable);
 			addChild(uic);
+		}
+
+		private function asDateField(dgp:DataGridPlus,
+			colp:DataGridColumnPlus):UIComponent
+		{
+			var dfp:DateFieldPlus=new DateFieldPlus();
+			BindingUtils.bindSetter(function(value:Object):void
+			{
+				dfp.selectedDate=dgp.showItemProxy[colp.dataField];
+			}, dgp, 'showItemProxy');
+			BindingUtils.bindSetter(function(value:String):void
+			{
+				dgp.showItemProxy[colp.dataField]=value;
+			}, dfp, 'selectedDate');
+			return dfp;
 		}
 
 		private function asComboBox(dgp:DataGridPlus, colp:DataGridColumnPlus):UIComponent
@@ -58,7 +75,6 @@ package ns.flex.controls
 		{
 			var cb:CheckBox=new CheckBox();
 			cb.enabled=editable;
-
 			BindingUtils.bindSetter(function(value:Object):void
 			{
 				cb.selected=dgp.showItemProxy[col.dataField];
@@ -110,6 +126,7 @@ package ns.flex.controls
 
 					if (colp.maxChars > INPUT_THRESHOLD_SIZE)
 						tip.width=colp.maxChars / INPUT_THRESHOLD_SIZE * 160;
+
 					if ('Password' == colp.asControl)
 						tip.displayAsPassword=true;
 
@@ -128,11 +145,11 @@ package ns.flex.controls
 			}
 			textInput.setStyle('textAlign', col.getStyle('textAlign'));
 			textInput['editable']=(editable && col.dataField);
-
 			BindingUtils.bindSetter(function(value:Object):void
 			{
 				textInput['text']=col.itemToLabel(value);
 			}, dgp, 'showItemProxy');
+
 			if (editable && col.dataField)
 				BindingUtils.bindSetter(function(value:String):void
 				{

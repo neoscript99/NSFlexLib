@@ -44,6 +44,7 @@ package ns.flex.util
 			property:String, value:Object):DisplayObject
 		{
 			var result:DisplayObject;
+
 			for each (var diso:DisplayObject in container.getChildren())
 			{
 				if (diso is type)
@@ -54,6 +55,7 @@ package ns.flex.util
 				else if (diso is Container)
 				{
 					result=findContainerChild(Container(diso), type, property, value);
+
 					if (result)
 						return result;
 				}
@@ -69,24 +71,19 @@ package ns.flex.util
 		{
 			for each (var diso:DisplayObject in container.getChildren())
 			{
-				if (diso is Container)
+				if (diso.hasOwnProperty('validated'))
 				{
-					if (!validate(Container(diso)))
-						return false;
-				}
-				else if (diso is TextInputPlus)
-				{
-					if (!TextInputPlus(diso).validated)
-						return false;
-				}
-				else if (diso is TextAreaPlus)
-				{
-					if (!TextAreaPlus(diso).validated)
+					if (!diso['validated'])
 						return false;
 				}
 				else if (diso is ComboBox)
 				{
 					if (!ComboBox(diso).selectedItem)
+						return false;
+				}
+				else if (diso is Container)
+				{
+					if (!validate(Container(diso)))
 						return false;
 				}
 			}
@@ -105,6 +102,7 @@ package ns.flex.util
 			var container:Container=Container(childClass.newInstance());
 			container.percentHeight=container.percentWidth=100;
 			container.setStyle('horizontalAlign', 'center');
+
 			for each (var child:* in children)
 				container.addChild(child);
 			return container;
@@ -123,8 +121,10 @@ package ns.flex.util
 		{
 			var pop:PopWindow=new PopWindow();
 			pop.title=title;
+
 			if (width > -1)
 				pop.width=width;
+
 			if (height > -1)
 				pop.height=height;
 			pop.addChild(child);

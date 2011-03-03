@@ -11,29 +11,37 @@
 			public var selectYesterday:Boolean=false;
 			private var millisecondsPerDay:int=1000 * 60 * 60 * 24;
 			private var today:Date=new Date();
-			
+			[Inspectable(category="General")]
+			public var required:Boolean=false;
+
+			[Bindable("valueCommit")]
+			public function get validated():Boolean
+			{
+				return (!required || selectedDate);
+			}
+
 			private function init():void
 			{
 				this.maxYear=today.getFullYear() + 1;
 				this.minYear=today.getFullYear() - 1;
 				setDefault();
 			}
-			
+
 			public function getTomorrow():Date
 			{
 				return new Date(selectedDate.getTime() + millisecondsPerDay);
 			}
-			
+
 			public function getYesterday():Date
 			{
 				return new Date(selectedDate.getTime() - millisecondsPerDay);
 			}
-			
+
 			public function setDefault():void
 			{
 				if (selectToday)
 					selectedDate=today;
-				
+
 				if (selectYesterday)
 				{
 					selectedDate=new Date(today.getTime() - millisecondsPerDay);
