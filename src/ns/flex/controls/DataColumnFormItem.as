@@ -61,6 +61,8 @@ package ns.flex.controls
 			{
 				if (value[colp.dataField])
 					cbp.defaultLabel=colp.itemToLabel(value);
+				else
+					cbp.selectedIndex=0;
 			}, dgp, 'showItemProxy');
 			BindingUtils.bindSetter(function(value:Object):void
 			{
