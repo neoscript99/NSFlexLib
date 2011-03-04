@@ -2,7 +2,8 @@
 <TitleWindowPlus xmlns="ns.flex.controls.*" xmlns:mx="http://www.adobe.com/2006/mxml"
 				 showCloseButton="true" keyDown="onKeyDown(event)" creationComplete="cc()"
 				 close="onClose()" added="setFocus()" horizontalAlign="center"
-				 titleDoubleClick="switchSize()" maxWidth="680" maxHeight="460">
+				 titleDoubleClick="switchSize()" maxWidth="880" maxHeight="600"
+				 borderAlpha=".9">
 	<mx:Metadata>
 		[Event(name="enterKeyDown")]
 	</mx:Metadata>
