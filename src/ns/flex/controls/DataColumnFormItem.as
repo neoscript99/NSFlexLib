@@ -54,7 +54,7 @@ package ns.flex.controls
 				{
 					if (value[colp.dataField])
 						dfp.text=value[colp.dataField];
-					else
+					else //不能设text为null，否则flex出错
 						dfp.selectedDate=null;
 				}, dgp, 'showItemProxy');
 				BindingUtils.bindSetter(function(value:Object):void
@@ -67,8 +67,7 @@ package ns.flex.controls
 			{
 				BindingUtils.bindSetter(function(value:Object):void
 				{
-					if (value[colp.dataField])
-						dfp.selectedDate=value[colp.dataField];
+					dfp.selectedDate=value[colp.dataField];
 				}, dgp, 'showItemProxy');
 				BindingUtils.bindSetter(function(value:Object):void
 				{
