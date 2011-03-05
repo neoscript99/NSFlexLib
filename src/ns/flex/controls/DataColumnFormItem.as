@@ -54,6 +54,8 @@ package ns.flex.controls
 				{
 					if (value[colp.dataField])
 						dfp.text=value[colp.dataField];
+					else
+						dfp.selectedDate=null;
 				}, dgp, 'showItemProxy');
 				BindingUtils.bindSetter(function(value:Object):void
 				{
