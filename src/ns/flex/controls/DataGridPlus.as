@@ -243,6 +243,7 @@ package ns.flex.controls
 		{
 			if (popEditing)
 				popEditing.close();
+
 			if (popView)
 				popView.close();
 		}
@@ -261,6 +262,7 @@ package ns.flex.controls
 		{
 			showItem=item;
 			showItemProxy=new ObjectProxy(ObjectUtil.copy(showItem));
+
 			if (editable)
 			{
 				if (popEditing)
@@ -294,6 +296,7 @@ package ns.flex.controls
 						continue;
 				form.addChild(new DataColumnFormItem(this, col, editable));
 			}
+
 			if (editable)
 			{
 				var buttonItem:FormItem=new FormItem();
@@ -321,8 +324,8 @@ package ns.flex.controls
 				buttonItem.addChild(hbox);
 				form.addChild(buttonItem);
 			}
-			return ContainerUtil.showPopUP(editable ? '新增/修改' : '查看', this, form,
-				showDetailPopWidth, -1);
+			return ContainerUtil.showPopUP(editable ? (showItem ? '修改' : '新增') : '查看',
+				this, form, showDetailPopWidth, -1);
 		}
 
 		private function copyToExcel(evt:Event):void
