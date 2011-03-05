@@ -17,7 +17,7 @@
 			[Bindable("valueCommit")]
 			public function get validated():Boolean
 			{
-				return (!required || selectedDate);
+				return (!required || (selectedDate && text));
 			}
 
 			private function init():void

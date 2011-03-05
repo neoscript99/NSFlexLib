@@ -24,8 +24,8 @@ package ns.flex.controls
 		public var comboBoxDataProvider:Object; //for ComboBox dataProvider
 		public var comboBoxLabelField:String;
 		public var comboBoxDataField:String;
-		[Inspectable(enumeration="Text,ComboBox,CheckBox,Password", defaultValue="Text",
-			category="General")]
+		[Inspectable(enumeration="Text,ComboBox,CheckBox,Password,DateString",
+			defaultValue="Text", category="General")]
 		public var asControl:String='Text';
 		[Inspectable(category="General")]
 		public var readonly:Boolean=false;
@@ -72,7 +72,10 @@ package ns.flex.controls
 		public function set asTime(b:Boolean):void
 		{
 			if (b)
+			{
 				labelFunction=DateUtil.getTimeLabel;
+				asControl='DateField';
+			}
 		}
 
 		public function getNumberLabel(item:Object, column:DataGridColumn):String

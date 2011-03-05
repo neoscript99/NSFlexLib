@@ -1,6 +1,7 @@
 package ns.flex.controls
 {
 	import mx.binding.utils.BindingUtils;
+	import mx.binding.utils.ChangeWatcher;
 	import mx.containers.FormItem;
 	import mx.controls.CheckBox;
 	import mx.controls.dataGridClasses.DataGridColumn;
@@ -27,7 +28,8 @@ package ns.flex.controls
 				else if ('ComboBox' == colp.asControl && editable &&
 					colp.comboBoxDataField && colp.comboBoxLabelField)
 					uic=asComboBox(dgp, colp);
-				else if ('DateField' == colp.asControl && editable)
+				else if (('DateField' == colp.asControl || 'DateString' == colp.asControl) &&
+					editable)
 					uic=asDateField(dgp, colp);
 				else
 					uic=asText(dgp, col, editable);
@@ -41,14 +43,36 @@ package ns.flex.controls
 			colp:DataGridColumnPlus):UIComponent
 		{
 			var dfp:DateFieldPlus=new DateFieldPlus();
-			BindingUtils.bindSetter(function(value:Object):void
+
+			if (colp.constraints)
+				if (colp.constraints.required)
+					dfp.required=true;
+
+			if ('DateString' == colp.asControl)
 			{
-				dfp.selectedDate=dgp.showItemProxy[colp.dataField];
-			}, dgp, 'showItemProxy');
-			BindingUtils.bindSetter(function(value:String):void
+				BindingUtils.bindSetter(function(value:Object):void
+				{
+					if (value[colp.dataField])
+						dfp.text=value[colp.dataField];
+				}, dgp, 'showItemProxy');
+				BindingUtils.bindSetter(function(value:Object):void
+				{
+					dgp.showItemProxy[colp.dataField]=value;
+				}, dfp, 'text');
+
+			}
+			else
 			{
-				dgp.showItemProxy[colp.dataField]=value;
-			}, dfp, 'selectedDate');
+				BindingUtils.bindSetter(function(value:Object):void
+				{
+					if (value[colp.dataField])
+						dfp.selectedDate=value[colp.dataField];
+				}, dgp, 'showItemProxy');
+				BindingUtils.bindSetter(function(value:Object):void
+				{
+					dgp.showItemProxy[colp.dataField]=value;
+				}, dfp, 'selectedDate');
+			}
 			return dfp;
 		}
 
@@ -79,7 +103,7 @@ package ns.flex.controls
 			cb.enabled=editable;
 			BindingUtils.bindSetter(function(value:Object):void
 			{
-				cb.selected=dgp.showItemProxy[col.dataField];
+				cb.selected=value[col.dataField];
 			}, dgp, 'showItemProxy');
 
 			if (editable)
