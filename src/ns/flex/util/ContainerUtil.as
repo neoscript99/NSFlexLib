@@ -12,7 +12,7 @@ package ns.flex.util
 	import ns.flex.controls.PopWindow;
 	import ns.flex.controls.TextAreaPlus;
 	import ns.flex.controls.TextInputPlus;
-
+	
 	/**
 	 * 显示容器工具类
 	 * @author wangchu
@@ -39,12 +39,12 @@ package ns.flex.util
 					DateField(diso).selectedDate=null;
 			}
 		}
-
+		
 		static public function findContainerChild(container:Container, type:Class,
 			property:String, value:Object):DisplayObject
 		{
 			var result:DisplayObject;
-
+			
 			for each (var diso:DisplayObject in container.getChildren())
 			{
 				if (diso is type)
@@ -55,14 +55,14 @@ package ns.flex.util
 				else if (diso is Container)
 				{
 					result=findContainerChild(Container(diso), type, property, value);
-
+					
 					if (result)
 						return result;
 				}
 			}
 			return null;
 		}
-
+		
 		/**
 		 * 级联验证容器内输入对象的输入内容
 		 * @param container
@@ -89,7 +89,7 @@ package ns.flex.util
 			}
 			return true;
 		}
-
+		
 		/**
 		 * 生产容器
 		 * @param childClass 容器类
@@ -102,12 +102,12 @@ package ns.flex.util
 			var container:Container=Container(childClass.newInstance());
 			container.percentHeight=container.percentWidth=100;
 			container.setStyle('horizontalAlign', 'center');
-
+			
 			for each (var child:* in children)
 				container.addChild(child);
 			return container;
 		}
-
+		
 		/**
 		 * 显示对话框
 		 * @param title 标题
@@ -119,16 +119,23 @@ package ns.flex.util
 		static public function showPopUP(title:String, parent:DisplayObject,
 			child:DisplayObject, width:int=-1, height:int=-1):PopWindow
 		{
+			var pop:PopWindow=initPopUP(title, parent, child, width, height);
+			pop.show(parent);
+			return pop;
+		}
+		
+		static public function initPopUP(title:String, parent:DisplayObject,
+			child:DisplayObject, width:int=-1, height:int=-1):PopWindow
+		{
 			var pop:PopWindow=new PopWindow();
 			pop.title=title;
-
+			
 			if (width > -1)
 				pop.width=width;
-
+			
 			if (height > -1)
 				pop.height=height;
 			pop.addChild(child);
-			PopUpManager.addPopUp(pop, parent, true);
 			return pop;
 		}
 	}
