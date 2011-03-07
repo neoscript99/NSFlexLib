@@ -1,13 +1,14 @@
 package ns.flex.controls
 {
 	import mx.controls.DateField;
+	import ns.flex.util.DateUtil;
 	
 	public class DateFieldPlus extends DateField
 	{
-		private var millisecondsPerDay:int=1000 * 60 * 60 * 24;
 		private var today:Date=new Date();
 		[Inspectable(category="General")]
 		public var required:Boolean=false;
+		private var _defaultDate:String='today';
 		
 		public function DateFieldPlus()
 		{
@@ -20,7 +21,7 @@ package ns.flex.controls
 				['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月']
 			formatString='YYYYMMDD';
 			dayNames=['日', '一', '二', '三', '四', '五', '六'];
-			selectedDate=today;
+			resetDefault();
 		}
 		
 		[Bindable("valueCommit")]
@@ -29,26 +30,43 @@ package ns.flex.controls
 			return (!required || (selectedDate && text));
 		}
 		
+		[Inspectable(enumeration="today,yesterday", defaultValue="today",
+			category="General")]
+		public function set defaultDate(dd:String):void
+		{
+			_defaultDate=dd;
+		}
+		
+		public function resetDefault():void
+		{
+			switch (_defaultDate)
+			{
+				case 'yesterday':
+					selectYesterday();
+					break;
+				default:
+					selectToday();
+			}
+		}
+		
 		public function getTomorrow():Date
 		{
-			return new Date(selectedDate.getTime() + millisecondsPerDay);
+			return DateUtil.shiftDays(selectedDate, 1);
 		}
 		
 		public function getYesterday():Date
 		{
-			return new Date(selectedDate.getTime() - millisecondsPerDay);
+			return DateUtil.shiftDays(selectedDate, -1);
 		}
 		
-		public function set selectToday(v:Boolean):void
+		public function selectToday():void
 		{
-			if (v)
-				selectedDate=today;
+			selectedDate=today;
 		}
 		
-		public function set selectYesterday(v:Boolean):void
+		public function selectYesterday():void
 		{
-			if (v)
-				selectedDate=new Date(today.getTime() - millisecondsPerDay);
+			selectedDate=new Date(today.getTime() - DateUtil.millisecondsPerDay);
 		}
 	}
 }

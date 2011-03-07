@@ -150,23 +150,23 @@ package ns.flex.controls
 				enableMenu("新增", createItem, (separatorCount++ == 0), true);
 			else if (showDetail.indexOf('new') > -1)
 				enableMenu("新增", function(evt:Event):void
-				{
-					showItemDetail(null, true);
-				}, (separatorCount++ == 0), true);
+					{
+						showItemDetail(null, true);
+					}, (separatorCount++ == 0), true);
 			
 			if (showDetail.indexOf('view') > -1)
 				enableMenu('查看', function(evt:Event):void
-				{
-					showItemDetail(selectedItem, false);
-				}, (separatorCount++ == 0), false, true);
+					{
+						showItemDetail(selectedItem, false);
+					}, (separatorCount++ == 0), false, true);
 			
 			if (modifyEnabled)
 				enableMenu("修改", modifyItem, (separatorCount++ == 0), false, true);
 			else if (showDetail.indexOf('edit') > -1)
 				enableMenu("修改", function(evt:Event):void
-				{
-					showItemDetail(selectedItem, true);
-				}, (separatorCount++ == 0), false, true);
+					{
+						showItemDetail(selectedItem, true);
+					}, (separatorCount++ == 0), false, true);
 			
 			if (deleteEnabled)
 				enableMenu("删除选中", deleteItems, (separatorCount++ == 0));
@@ -229,12 +229,12 @@ package ns.flex.controls
 		{
 			Alert.show("确认删除？", null, Alert.YES | Alert.NO, this,
 				function(evt:CloseEvent):void
-			{
-				if (evt.detail == Alert.YES)
 				{
-					dispatchEvent(new Event('deleteItems'));
-				}
-			})
+					if (evt.detail == Alert.YES)
+					{
+						dispatchEvent(new Event('deleteItems'));
+					}
+				})
 		}
 		
 		public function closePop():void
@@ -256,7 +256,7 @@ package ns.flex.controls
 		 * 生成默认的详细对话框
 		 * @param evt
 		 */
-		protected function showItemDetail(item:Object, editable:Boolean=false):void
+		public function showItemDetail(item:Object, editable:Boolean=false):void
 		{
 			showItem=item;
 			showItemProxy=new ObjectProxy(ObjectUtil.copy(showItem));
@@ -271,18 +271,21 @@ package ns.flex.controls
 			else
 			{
 				if (!popView)
-					popView=initPop(editable);
+					popView=initPop(false);
 				popView.show(root);
 			}
 		}
 		
-		protected function initPopEditing():void
+		public function initPopEditing():PopWindow
 		{
+			if (popEditing)
+				return popEditing;
 			popEditing=initPop(true);
 			addEventListener('resetEditItem', function(e:Event):void
-			{
-				showItemProxy=new ObjectProxy(ObjectUtil.copy(showItem));
-			});
+				{
+					showItemProxy=new ObjectProxy(ObjectUtil.copy(showItem));
+				});
+			return popEditing;
 		}
 		
 		private function initPop(editable:Boolean=false):PopWindow
@@ -304,21 +307,21 @@ package ns.flex.controls
 				var saveButton:Button=new Button();
 				saveButton.label='保存';
 				saveButton.addEventListener('click', function(e:Event):void
-				{
-					if (!ContainerUtil.validate(form))
 					{
-						popEditing.shake.play();
-						return;
-					}
-					popEditing.showProgress();
-					dispatchEvent(new SaveItemEvent(showItemProxy));
-				});
+						if (!ContainerUtil.validate(form))
+						{
+							popEditing.shake.play();
+							return;
+						}
+						popEditing.showProgress();
+						dispatchEvent(new SaveItemEvent(showItemProxy));
+					});
 				var resetButton:Button=new Button();
 				resetButton.label='重置';
 				resetButton.addEventListener('click', function(e:Event):void
-				{
-					dispatchEvent(new Event('resetEditItem'));
-				});
+					{
+						dispatchEvent(new Event('resetEditItem'));
+					});
 				hbox.addChild(saveButton);
 				hbox.addChild(resetButton);
 				buttonItem.addChild(hbox);
@@ -358,12 +361,12 @@ package ns.flex.controls
 		{
 			Alert.show("确认全部删除？", null, Alert.YES | Alert.NO, this,
 				function(evt:CloseEvent):void
-			{
-				if (evt.detail == Alert.YES)
 				{
-					dispatchEvent(new Event('deleteAll'));
-				}
-			})
+					if (evt.detail == Alert.YES)
+					{
+						dispatchEvent(new Event('deleteAll'));
+					}
+				})
 		}
 	}
 }

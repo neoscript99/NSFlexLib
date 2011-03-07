@@ -9,7 +9,25 @@ package ns.flex.util
 		_timeFormatter.formatString='YYYY-MM-DD HH:NN:SS';
 		static private var _dateFormatter:DateFormatter=new DateFormatter();
 		_dateFormatter.formatString='YYYYMMDD';
-		static private var millisecondsPerDay:int=1000 * 60 * 60 * 24;
+		public static const millisecondsPerMinute:int=1000 * 60;
+		public static const millisecondsPerHour:int=1000 * 60 * 60;
+		public static const millisecondsPerDay:int=1000 * 60 * 60 * 24;
+		
+		/**
+		 * 计算两个日期间隔天数
+		 * @param left
+		 * @param right
+		 * @return
+		 */
+		static public function sub(left:Date, right:Date):int
+		{
+			return (left.getTime() - right.getTime()) / millisecondsPerDay;
+		}
+		
+		static public function shiftDays(date:Date, value:int):Date
+		{
+			return new Date(date.getTime() + value * millisecondsPerDay);
+		}
 		
 		static public function getTimeLabel(item:Object, column:DataGridColumn=
 			null):String
