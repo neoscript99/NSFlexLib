@@ -14,7 +14,6 @@ package ns.flex.controls
 	import ns.flex.util.StringUtil;
 	import ns.flex.util.ValidatorUtil;
 	
-	[Event(name="enterKeyDown")]
 	public class TextInputPlus extends TextInput
 	{
 		[Inspectable(category="General")]
@@ -31,7 +30,6 @@ package ns.flex.controls
 		public function TextInputPlus()
 		{
 			super();
-			addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
 			addEventListener(FlexEvent.VALUE_COMMIT, onValueCommit);
 			maxChars=32;
 			validator=new RegExpValidatorPlus(this);
@@ -54,12 +52,6 @@ package ns.flex.controls
 		public function get validated():Boolean
 		{
 			return ValidatorUtil.validate(validator);
-		}
-		
-		private function onKeyDown(evt:KeyboardEvent):void
-		{
-			if (evt.keyCode == Keyboard.ENTER)
-				this.dispatchEvent(new Event('enterKeyDown'));
 		}
 		
 		override protected function focusInHandler(event:FocusEvent):void
