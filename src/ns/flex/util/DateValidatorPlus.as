@@ -2,7 +2,7 @@ package ns.flex.util
 {
 	import flash.display.DisplayObject;
 	import mx.validators.DateValidator;
-	
+
 	/**
 	 * 日期校验
 	 * @author wangchu
@@ -15,7 +15,7 @@ package ns.flex.util
 			super();
 			this.source=source;
 			this.property=property;
-			
+
 			if (trigger)
 				this.trigger=trigger;
 			else
@@ -33,6 +33,7 @@ package ns.flex.util
 			wrongMonthError="请输入正确的月份 1 - 12.";
 			wrongYearError="请输入正确的年度 0 - 9999.";
 			requiredFieldError='不能为空';
+			required=false;
 		}
 	}
 }
