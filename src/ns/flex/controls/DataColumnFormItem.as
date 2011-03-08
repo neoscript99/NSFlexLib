@@ -43,10 +43,7 @@ package ns.flex.controls
 			colp:DataGridColumnPlus):UIComponent
 		{
 			var dfp:DateFieldPlus=new DateFieldPlus();
-			
-			if (colp.constraints)
-				if (colp.constraints.required)
-					dfp.required=true;
+			dfp.constraints=colp.constraints;
 			
 			if ('DateString' == colp.asControl)
 			{

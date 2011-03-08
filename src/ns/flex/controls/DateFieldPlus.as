@@ -1,14 +1,19 @@
 package ns.flex.controls
 {
 	import mx.controls.DateField;
+	import mx.events.FlexEvent;
+	
 	import ns.flex.util.DateUtil;
+	import ns.flex.util.DateValidatorPlus;
+	import ns.flex.util.ObjectUtils;
+	import ns.flex.util.ValidatorUtil;
 	
 	public class DateFieldPlus extends DateField
 	{
 		private var today:Date=new Date();
 		[Inspectable(category="General")]
-		public var required:Boolean=false;
 		private var _defaultDate:String='today';
+		private var validator:DateValidatorPlus;
 		
 		public function DateFieldPlus()
 		{
@@ -21,13 +26,20 @@ package ns.flex.controls
 				['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月']
 			formatString='YYYYMMDD';
 			dayNames=['日', '一', '二', '三', '四', '五', '六'];
+			validator=new DateValidatorPlus(this);
 			resetDefault();
 		}
 		
 		[Bindable("valueCommit")]
 		public function get validated():Boolean
 		{
-			return (!required || (selectedDate && text));
+			return ValidatorUtil.validate(validator);
+		}
+		
+		public function set constraints(value:Object):void
+		{
+			ObjectUtils.copyProperties(this, value);
+			ObjectUtils.copyProperties(validator, value);
 		}
 		
 		[Inspectable(enumeration="today,yesterday", defaultValue="today",
@@ -35,6 +47,7 @@ package ns.flex.controls
 		public function set defaultDate(dd:String):void
 		{
 			_defaultDate=dd;
+			resetDefault();
 		}
 		
 		public function resetDefault():void
@@ -44,8 +57,11 @@ package ns.flex.controls
 				case 'yesterday':
 					selectYesterday();
 					break;
-				default:
+				case 'today':
 					selectToday();
+					break;
+				default:
+					selectedDate=null;
 			}
 		}
 		
@@ -59,12 +75,12 @@ package ns.flex.controls
 			return DateUtil.shiftDays(selectedDate, -1);
 		}
 		
-		public function selectToday():void
+		protected function selectToday():void
 		{
 			selectedDate=today;
 		}
 		
-		public function selectYesterday():void
+		protected function selectYesterday():void
 		{
 			selectedDate=new Date(today.getTime() - DateUtil.millisecondsPerDay);
 		}

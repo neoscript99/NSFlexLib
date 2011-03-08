@@ -14,24 +14,11 @@
 			import mx.core.IFlexDisplayObject;
 			import mx.managers.PopUpManager;
 			import mx.events.CloseEvent;
-			import mx.validators.Validator;
-			private var validatorArr:Array=new Array();
 			private var originWidth:int;
 			private var originHeight:int;
 			public var menuSupport:MenuSupport;
 			private var popProgress:ProgressBox;
-
-			protected function pushValidator(... args):void
-			{
-				for each (var arg:* in args)
-					validatorArr.push(arg);
-			}
-
-			public function validate():Boolean
-			{
-				return Validator.validateAll(validatorArr).length == 0;
-			}
-
+			
 			private function switchSize():void
 			{
 				if (originWidth == width && originHeight == height)
@@ -48,7 +35,7 @@
 					PopUpManager.centerPopUp(this);
 				}
 			}
-
+			
 			private function cc():void
 			{
 				//height最大时，出现横竖滚动条，加大width，去除横向滚动
@@ -60,30 +47,30 @@
 				menuSupport=new MenuSupport(this);
 				menuSupport.createMenuItem('关闭', onClose, false, true);
 			}
-
+			
 			//导致重影，无法解决
 			private function followMouse():void
 			{
 				trace(mouseX, mouseY);
 				var moveToX:Number=mouseX - width / 2;
 				var moveToY:Number=mouseY - height / 2;
-
+				
 				if (moveToX < 0)
 					moveToX=0;
-
+				
 				if (moveToX + width > stage.stageWidth)
 					moveToX=stage.stageWidth - width;
-
+				
 				if (moveToY + height > stage.stageHeight)
 					moveToY=stage.stageHeight - height;
-
+				
 				//顺序不能改变，保证关闭按钮显示
 				if (moveToY < 0)
 					moveToY=0;
 				x=moveToX;
 				y=moveToY;
 			}
-
+			
 			private function onKeyDown(evt:KeyboardEvent):void
 			{
 				if (evt.keyCode == Keyboard.ESCAPE)
@@ -91,33 +78,33 @@
 				else if (evt.keyCode == Keyboard.ENTER)
 					this.dispatchEvent(new Event('enterKeyDown'));
 			}
-
+			
 			private function onClose(evt:Event=null):void
 			{
 				closeProgress();
-
+				
 				if (this.isPopUp)
 					PopUpManager.removePopUp(this);
 			}
-
+			
 			public function close():void
 			{
 				this.dispatchEvent(new CloseEvent(CloseEvent.CLOSE));
 				trace('CloseEvent');
 			}
-
+			
 			public function show(parent:DisplayObject, modal:Boolean=true):void
 			{
 				PopUpManager.addPopUp(this, parent, modal);
 			}
-
+			
 			public function showProgress():void
 			{
 				if (!popProgress)
 					popProgress=new ProgressBox();
 				popProgress.show(this);
 			}
-
+			
 			public function closeProgress():void
 			{
 				if (popProgress)
