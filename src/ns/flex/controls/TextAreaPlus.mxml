@@ -6,30 +6,36 @@
 	</mx:Metadata>
 	<mx:Script>
 		<![CDATA[
+			import ns.flex.util.ObjectUtils;
 			import ns.flex.util.StringUtil;
 			[Inspectable(category="General")]
 			public var autoTrim:Boolean=true;
 			[Inspectable(category="General")]
 			public var required:Boolean=false;
-			
+
 			[Bindable("textChanged")]
 			public function get remainSize():int
 			{
 				return maxChars - text.length;
 			}
-			
+
+			public function set constraints(value:Object):void
+			{
+				ObjectUtils.copyProperties(this, value);
+			}
+
 			[Bindable("valueCommit")]
 			public function get validated():Boolean
 			{
 				return (!required || text);
 			}
-			
+
 			private function onKeyDown(evt:KeyboardEvent):void
 			{
 				if (evt.keyCode == Keyboard.ENTER)
 					this.dispatchEvent(new Event('enterKeyDown'));
 			}
-			
+
 			private function changeHandle():void
 			{
 				if (autoTrim)
