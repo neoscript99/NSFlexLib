@@ -1,17 +1,17 @@
 package ns.flex.util
 {
 	import flash.display.DisplayObject;
+	
 	import mx.controls.ComboBox;
 	import mx.controls.DateField;
 	import mx.controls.TextArea;
 	import mx.controls.TextInput;
 	import mx.core.ClassFactory;
 	import mx.core.Container;
-	import mx.managers.PopUpManager;
+	import mx.core.UIComponent;
 	import mx.utils.ObjectUtil;
+	
 	import ns.flex.controls.PopWindow;
-	import ns.flex.controls.TextAreaPlus;
-	import ns.flex.controls.TextInputPlus;
 	
 	/**
 	 * 显示容器工具类
@@ -69,21 +69,27 @@ package ns.flex.util
 		 */
 		static public function validate(container:Container):Boolean
 		{
-			for each (var diso:DisplayObject in container.getChildren())
+			for each (var uic:UIComponent in container.getChildren())
 			{
-				if (diso.hasOwnProperty('validated'))
+				if (uic.hasOwnProperty('validated'))
 				{
-					if (!diso['validated'])
+					if (!uic['validated'])
+					{
+						uic.setFocus();
 						return false;
+					}
 				}
-				else if (diso is ComboBox)
+				else if (uic is ComboBox)
 				{
-					if (!ComboBox(diso).selectedItem)
+					if (!ComboBox(uic).selectedItem)
+					{
+						uic.setFocus();
 						return false;
+					}
 				}
-				else if (diso is Container)
+				else if (uic is Container)
 				{
-					if (!validate(Container(diso)))
+					if (!validate(Container(uic)))
 						return false;
 				}
 			}

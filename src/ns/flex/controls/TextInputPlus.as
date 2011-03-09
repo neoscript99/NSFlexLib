@@ -2,9 +2,7 @@ package ns.flex.controls
 {
 	import flash.events.Event;
 	import flash.events.FocusEvent;
-	import flash.events.KeyboardEvent;
 	import flash.system.IME;
-	import flash.ui.Keyboard;
 	
 	import mx.controls.TextInput;
 	import mx.events.FlexEvent;
@@ -12,9 +10,10 @@ package ns.flex.controls
 	import ns.flex.util.ObjectUtils;
 	import ns.flex.util.RegExpValidatorPlus;
 	import ns.flex.util.StringUtil;
+	import ns.flex.util.Validatable;
 	import ns.flex.util.ValidatorUtil;
 	
-	public class TextInputPlus extends TextInput
+	public class TextInputPlus extends TextInput implements Validatable
 	{
 		[Inspectable(category="General")]
 		public var noSpace:Boolean=false;
@@ -26,19 +25,27 @@ package ns.flex.controls
 		public var imeDisabled:Boolean=false;
 		public var ignorePattern:RegExp;
 		private var validator:RegExpValidatorPlus;
+		private const THRESHOLD_SIZE:int=32;
 		
 		public function TextInputPlus()
 		{
 			super();
 			addEventListener(FlexEvent.VALUE_COMMIT, onValueCommit);
 			maxChars=32;
-			validator=new RegExpValidatorPlus(this);
 		}
 		
 		public function set constraints(value:Object):void
 		{
-			ObjectUtils.copyProperties(this, value);
-			validator.copyProperties(value);
+			if (value)
+			{
+				if (!validator)
+					validator=new RegExpValidatorPlus(this);
+				ObjectUtils.copyProperties(this, value);
+				
+				if (maxChars > THRESHOLD_SIZE)
+					width=Math.min(maxChars / THRESHOLD_SIZE, 3) * 160;
+				validator.copyProperties(value);
+			}
 		}
 		
 		[Bindable("textChanged")]

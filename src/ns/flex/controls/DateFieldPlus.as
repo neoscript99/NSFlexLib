@@ -26,7 +26,6 @@ package ns.flex.controls
 				['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月']
 			formatString='YYYYMMDD';
 			dayNames=['日', '一', '二', '三', '四', '五', '六'];
-			validator=new DateValidatorPlus(this);
 			resetDefault();
 		}
 		
@@ -38,8 +37,13 @@ package ns.flex.controls
 		
 		public function set constraints(value:Object):void
 		{
-			ObjectUtils.copyProperties(this, value);
-			ObjectUtils.copyProperties(validator, value);
+			if (value)
+			{
+				if (!validator)
+					validator=new DateValidatorPlus(this);
+				ObjectUtils.copyProperties(this, value);
+				ObjectUtils.copyProperties(validator, value);
+			}
 		}
 		
 		[Inspectable(enumeration="today,yesterday", defaultValue="today",

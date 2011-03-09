@@ -23,14 +23,18 @@ package ns.flex.util
 		
 		public function copyProperties(propertyHost:Object):void
 		{
-			ObjectUtils.copyProperties(this, propertyHost);
-			
-			if (!propertyHost.noMatchError)
-				noMatchError=
-					String("格式错误").concat('(', expression, flags ? ' ' + flags : '', ')');
-			
-			if (!propertyHost.requiredFieldError)
-				requiredFieldError="不能为空";
+			if (propertyHost)
+			{
+				ObjectUtils.copyProperties(this, propertyHost);
+				
+				if (!propertyHost.noMatchError)
+					noMatchError=
+						String("格式错误").concat('(', expression, flags ? ' ' + flags : '',
+						')');
+				
+				if (!propertyHost.requiredFieldError)
+					requiredFieldError="不能为空";
+			}
 		}
 	}
 }

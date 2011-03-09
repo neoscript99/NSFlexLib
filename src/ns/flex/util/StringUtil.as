@@ -23,6 +23,11 @@ package ns.flex.util
 			return str.charAt(0).toLowerCase() + str.slice(1);
 		}
 		
+		static public function parseNumber(str:String):Number
+		{
+			return Number(str ? str.replace(/\,/g, '') : str);
+		}
+		
 		/**
 		 * 增加千分位逗号，并根据精度补0
 		 * @param v 格式化的数字
@@ -30,8 +35,8 @@ package ns.flex.util
 		 * @param isSeparateThousands 是否使用千分位
 		 * @return
 		 */
-		static public function formatNumber(v:Number, precision:int,
-			isSeparateThousands:Boolean):String
+		static public function formatNumber(v:Number, precision:int=2,
+			isSeparateThousands:Boolean=true):String
 		{
 			var value:String=v.toFixed(precision);
 			

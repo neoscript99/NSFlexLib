@@ -23,6 +23,7 @@
     <classEntry path="ns.flex.util.ArrayCollectionPlus"/>
     <classEntry path="ns.flex.util.ArrayUtil"/>
     <classEntry path="ns.flex.util.ChartUtil"/>
+    <classEntry path="ns.flex.util.ConstraintCommon"/>
     <classEntry path="ns.flex.util.ContainerUtil"/>
     <classEntry path="ns.flex.util.DateUtil"/>
     <classEntry path="ns.flex.util.DateValidatorPlus"/>
@@ -33,6 +34,7 @@
     <classEntry path="ns.flex.util.RemoteUtil"/>
     <classEntry path="ns.flex.util.SQLUtil"/>
     <classEntry path="ns.flex.util.StringUtil"/>
+    <classEntry path="ns.flex.util.Validatable"/>
     <classEntry path="ns.flex.util.ValidatorUtil"/>
   </includeClasses>
   <includeResources/>

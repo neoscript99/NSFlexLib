@@ -1,0 +1,75 @@
+package ns.flex.controls
+{
+	import flash.events.Event;
+	import flash.events.KeyboardEvent;
+	import flash.ui.Keyboard;
+	
+	import mx.controls.TextArea;
+	import mx.events.FlexEvent;
+	
+	import ns.flex.util.ObjectUtils;
+	import ns.flex.util.RegExpValidatorPlus;
+	import ns.flex.util.StringUtil;
+	import ns.flex.util.Validatable;
+	import ns.flex.util.ValidatorUtil;
+	
+	[Event(name="enterKeyDown")]
+	public class TextAreaPlus extends TextArea implements Validatable
+	{
+		[Inspectable(category="General")]
+		public var autoTrim:Boolean=true;
+		[Inspectable(category="General")]
+		private var validator:RegExpValidatorPlus;
+		private const THRESHOLD_SIZE:int=64;
+		
+		public function TextAreaPlus()
+		{
+			super();
+			addEventListener(FlexEvent.VALUE_COMMIT, onValueCommit);
+			addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
+			maxChars=64;
+			height=60;
+		}
+		
+		[Bindable("textChanged")]
+		public function get remainSize():int
+		{
+			return maxChars - text.length;
+		}
+		
+		public function set constraints(value:Object):void
+		{
+			if (value)
+			{
+				if (!validator)
+					validator=new RegExpValidatorPlus(this);
+				ObjectUtils.copyProperties(this, value);
+				
+				if (maxChars > THRESHOLD_SIZE)
+				{
+					width=Math.min(maxChars / THRESHOLD_SIZE, 3) * 160;
+					height=Math.min(maxChars / THRESHOLD_SIZE, 3) * 60;
+				}
+				validator.copyProperties(value);
+			}
+		}
+		
+		[Bindable("valueCommit")]
+		public function get validated():Boolean
+		{
+			return ValidatorUtil.validate(validator);
+		}
+		
+		private function onKeyDown(evt:KeyboardEvent):void
+		{
+			if (evt.keyCode == Keyboard.ENTER)
+				this.dispatchEvent(new Event('enterKeyDown'));
+		}
+		
+		private function onValueCommit(e:Event):void
+		{
+			if (autoTrim)
+				text=StringUtil.trim(text);
+		}
+	}
+}

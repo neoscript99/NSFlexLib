@@ -2,7 +2,7 @@ package ns.flex.util
 {
 	import flash.display.DisplayObject;
 	import mx.validators.DateValidator;
-
+	
 	/**
 	 * 日期校验
 	 * @author wangchu
@@ -15,7 +15,7 @@ package ns.flex.util
 			super();
 			this.source=source;
 			this.property=property;
-
+			
 			if (trigger)
 				this.trigger=trigger;
 			else
@@ -26,7 +26,7 @@ package ns.flex.util
 			validateAsString="true";
 			inputFormat="YYYYMMDD";
 			allowedFormatChars='';
-			formatError="格式错误";
+			formatError="日期格式错误";
 			invalidCharError="请不要输入除数字外的字符"
 			wrongLengthError="日期长度不正确";
 			wrongDayError="根据当前月份，请输入正确的日期.";
