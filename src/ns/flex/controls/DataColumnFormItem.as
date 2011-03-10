@@ -17,12 +17,13 @@ package ns.flex.controls
 			super();
 			var uic:UIComponent;
 			label=col.headerText;
+			editable=(editable && col.dataField);
 			
-			if (col is DataGridColumnPlus && col.dataField)
+			if (col is DataGridColumnPlus)
 			{
 				var colp:DataGridColumnPlus=DataGridColumnPlus(col)
 				
-				if ('CheckBox' == colp.asControl)
+				if ('CheckBox' == colp.asControl && col.dataField)
 					uic=asCheckBox(dgp, col, editable);
 				else if ('ComboBox' == colp.asControl && editable)
 					uic=asComboBox(dgp, colp);
@@ -115,7 +116,6 @@ package ns.flex.controls
 		private function asText(dgp:DataGridPlus, col:DataGridColumn,
 			editable:Boolean):UIComponent
 		{
-			editable=(editable && col.dataField);
 			var textInput:UIComponent=
 				col.wordWrap ? new TextAreaPlus() : new TextInputPlus();
 			

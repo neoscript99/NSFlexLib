@@ -32,9 +32,16 @@ package ns.flex.controls
 		}
 		
 		[Bindable("textChanged")]
+		[Bindable("maxCharsChanged")]
 		public function get remainSize():int
 		{
 			return maxChars - text.length;
+		}
+		
+		public function set zoom(times:Number):void
+		{
+			width=times * 160;
+			height=times * 60;
 		}
 		
 		public function set constraints(value:Object):void

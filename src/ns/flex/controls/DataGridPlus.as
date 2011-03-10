@@ -310,7 +310,7 @@ package ns.flex.controls
 					{
 						if (!ContainerUtil.validate(form))
 						{
-							popEditing.shake.play();
+							popEditing.playShake();
 							return;
 						}
 						popEditing.showProgress();
