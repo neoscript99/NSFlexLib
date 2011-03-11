@@ -46,7 +46,16 @@ package ns.flex.controls
 			}
 		}
 		
-		[Inspectable(enumeration="today,yesterday", defaultValue="today",
+		override public function set editable(value:Boolean):void
+		{
+			super.editable=value;
+			
+			if (!validator)
+				validator=new DateValidatorPlus(this);
+		
+		}
+		
+		[Inspectable(enumeration="today,yesterday,none", defaultValue="today",
 			category="General")]
 		public function set defaultDate(dd:String):void
 		{

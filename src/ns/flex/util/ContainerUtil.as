@@ -29,13 +29,13 @@ package ns.flex.util
 			{
 				if (diso is Container)
 					clearInput(Container(diso));
-				else if (diso is TextInput)
+				else if (diso is TextInput && TextInput(diso).editable)
 					TextInput(diso).text='';
-				else if (diso is TextArea)
+				else if (diso is TextArea && TextArea(diso).editable)
 					TextArea(diso).text='';
 				else if (diso is ComboBox)
 					ComboBox(diso).selectedIndex=0;
-				else if (diso is DateField)
+				else if (diso is DateField && DateField(diso).editable)
 					DateField(diso).selectedDate=null;
 			}
 		}
