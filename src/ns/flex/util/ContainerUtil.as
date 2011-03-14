@@ -1,7 +1,6 @@
 package ns.flex.util
 {
 	import flash.display.DisplayObject;
-	
 	import mx.controls.ComboBox;
 	import mx.controls.DateField;
 	import mx.controls.TextArea;
@@ -10,7 +9,6 @@ package ns.flex.util
 	import mx.core.Container;
 	import mx.core.UIComponent;
 	import mx.utils.ObjectUtil;
-	
 	import ns.flex.controls.PopWindow;
 	
 	/**
@@ -67,7 +65,8 @@ package ns.flex.util
 		 * 级联验证容器内输入对象的输入内容
 		 * @param container
 		 */
-		static public function validate(container:Container):Boolean
+		static public function validate(container:Container, isSetFocus:Boolean=
+			true):Boolean
 		{
 			for each (var uic:UIComponent in container.getChildren())
 			{
@@ -75,7 +74,8 @@ package ns.flex.util
 				{
 					if (!uic['validated'])
 					{
-						uic.setFocus();
+						if (isSetFocus)
+							uic.setFocus();
 						return false;
 					}
 				}
@@ -83,13 +83,14 @@ package ns.flex.util
 				{
 					if (!ComboBox(uic).selectedItem)
 					{
-						uic.setFocus();
+						if (isSetFocus)
+							uic.setFocus();
 						return false;
 					}
 				}
 				else if (uic is Container)
 				{
-					if (!validate(Container(uic)))
+					if (!validate(Container(uic), isSetFocus))
 						return false;
 				}
 			}
