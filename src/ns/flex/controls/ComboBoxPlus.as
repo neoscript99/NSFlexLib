@@ -1,32 +1,45 @@
 package ns.flex.controls
 {
+	import mx.collections.IList;
 	import mx.controls.ComboBox;
-
+	
 	public class ComboBoxPlus extends ComboBox
 	{
 		private var _defaultLabel:String;
-
+		
+		private function getIndexLabel(item:Object):String
+		{
+			return (dataProvider is IList) ? String(IList(dataProvider).getItemIndex(item) + 1).concat('、',
+				item[labelField]) : item[labelField];
+		}
+		
 		public function ComboBoxPlus()
 		{
 			super();
 			tabEnabled=false;
 			rowCount=15;
 		}
-
+		
+		public function set withIndex(v:Boolean):void
+		{
+			if (v)
+				labelFunction=getIndexLabel;
+		}
+		
 		override protected function commitProperties():void
 		{
 			super.commitProperties();
 			selectDefaultLabel();
 		}
-
+		
 		private function selectDefaultLabel():void
 		{
 			var tempIndex:int=-1;
-
+			
 			for (var i:int=dataProvider.length - 1; i >= 0; i--)
 			{
 				var label:String=itemToLabel(dataProvider[i]);
-
+				
 				if (label == _defaultLabel)
 				{
 					tempIndex=i;
@@ -38,16 +51,16 @@ package ns.flex.controls
 					tempIndex=i;
 				}
 			}
-
+			
 			if (tempIndex > -1)
 				selectedIndex=tempIndex;
 		}
-
+		
 		public function get defaultLabel():String
 		{
 			return _defaultLabel;
 		}
-
+		
 		public function set defaultLabel(value:String):void
 		{
 			this._defaultLabel=value;

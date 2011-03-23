@@ -16,7 +16,7 @@ package ns.flex.controls
 		{
 			super();
 			var uic:UIComponent;
-			label=col.headerText;
+			label=col.headerText.replace(/[↑↓]\d*/, '');
 			editable=(editable && col.dataField);
 			
 			if (col is DataGridColumnPlus)
