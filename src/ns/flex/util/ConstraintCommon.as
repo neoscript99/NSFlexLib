@@ -10,7 +10,12 @@ package ns.flex.util
 			{noSpace: true, expression: '^\\d+\.{0,1}\\d*$', required: true,
 				imeDisabled: true, restrict: '\.0-9'};
 		static public const justRequired:Object={required: true};
-		static public const noSpaceFour:Object=
-			{expression: ".{4}", noSpace: true, imeDisabled: true, required: true};
+		
+		static public function forLength(len:int, required:Boolean=true, noSpace:Boolean=
+			true, imeDisabled:Boolean=true):Object
+		{
+			return {expression: String(".{").concat(len, "}"), required: required,
+					noSpace: noSpace, imeDisabled: imeDisabled};
+		}
 	}
 }

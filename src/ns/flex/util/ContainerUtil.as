@@ -72,7 +72,7 @@ package ns.flex.util
 			{
 				if (uic.hasOwnProperty('validated'))
 				{
-					if (!uic['validated'])
+					if (uic.enabled && !uic['validated'])
 					{
 						if (isSetFocus)
 							uic.setFocus();
