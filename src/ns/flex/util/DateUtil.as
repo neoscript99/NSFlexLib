@@ -1,5 +1,6 @@
 package ns.flex.util
 {
+	import mx.controls.DateField;
 	import mx.controls.dataGridClasses.DataGridColumn;
 	import mx.formatters.DateFormatter;
 	
@@ -55,24 +56,27 @@ package ns.flex.util
 		static public function get dateFormatter():DateFormatter
 		{
 			return _dateFormatter;
+		}		
+		
+		static public function stringToDate(dayString:String):Date
+		{
+			return DateField.stringToDate(dayString, dateFormatter.formatString);
 		}
 		
-		static public function getYesterday(selectDate:Date):String
+		static public function stringToTime(timeString:String):Date
 		{
-			return dateFormatter.format(new Date(selectDate.getTime() - millisecondsPerDay));
+			return DateField.stringToDate(timeString, timeFormatter.formatString);
 		}
 		
-		static public function getLastYearFinal(day:Object):String
+		static public function getLastMonthFinal(day:Date):Date
 		{
-			switch (typeof day)
-			{
-				case 'string':
-					var str:String=day as String;
-					return String(Number(str.substr(0, 4)) - 1).concat('1231');
-				default:
-					break;
-			}
-			throw new Error('格式错误:' + day);
+			return new Date(day.fullYear, day.month, 0);
 		}
+		
+		static public function getLastYearFinal(day:Date):Date
+		{
+			//new Date 参数小于最小值或大于最大值时，对应日期自动移动
+			return new Date(day.fullYear, 0, 0);
+		}		
 	}
 }

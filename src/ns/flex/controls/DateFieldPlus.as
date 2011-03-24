@@ -11,7 +11,6 @@ package ns.flex.controls
 	public class DateFieldPlus extends DateField
 	{
 		private var today:Date=new Date();
-		[Inspectable(category="General")]
 		private var _defaultDate:String='today';
 		private var validator:DateValidatorPlus;
 		
@@ -55,8 +54,8 @@ package ns.flex.controls
 		
 		}
 		
-		[Inspectable(enumeration="today,yesterday,none", defaultValue="today",
-			category="General")]
+		[Inspectable(enumeration="today,yesterday,last_month_final,last_year_final,none",
+			defaultValue="today", category="General")]
 		public function set defaultDate(dd:String):void
 		{
 			_defaultDate=dd;
@@ -67,11 +66,17 @@ package ns.flex.controls
 		{
 			switch (_defaultDate)
 			{
-				case 'yesterday':
-					selectYesterday();
-					break;
 				case 'today':
-					selectToday();
+					selectedDate=today;
+					break;
+				case 'yesterday':
+					selectedDate=DateUtil.shiftDays(today, -1);
+					break;
+				case 'last_month_final':
+					selectedDate=DateUtil.getLastMonthFinal(today);
+					break;
+				case 'last_year_final':
+					selectedDate=DateUtil.getLastYearFinal(today);
 					break;
 				default:
 					selectedDate=null;
@@ -86,16 +91,6 @@ package ns.flex.controls
 		public function getYesterday():Date
 		{
 			return DateUtil.shiftDays(selectedDate, -1);
-		}
-		
-		protected function selectToday():void
-		{
-			selectedDate=today;
-		}
-		
-		protected function selectYesterday():void
-		{
-			selectedDate=new Date(today.getTime() - DateUtil.millisecondsPerDay);
 		}
 	}
 }
