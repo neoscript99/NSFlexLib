@@ -4,17 +4,14 @@ package ns.flex.controls
 	import flash.events.Event;
 	import flash.events.KeyboardEvent;
 	import flash.ui.Keyboard;
-	
 	import mx.events.CloseEvent;
 	import mx.events.FlexEvent;
 	import mx.managers.PopUpManager;
-	
 	import ns.flex.support.MenuSupport;
 	
 	[Event(name="enterKeyDown")]
 	public class PopWindow extends TitleWindowPlus
 	{
-		
 		private var originWidth:int;
 		private var originHeight:int;
 		public var menuSupport:MenuSupport;
@@ -28,9 +25,9 @@ package ns.flex.controls
 			addEventListener(FlexEvent.CREATION_COMPLETE, cc);
 			addEventListener(CloseEvent.CLOSE, onClose);
 			addEventListener(Event.ADDED, function(e:Event):void
-				{
-					setFocus();
-				});
+			{
+				setFocus();
+			});
 			addEventListener('titleDoubleClick', switchSize);
 			maxWidth=800
 			maxHeight=480
@@ -51,7 +48,9 @@ package ns.flex.controls
 			{
 				width=originWidth;
 				height=originHeight;
-				PopUpManager.centerPopUp(this);
+				
+				if (this.isPopUp)
+					PopUpManager.centerPopUp(this);
 			}
 		}
 		
@@ -62,7 +61,9 @@ package ns.flex.controls
 				width+=this.verticalScrollBar.width * 2;
 			originWidth=width;
 			originHeight=height;
-			PopUpManager.centerPopUp(this);
+			
+			if (this.isPopUp)
+				PopUpManager.centerPopUp(this);
 			menuSupport=new MenuSupport(this);
 			menuSupport.createMenuItem('关闭', onClose, false, true);
 		}
