@@ -6,7 +6,7 @@ package ns.flex.util
 	
 	public class EffectUtil
 	{
-		static public function createMove(properties:Object, target:Object=null)
+		static public function createMove(properties:Object, target:Object=null):Move
 		{
 			var move:Move=new Move(target);
 			ObjectUtils.copyProperties(move, properties);
@@ -16,7 +16,6 @@ package ns.flex.util
 		static public function createSequence(properties:Object, target:Object,
 			... actions):Sequence
 		{
-			
 			var seq:Sequence=new Sequence();
 			seq.target=target;
 			ObjectUtils.copyProperties(seq, properties);
@@ -25,6 +24,5 @@ package ns.flex.util
 				seq.addChild(effect);
 			return seq;
 		}
-	
 	}
 }
