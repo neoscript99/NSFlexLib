@@ -9,7 +9,6 @@ package ns.flex.controls
 	import mx.managers.PopUpManager;
 	import ns.flex.support.MenuSupport;
 	
-	[Event(name="enterKeyDown")]
 	public class PopWindow extends TitleWindowPlus
 	{
 		private var originWidth:int;
@@ -61,9 +60,7 @@ package ns.flex.controls
 				width+=this.verticalScrollBar.width * 2;
 			originWidth=width;
 			originHeight=height;
-			
-			if (this.isPopUp)
-				PopUpManager.centerPopUp(this);
+			PopUpManager.centerPopUp(this);
 			menuSupport=new MenuSupport(this);
 			menuSupport.createMenuItem('关闭', onClose, false, true);
 		}
@@ -95,27 +92,23 @@ package ns.flex.controls
 		{
 			if (evt.keyCode == Keyboard.ESCAPE)
 				close();
-			else if (evt.keyCode == Keyboard.ENTER)
-				this.dispatchEvent(new Event('enterKeyDown'));
 		}
 		
 		private function onClose(evt:Event=null):void
 		{
 			closeProgress();
-			
-			if (this.isPopUp)
-				PopUpManager.removePopUp(this);
+			PopUpManager.removePopUp(this);
+		}
+		
+		public function show(parent:DisplayObject, modal:Boolean=true):void
+		{
+			PopUpManager.addPopUp(this, parent, modal);
 		}
 		
 		public function close():void
 		{
 			this.dispatchEvent(new CloseEvent(CloseEvent.CLOSE));
 			trace('CloseEvent');
-		}
-		
-		public function show(parent:DisplayObject, modal:Boolean=true):void
-		{
-			PopUpManager.addPopUp(this, parent, modal);
 		}
 		
 		public function showProgress():void
