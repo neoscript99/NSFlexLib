@@ -147,12 +147,9 @@ package ns.flex.util
 			return acp;
 		}
 		
-		static public function withAll(source:Object, labelField:String, label:String=
-			'全部'):ArrayCollectionPlus
+		static public function withFirst(source:Object, first:Object):ArrayCollectionPlus
 		{
-			var all:Object={};
-			all[labelField]=label;
-			return new ArrayCollectionPlus(source).addFirst(all);
+			return new ArrayCollectionPlus(source).addFirst(first);
 		}
 	}
 }

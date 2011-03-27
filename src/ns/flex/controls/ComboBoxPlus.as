@@ -6,6 +6,16 @@ package ns.flex.controls
 	public class ComboBoxPlus extends ComboBox
 	{
 		private var _defaultLabel:String;
+		public var valueField:String;
+		
+		[Bindable("valueCommit")]
+		public function get validated():Boolean
+		{
+			if (selectedItem)
+				return valueField ? selectedItem[valueField] : true;
+			else
+				return false;
+		}
 		
 		private function getIndexLabel(item:Object):String
 		{
