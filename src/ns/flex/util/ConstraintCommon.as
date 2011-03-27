@@ -5,7 +5,7 @@ package ns.flex.util
 	{
 		static public const phone:Object=
 			{noSpace: true, expression: '^[\-\+\.\(\)\\d]{5,32}$', required: true,
-				imeDisabled: true, restrict: '-+.()0-9'};
+				imeDisabled: true, restrict: '\\-+.()0-9'};
 		static public const number:Object=
 			{noSpace: true, expression: '^\\d+\.{0,1}\\d*$', required: true,
 				imeDisabled: true, restrict: '.0-9'};
