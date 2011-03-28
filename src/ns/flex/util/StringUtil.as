@@ -5,17 +5,17 @@ package ns.flex.util
 	{
 		static public function trim(str:String):String
 		{
-			return str ? str.replace(/^\s*/, '').replace(/\s*$/, '') : str;
+			return str ? str.replace(/^\s*/, '').replace(/\s*$/, '') : '';
 		}
 		
 		static public function removeSpace(str:String):String
 		{
-			return str ? str.replace(/\s/g, '') : str;
+			return str ? str.replace(/\s/g, '') : '';
 		}
 		
 		static public function toLine(str:String):String
 		{
-			return str ? trim(str.replace(/[\t\r\n]/g, ' ')) : str;
+			return str ? trim(str.replace(/[\t\r\n]/g, ' ')) : '';
 		}
 		
 		static public function firstToLowCase(str:String):String

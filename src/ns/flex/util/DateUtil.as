@@ -56,7 +56,7 @@ package ns.flex.util
 		static public function get dateFormatter():DateFormatter
 		{
 			return _dateFormatter;
-		}		
+		}
 		
 		static public function stringToDate(dayString:String):Date
 		{
@@ -77,6 +77,16 @@ package ns.flex.util
 		{
 			//new Date 参数小于最小值或大于最大值时，对应日期自动移动
 			return new Date(day.fullYear, 0, 0);
-		}		
+		}
+		
+		static public function getLastMonthFinalString(dayString:String):String
+		{
+			return getDateLabel(getLastMonthFinal(stringToDate(dayString)));
+		}
+		
+		static public function getLastYearFinalString(dayString:String):String
+		{
+			return String(Number(dayString.substr(0, 4)) - 1).concat('1231');
+		}
 	}
 }

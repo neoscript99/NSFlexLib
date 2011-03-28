@@ -24,14 +24,14 @@ package ns.flex.controls
 			addEventListener(FlexEvent.CREATION_COMPLETE, cc);
 			addEventListener(CloseEvent.CLOSE, onClose);
 			addEventListener(Event.ADDED, function(e:Event):void
-			{
-				setFocus();
-			});
+				{
+					setFocus();
+				});
 			addEventListener('titleDoubleClick', switchSize);
 			maxWidth=800
 			maxHeight=480
 			setStyle('horizontalAlign', 'center')
-			setStyle('borderAlpha', .8)
+			setStyle('borderAlpha', .9)
 		}
 		
 		private function switchSize(e:Event):void
