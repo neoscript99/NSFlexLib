@@ -2,7 +2,7 @@ package ns.flex.util
 {
 	import mx.rpc.events.ResultEvent;
 	import mx.rpc.remoting.mxml.RemoteObject;
-	
+
 	/**
 	 * 数据库查询工具类
 	 * @author wangchu
@@ -19,7 +19,7 @@ package ns.flex.util
 			param=param == null ? '' : param;
 			return param.concat('%');
 		}
-		
+
 		/**
 		 * 查询并统计总结果数
 		 * @param ro
@@ -32,19 +32,47 @@ package ns.flex.util
 		static public function countAndList(ro:RemoteObject, params:Object,
 			maxResults:int, firstResult:int, orders:Array=null, domain:String=null):void
 		{
+			var notNestOrders:Array=[];
 			ro.count(params, domain);
-			//线程安全创建一个新对象，否则下面的赋值有时会影响count的参数
+
+			//线程安全创建一个新对象，如果直接对param赋值有时会影响count的参数
 			var listParam:Object=
-				{maxResults: [maxResults], firstResult: [firstResult], order: orders};
-			
+				{maxResults: [maxResults], firstResult: [firstResult],
+					order: notNestOrders};
+
 			for (var prop:* in params)
 			{
 				trace(prop);
 				listParam[prop]=params[prop];
 			}
+
+			//嵌套字段的排序criteria
+			for each (var order:Array in orders)
+			{
+				if (String(order[0]).indexOf('.') == -1)
+					notNestOrders.push(order);
+				else
+				{
+					var nestFields:Array=order[0].split('.');
+					order[0]=nestFields[nestFields.length - 1];
+					var parentParam:Object=listParam;
+
+					for (var i:int=0; i < nestFields.length - 1; i++)
+					{
+						if (!parentParam[nestFields[i]])
+							parentParam[nestFields[i]]={}
+						parentParam=parentParam[nestFields[i]];
+					}
+
+					if (parentParam.order)
+						(parentParam.order as Array).push(order);
+					else
+						parentParam.order=[order];
+				}
+			}
 			ro.list(listParam, domain);
 		}
-		
+
 		/**
 		 * 清除远程对象的查询结果
 		 * @param ro
