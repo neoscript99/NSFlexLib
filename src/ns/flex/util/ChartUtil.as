@@ -1,18 +1,26 @@
 package ns.flex.util
 {
 	import flash.display.DisplayObject;
+	import flash.events.Event;
+	import flash.events.MouseEvent;
+	import flash.net.FileReference;
+	
 	import mx.binding.utils.BindingUtils;
+	import mx.charts.AxisRenderer;
 	import mx.charts.CategoryAxis;
 	import mx.charts.ColumnChart;
 	import mx.charts.Legend;
 	import mx.charts.LineChart;
 	import mx.charts.PieChart;
+	import mx.charts.chartClasses.ChartBase;
 	import mx.charts.events.ChartItemEvent;
 	import mx.charts.series.ColumnSeries;
 	import mx.charts.series.LineSeries;
 	import mx.charts.series.PieSeries;
 	import mx.containers.HBox;
-	import mx.core.ClassFactory;
+	import mx.containers.VBox;
+	import mx.controls.LinkButton;
+	import mx.graphics.ImageSnapshot;
 	import mx.rpc.remoting.mxml.Operation;
 	
 	/**
@@ -36,10 +44,6 @@ package ns.flex.util
 			chartData:Array, field:String='value', nameField:String='name',
 			itemClick:Function=null, width:int=480, height:int=400):void
 		{
-			for each (var o:Object in chartData)
-			{
-				o[field]=Number(o[field]).toFixed(2);
-			}
 			var pc:PieChart=new PieChart();
 			pc.dataProvider=chartData;
 			pc.showDataTips=true;
@@ -51,15 +55,13 @@ package ns.flex.util
 			var ps:PieSeries=new PieSeries();
 			ps.field=field;
 			ps.nameField=nameField;
+			ps.setStyle('labelPosition', 'inside');
+			ps.labelFunction=LabelUtil.getPieSeriesLabel;
 			pc.series=[ps];
 			var legend:Legend=new Legend();
 			legend.dataProvider=pc;
 			
-			with (ContainerUtil)
-			{
-				showPopUP(chartName, parent,
-					generateContainer(new ClassFactory(HBox), pc, legend), width, height);
-			}
+			showChart(chartName, parent, pc, legend, width, height);
 		}
 		
 		/**
@@ -92,6 +94,11 @@ package ns.flex.util
 			BindingUtils.bindProperty(axis, 'dataProvider', operation, 'lastResult');
 			lineChart.horizontalAxis=axis;
 			
+			var axisRenderer:AxisRenderer=new AxisRenderer;
+			axisRenderer.axis=axis;
+			axisRenderer.setStyle("canDropLabels", true);
+			lineChart.horizontalAxisRenderers=[axisRenderer];
+			
 			for each (var s:Object in series)
 			{
 				var ls:LineSeries=new LineSeries();
@@ -105,12 +112,7 @@ package ns.flex.util
 			var legend:Legend=new Legend();
 			legend.dataProvider=lineChart;
 			
-			with (ContainerUtil)
-			{
-				showPopUP(chartName, parent,
-					generateContainer(new ClassFactory(HBox), lineChart, legend), width,
-					height);
-			}
+			showChart(chartName, parent, lineChart, legend, width, height);
 		}
 		
 		/**
@@ -146,15 +148,43 @@ package ns.flex.util
 				cs.xField=s.xField;
 				cs.yField=s.yField;
 				cs.displayName=s.displayName;
+				cs.labelFunction=LabelUtil.getColumnSeriesLabel;
+				cs.setStyle('labelPosition', 'inside');
 				columnChart.series.push(cs);
 			}
 			var legend:Legend=new Legend();
 			legend.dataProvider=columnChart;
 			
+			showChart(chartName, parent, columnChart, legend, width, height);
+		}
+		
+		static public function showChart(chartName:String, parent:DisplayObject,
+			chart:ChartBase, legend:Legend, width:int, height:int):void
+		{
+			var hbox:HBox=new HBox;
+			hbox.percentHeight=hbox.percentWidth=100;
+			hbox.setStyle('horizontalAlign', 'center');
+			
+			var vbox:VBox=new VBox();
+			vbox.percentHeight=100;
+			vbox.setStyle('horizontalAlign', 'right');
+			var legendBox:HBox=new HBox;
+			legendBox.percentHeight=100;
+			legendBox.addChild(legend);
+			var link:LinkButton=new LinkButton();
+			link.label='保存';
+			link.addEventListener(MouseEvent.CLICK, function(e:Event):void
+				{
+					link.visible=false;
+					new FileReference().save(ImageSnapshot.captureImage(hbox).data,
+						chartName + '.png');
+					link.visible=true;
+				});
+			
 			with (ContainerUtil)
 			{
-				showPopUP(chartName, parent,
-					generateContainer(new ClassFactory(HBox), columnChart, legend), width,
+				builderContainer(vbox, legendBox, link);
+				showPopUP(chartName, parent, builderContainer(hbox, chart, vbox), width,
 					height);
 			}
 		}

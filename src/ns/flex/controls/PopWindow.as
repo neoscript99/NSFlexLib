@@ -28,8 +28,8 @@ package ns.flex.controls
 					setFocus();
 				});
 			addEventListener('titleDoubleClick', switchSize);
-			maxWidth=800
-			maxHeight=480
+			//maxWidth=800
+			//maxHeight=480
 			setStyle('horizontalAlign', 'center')
 			setStyle('borderAlpha', .9)
 		}

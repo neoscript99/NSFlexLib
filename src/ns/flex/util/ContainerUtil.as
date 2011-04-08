@@ -97,22 +97,11 @@ package ns.flex.util
 			return true;
 		}
 		
-		/**
-		 * 生产容器
-		 * @param childClass 容器类
-		 * @param children
-		 * @return
-		 */
-		static public function generateContainer(childClass:ClassFactory,
-			... children):Container
+		static public function builderContainer(parent:Container, ... children):Container
 		{
-			var container:Container=Container(childClass.newInstance());
-			container.percentHeight=container.percentWidth=100;
-			container.setStyle('horizontalAlign', 'center');
-			
 			for each (var child:* in children)
-				container.addChild(child);
-			return container;
+				parent.addChild(child);
+			return parent;
 		}
 		
 		/**
