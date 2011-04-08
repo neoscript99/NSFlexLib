@@ -115,13 +115,13 @@ package ns.flex.util
 		static public function showPopUP(title:String, parent:DisplayObject,
 			child:DisplayObject, width:int=-1, height:int=-1):PopWindow
 		{
-			var pop:PopWindow=initPopUP(title, parent, child, width, height);
+			var pop:PopWindow=initPopUP(title, child, width, height);
 			pop.show(parent);
 			return pop;
 		}
 		
-		static public function initPopUP(title:String, parent:DisplayObject,
-			child:DisplayObject, width:int=-1, height:int=-1):PopWindow
+		static public function initPopUP(title:String, child:DisplayObject, width:int=-1,
+			height:int=-1):PopWindow
 		{
 			var pop:PopWindow=new PopWindow();
 			pop.title=title;
