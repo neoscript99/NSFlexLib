@@ -41,7 +41,7 @@ package ns.flex.util
 		 * @param height 初始高
 		 */
 		static public function showPie(chartName:String, parent:DisplayObject,
-			chartData:Array, field:String='value', nameField:String='name',
+			chartData:*, field:String='value', nameField:String='name',
 			itemClick:Function=null, width:int=480, height:int=400):void
 		{
 			var pc:PieChart=new PieChart();
@@ -127,7 +127,7 @@ package ns.flex.util
 		 * @param height 高
 		 */
 		static public function showColumn(chartName:String, parent:DisplayObject,
-			chartData:Array, categoryField:String, series:Array, itemClick:Function=null,
+			chartData:*, categoryField:String, series:Array, itemClick:Function=null,
 			width:int=700, height:int=400):void
 		{
 			var columnChart:ColumnChart=new ColumnChart();
