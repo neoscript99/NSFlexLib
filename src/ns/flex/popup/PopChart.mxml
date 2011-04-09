@@ -1,15 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PopWindow xmlns="ns.flex.controls.*" xmlns:mx="http://www.adobe.com/2006/mxml"
-		   title="{chartName}">
+<PopWindow xmlns="ns.flex.controls.*" xmlns:mx="http://www.adobe.com/2006/mxml">
 	<mx:Script>
 		<![CDATA[
 			import mx.charts.LegendItem;
 			[Bindable]
 			public var chartData:*;
-			[Bindable]
-			public var chartName:String='';
-			[Bindable]
-			public var legendItemClass:Class=LegendItem;
 		]]>
 	</mx:Script>
 </PopWindow>

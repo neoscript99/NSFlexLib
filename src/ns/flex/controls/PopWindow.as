@@ -13,6 +13,8 @@ package ns.flex.controls
 	{
 		private var originWidth:int;
 		private var originHeight:int;
+		private var originX:int;
+		private var originY:int;
 		public var menuSupport:MenuSupport;
 		private var popProgress:ProgressBox;
 		
@@ -24,9 +26,9 @@ package ns.flex.controls
 			addEventListener(FlexEvent.CREATION_COMPLETE, cc);
 			addEventListener(CloseEvent.CLOSE, onClose);
 			addEventListener(Event.ADDED, function(e:Event):void
-				{
-					setFocus();
-				});
+			{
+				setFocus();
+			});
 			addEventListener('titleDoubleClick', switchSize);
 			//maxWidth=800
 			//maxHeight=480
@@ -36,10 +38,18 @@ package ns.flex.controls
 		
 		private function switchSize(e:Event):void
 		{
+			if (originWidth == 0)
+			{
+				originWidth=width;
+				originHeight=height;
+			}
+			
 			if (originWidth == width && originHeight == height)
 			{
 				width=parent.width;
 				height=parent.height;
+				originX=x;
+				originY=y;
 				x=0;
 				y=0;
 			}
@@ -47,9 +57,8 @@ package ns.flex.controls
 			{
 				width=originWidth;
 				height=originHeight;
-				
-				if (this.isPopUp)
-					PopUpManager.centerPopUp(this);
+				x=originX;
+				y=originY;
 			}
 		}
 		
@@ -58,9 +67,7 @@ package ns.flex.controls
 			//height最大时，出现横竖滚动条，加大width，去除横向滚动
 			if (height == maxHeight && this.verticalScrollBar)
 				width+=this.verticalScrollBar.width * 2;
-			originWidth=width;
-			originHeight=height;
-			PopUpManager.centerPopUp(this);
+			center();
 			menuSupport=new MenuSupport(this);
 			menuSupport.createMenuItem('关闭', onClose, false, true);
 		}
@@ -97,7 +104,15 @@ package ns.flex.controls
 		private function onClose(evt:Event=null):void
 		{
 			closeProgress();
-			PopUpManager.removePopUp(this);
+			
+			if (this.isPopUp)
+				PopUpManager.removePopUp(this);
+		}
+		
+		public function center():void
+		{
+			if (this.isPopUp)
+				PopUpManager.centerPopUp(this);
 		}
 		
 		public function show(parent:DisplayObject, modal:Boolean=true):void
