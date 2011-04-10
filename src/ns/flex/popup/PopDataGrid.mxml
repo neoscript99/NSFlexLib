@@ -11,23 +11,23 @@
 			[Bindable]
 			public var dataGridData:*;
 			public var dataGrid:DataGridPlus=new DataGridPlus;
-			[Bindable]
-			public var columnList:ArrayCollectionPlus=new ArrayCollectionPlus;
+			private var columns:Array=[];
 			
 			private function cc():void
 			{
 				BindingUtils.bindProperty(dataGrid, 'dataProvider', this, 'dataGridData');
 				this.addChild(dataGrid);
-				BindingUtils.bindSetter(function(value:ArrayCollectionPlus):void
-				{
-					dataGrid.columns=columnList.toArray();
-					center();
-				}, this, 'columnList');
 			}
 			
-			public function addColumns(columns:Array):void
+			public function resetColumns(cols:Array):void
 			{
-				for each (var col:Object in columns)
+				columns=[];
+				addColumn(cols);
+			}
+			
+			public function addColumns(cols:Array):void
+			{
+				for each (var col:Object in cols)
 					addColumn(col);
 			}
 			
@@ -35,7 +35,8 @@
 			{
 				var dgColumn:DataGridColumnPlus=new DataGridColumnPlus;
 				ObjectUtils.copyProperties(dgColumn, col);
-				columnList.addItem(dgColumn);
+				columns.push(dgColumn);
+				dataGrid.columns=columns;
 			}
 		]]>
 	</mx:Script>

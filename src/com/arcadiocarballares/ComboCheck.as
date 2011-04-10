@@ -43,6 +43,7 @@ package com.arcadiocarballares
 		public function ComboCheck()
 		{
 			super();
+			rowCount=15;
 			addEventListener("comboChecked", onComboChecked);
 			addEventListener(FlexEvent.CREATION_COMPLETE, refresh);
 			addEventListener(Event.ADDED_TO_STAGE, refresh);
