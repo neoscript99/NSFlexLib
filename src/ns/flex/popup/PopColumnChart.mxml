@@ -1,23 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PopChart xmlns:mx="http://www.adobe.com/2006/mxml" xmlns="ns.flex.popup.*">
+<PopChart xmlns:mx="http://www.adobe.com/2006/mxml" xmlns="ns.flex.popup.*" width="680"
+		  height="400">
 	<mx:Script>
 		<![CDATA[
+			import mx.charts.series.ColumnSeries;
 			import ns.flex.util.LabelUtil;
 			[Bindable]
-			public var field:String='value';
-			[Bindable]
-			public var nameField:String='name';
+			public var categoryField:String;
+			public var seriesInfos:Array;
+			
+			private function initSeries():void
+			{
+				for each (var s:Object in seriesInfos)
+				{
+					var cs:ColumnSeries=new ColumnSeries()
+					cs.xField=s.xField;
+					cs.yField=s.yField;
+					cs.displayName=s.displayName;
+					cs.labelFunction=LabelUtil.getColumnSeriesLabel;
+					cs.setStyle('labelPosition', 'inside');
+					columnChart.series.push(cs);
+				}
+			}
 		]]>
 	</mx:Script>
-	<mx:HBox horizontalAlign="center">
-		<mx:PieChart id="pieChart" dataProvider="{chartData}" showDataTips="true"
-					 height="100%" width="{pieChart.height}">
-			<mx:series>
-				<mx:PieSeries field="{field}" nameField="{nameField}"
-							  labelFunction="LabelUtil.getPieSeriesLabel"
-							  labelPosition="inside"/>
-			</mx:series>
-		</mx:PieChart>
-		<LegendBox chart="{pieChart}" name="{title}"/>
+	<mx:HBox horizontalAlign="center" width="100%" height="100%">
+		<mx:ColumnChart id="columnChart" dataProvider="{chartData}" showDataTips="true"
+						height="100%" width="100%" preinitialize="initSeries()">
+			<mx:horizontalAxis>
+				<mx:CategoryAxis id="columnAxis" dataProvider="{chartData}"
+								 categoryField="{categoryField}"/>
+			</mx:horizontalAxis>
+		</mx:ColumnChart>
+		<LegendBox chart="{columnChart}" name="{title}"/>
 	</mx:HBox>
 </PopChart>

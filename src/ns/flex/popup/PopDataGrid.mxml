@@ -1,43 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PopWindow xmlns="ns.flex.controls.*" xmlns:mx="http://www.adobe.com/2006/mxml"
-		   creationComplete="cc()">
+<PopWindow xmlns="ns.flex.controls.*" xmlns:mx="http://www.adobe.com/2006/mxml">
 	<mx:Script>
 		<![CDATA[
-			import ns.flex.util.ArrayCollectionPlus;
-			import ns.flex.controls.DataGridPlus;
-			import mx.binding.utils.BindingUtils;
 			import ns.flex.util.ObjectUtils;
 			import ns.flex.controls.DataGridColumnPlus;
 			[Bindable]
 			public var dataGridData:*;
-			public var dataGrid:DataGridPlus=new DataGridPlus;
-			private var columns:Array=[];
+			public var columnInfos:Array;
 			
-			private function cc():void
+			private function initColumns():void
 			{
-				BindingUtils.bindProperty(dataGrid, 'dataProvider', this, 'dataGridData');
-				this.addChild(dataGrid);
-			}
-			
-			public function resetColumns(cols:Array):void
-			{
-				columns=[];
-				addColumn(cols);
-			}
-			
-			public function addColumns(cols:Array):void
-			{
-				for each (var col:Object in cols)
-					addColumn(col);
-			}
-			
-			public function addColumn(col:Object):void
-			{
-				var dgColumn:DataGridColumnPlus=new DataGridColumnPlus;
-				ObjectUtils.copyProperties(dgColumn, col);
-				columns.push(dgColumn);
+				var columns:Array=[];
+				
+				for each (var col:Object in columnInfos)
+				{
+					var dgColumn:DataGridColumnPlus=new DataGridColumnPlus;
+					ObjectUtils.copyProperties(dgColumn, col);
+					columns.push(dgColumn);
+				}
 				dataGrid.columns=columns;
 			}
 		]]>
 	</mx:Script>
+	<DataGridPlus id="dataGrid" dataProvider="{dataGridData}"
+				  preinitialize="initColumns()"/>
 </PopWindow>

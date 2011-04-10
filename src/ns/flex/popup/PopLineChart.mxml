@@ -1,23 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PopChart xmlns:mx="http://www.adobe.com/2006/mxml" xmlns="ns.flex.popup.*"
-		  creationComplete="cc()">
+<PopChart xmlns:mx="http://www.adobe.com/2006/mxml" xmlns="ns.flex.popup.*" width="680"
+		  height="400">
 	<mx:Script>
 		<![CDATA[
-			import mx.binding.utils.BindingUtils;
 			import mx.charts.series.LineSeries;
 			import ns.flex.util.LabelUtil;
 			[Bindable]
 			public var categoryField:String;
-			//must assign before creationComplete
 			public var seriesInfos:Array;
 			
-			private function cc():void
-			{
-				this.width=this.height * 1.36;
-				initSeries();
-			}
-			
-			//must before creationComplete
 			private function initSeries():void
 			{
 				for each (var s:Object in seriesInfos)
@@ -35,7 +26,7 @@
 	</mx:Script>
 	<mx:HBox horizontalAlign="center" width="100%" height="100%">
 		<mx:LineChart id="lineChart" dataProvider="{chartData}" showDataTips="true"
-					  height="100%" width="100%">
+					  height="100%" width="100%" preinitialize="initSeries()">
 			<mx:horizontalAxis>
 				<mx:CategoryAxis id="lineAxis" dataProvider="{chartData}"
 								 categoryField="{categoryField}"
