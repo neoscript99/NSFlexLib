@@ -40,8 +40,6 @@ package ns.flex.controls
 		[Inspectable(enumeration="none,new,view,edit,new-edit,view-edit,new-view-edit",
 			defaultValue="none", category="General")]
 		public var showDetail:String='none';
-		[Inspectable(category="General")]
-		public var showDetailPopWidth:int=-1;
 		[Bindable]
 		private var lastRollOverIndex:Number;
 		private var orderList:ArrayCollectionPlus=new ArrayCollectionPlus();
@@ -328,7 +326,7 @@ package ns.flex.controls
 				buttonItem.addChild(hbox);
 				form.addChild(buttonItem);
 			}
-			return ContainerUtil.initPopUP('查看', form, showDetailPopWidth, -1);
+			return ContainerUtil.initPopUP('查看', form);
 		}
 		
 		private function copyToExcel(evt:Event):void
