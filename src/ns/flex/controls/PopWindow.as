@@ -33,7 +33,6 @@ package ns.flex.controls
 				setFocus();
 			});
 			addEventListener('titleDoubleClick', switchSize);
-			setStyle('horizontalAlign', 'center')
 			setStyle('borderAlpha', .9)
 
 			maxWidth=SystemManager.getSWFRoot(this).stage.stageWidth * .9;
