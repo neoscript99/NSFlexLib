@@ -15,21 +15,6 @@
 	</mx:Style>
 	<mx:Script>
 		<![CDATA[
-			/*
-			   example:
-			   private function query(first:int=-1):void
-			   {
-			   listPage(paging.forFirst(first),paging.offsetValue);
-			   }
-
-			   <mx:RemoteObject destination="someService" id="ss" fault="MessageUtil.showError(event)" showBusyCursor="true">
-			   <mx:method name="save" result="paging.reCurrentPage();"/>
-			   <mx:method name="deleteItems" result="paging.reCurrentPage()"/>
-			   <mx:method name="count" result="paging.updateDispaly()"/>
-			   </mx:RemoteObject>
-
-			   <component:Paging id="paging" totalNumber="{ics.count.lastResult}" changePage="query(event.first)"/>
-			 */
 			import mx.events.ItemClickEvent;
 			import ns.flex.event.PageChangeEvent;
 			[Bindable]
@@ -105,6 +90,7 @@
 				offset.value=int(value / offset.stepSize) * offset.stepSize;
 			}
 
+			[Bindable("changePage")]
 			public function get offsetValue():int
 			{
 				return offset.value;

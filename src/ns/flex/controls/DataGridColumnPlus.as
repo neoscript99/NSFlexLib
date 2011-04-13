@@ -20,7 +20,7 @@ package ns.flex.controls
 		// @see TextInputPlus,TextAreaPlus,DateFieldPlus
 		public var constraints:Object;
 		public var comboBoxInfo:Object; //for asComboBox
-		[Inspectable(enumeration="Text,CheckBox,DateString", defaultValue="Text",
+		[Inspectable(enumeration="Text,TextArea,CheckBox,DateString", defaultValue="Text",
 			category="General")]
 		public var asControl:String='Text';
 		[Inspectable(category="General")]
@@ -30,14 +30,20 @@ package ns.flex.controls
 		{
 			super(columnName);
 			headerWordWrap=true;
-			itemRenderer=new ClassFactory(Text);
+			itemRenderer=new ClassFactory(SelectableLabel);
 		}
 
-		[Inspectable(category="General")]
-		public function set truncateToFit(value:Boolean):void
+		/**
+		 * 默认使用SelectableLabel的truncateToFit
+		 * 如果设wordWrap为ture，改用Text，可以多行，对话框控件改用TextArea
+		 * 如果想保留truncateToFit，但对话框控件是TextArea，可设置asControl=TextArea
+		 * @param value
+		 */
+		override public function set wordWrap(value:*):void
 		{
-			if (value)
-				itemRenderer=new ClassFactory(SelectableLabel);
+			super.wordWrap=value;
+			if (value == true)
+				itemRenderer=new ClassFactory(Text);
 		}
 
 		public function set nestDataField(nestField:String):void
@@ -49,7 +55,7 @@ package ns.flex.controls
 		public function set percision(p:int):void
 		{
 			_percision=p;
-			labelFunction=getNumberLabel;
+			labelFunction=DataGridColumnPlus.getNumberLabel;
 			this.setStyle('textAlign', 'right');
 		}
 
@@ -84,10 +90,11 @@ package ns.flex.controls
 			}
 		}
 
-		public function getNumberLabel(item:Object, column:DataGridColumn):String
+		static public function getNumberLabel(item:Object,
+			column:DataGridColumnPlus):String
 		{
-			return StringUtil.formatNumber(Number(item[column.dataField]), _percision,
-				isSeparateThousands);
+			return StringUtil.formatNumber(Number(item[column.dataField]),
+				column._percision, column.isSeparateThousands);
 		}
 
 		static public function getLabel(item:Object, column:DataGridColumn):String
@@ -106,3 +113,4 @@ package ns.flex.controls
 		}
 	}
 }
+

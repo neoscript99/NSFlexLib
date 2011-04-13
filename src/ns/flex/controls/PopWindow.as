@@ -19,6 +19,11 @@ package ns.flex.controls
 		private var originX:Number;
 		private var originY:Number;
 		public var menuSupport:MenuSupport;
+
+		//这个功能应该只在针对静态内容时开启，
+		//如果内容为动态，width或height被赋值后，窗口大小就不会跟着内容变化
+		[Inspectable(category="General")]
+		public var tryToRemoveScrollBar:Boolean=true;
 		private var popProgress:ProgressBox;
 
 		public function PopWindow()
@@ -33,24 +38,29 @@ package ns.flex.controls
 				setFocus();
 			});
 			addEventListener('titleDoubleClick', switchSize);
-			setStyle('borderAlpha', .9)
 
 			maxWidth=SystemManager.getSWFRoot(this).stage.stageWidth * .9;
 			maxHeight=SystemManager.getSWFRoot(this).stage.stageHeight * .9;
 		}
 
+		/**
+		 * 必须设置explicitWidth和explicitHeight，
+		 * 如果设置width和height，窗口将不能随内容动态扩展
+		 * @param e
+		 */
 		private function switchSize(e:Event):void
 		{
-			if (isNaN(originWidth))
+			if (isNaN(originX))
 			{
-				originWidth=width;
-				originHeight=height;
+				originWidth=explicitWidth;
+				originHeight=explicitHeight;
 			}
 
-			if (originWidth == width && originHeight == height)
+			if (isNaN(explicitWidth) || isNaN(explicitHeight) ||
+				(originWidth == explicitWidth && originHeight == explicitHeight))
 			{
-				width=parent.width;
-				height=parent.height;
+				explicitWidth=parent.width;
+				explicitHeight=parent.height;
 				originX=x;
 				originY=y;
 				x=0;
@@ -58,18 +68,28 @@ package ns.flex.controls
 			}
 			else
 			{
-				width=originWidth;
-				height=originHeight;
+				explicitWidth=originWidth;
+				explicitHeight=originHeight;
 				x=originX;
 				y=originY;
 			}
+			trace(width, height, explicitWidth, explicitHeight);
 		}
 
 		private function cc(e:Event):void
 		{
-			//height最大时，出现横竖滚动条，加大width，去除横向滚动
-			if (height == maxHeight && this.verticalScrollBar)
-				width+=this.verticalScrollBar.width * 2;
+			//height最大时，width未最大，出现横竖滚动条，但横向其实还有扩展空间，加大width，去除横向滚动
+			//width最大时，同理.
+			//这个功能应该只在针对静态内容时开启，
+			//如果内容为动态，width或height被赋值后，窗口大小就不会跟着内容变化
+			if (tryToRemoveScrollBar)
+			{
+				if (height == maxHeight && width < maxWidth && this.verticalScrollBar)
+					width+=this.verticalScrollBar.width * 2;
+				else if (width == maxWidth && height < maxHeight &&
+					this.horizontalScrollBar)
+					height+=this.horizontalScrollBar.height * 2;
+			}
 			center();
 			menuSupport=new MenuSupport(this);
 			menuSupport.createMenuItem('关闭', onClose, false, true);

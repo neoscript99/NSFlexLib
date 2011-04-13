@@ -41,10 +41,7 @@ package ns.flex.util
 					order: notNestOrders};
 
 			for (var prop:* in params)
-			{
-				trace(prop);
 				listParam[prop]=params[prop];
-			}
 
 			//嵌套字段的排序criteria
 			for each (var order:Array in orders)
@@ -88,3 +85,4 @@ package ns.flex.util
 		}
 	}
 }
+
