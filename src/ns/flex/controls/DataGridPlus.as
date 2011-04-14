@@ -4,6 +4,7 @@ package ns.flex.controls
 	import flash.events.Event;
 	import flash.system.System;
 	import flash.ui.ContextMenuItem;
+
 	import mx.containers.Form;
 	import mx.containers.FormItem;
 	import mx.containers.HBox;
@@ -17,6 +18,8 @@ package ns.flex.controls
 	import mx.events.ListEvent;
 	import mx.utils.ObjectProxy;
 	import mx.utils.ObjectUtil;
+	import mx.utils.UIDUtil;
+
 	import ns.flex.event.SaveItemEvent;
 	import ns.flex.support.MenuSupport;
 	import ns.flex.util.ArrayCollectionPlus;
@@ -43,6 +46,8 @@ package ns.flex.controls
 		[Bindable]
 		private var lastRollOverIndex:Number;
 		private var orderList:ArrayCollectionPlus=new ArrayCollectionPlus();
+		[Inspectable(category="General")]
+		public var showSum:Boolean=false;
 		[Inspectable(category="General")]
 		public var deleteEnabled:Boolean=false;
 		[Inspectable(category="General")]
@@ -71,6 +76,36 @@ package ns.flex.controls
 			addEventListener(ListEvent.ITEM_ROLL_OUT, dgItemRollOut);
 			addEventListener(FlexEvent.CREATION_COMPLETE, cc);
 			addEventListener(DataGridEvent.HEADER_RELEASE, onHeaderRelease);
+		}
+
+		[Inspectable(category="Data", defaultValue="undefined")]
+		override public function set dataProvider(value:Object):void
+		{
+			if (showSum && value)
+			{
+				var acp:ArrayCollectionPlus=new ArrayCollectionPlus(value);
+				var sumItem:Object={uniqueIdForSumItem: uid};
+				var hasGroupColumn:Boolean=false;
+				if (acp.length > 0)
+				{
+					for each (var col:DataGridColumn in columns)
+						if (col.dataField && col is DataGridColumnPlus &&
+							col['groupMethod'])
+						{
+							hasGroupColumn=true;
+							for (var i:int=0; i < acp.length; i++)
+								if (col['groupMethod'] == 'sum')
+									sumItem[col.dataField]=
+										(sumItem[col.dataField] ? sumItem[col.dataField] : 0) + Number(DataGridColumnPlus.getLabel(acp[i],
+										col));
+						}
+					if (hasGroupColumn)
+						acp.addItem(sumItem);
+					super.dataProvider=acp;
+					return;
+				}
+			}
+			super.dataProvider=value;
 		}
 
 		public function updateCMDMenu(enabled:Boolean):void
@@ -182,6 +217,20 @@ package ns.flex.controls
 		private function cc(event:FlexEvent):void
 		{
 			resetMenu();
+			var dgUid:String=uid;
+			var firstColumn:DataGridColumn=columns[0];
+			var oldLabelFunction:Function=firstColumn.labelFunction;
+			firstColumn.labelFunction=function(item:Object, column:DataGridColumn):String
+			{
+				if (item.uniqueIdForSumItem == dgUid &&
+					!(column is DataGridColumnPlus && column['groupMethod'] &&
+					column['groupMethod'] != 'none'))
+					return '汇总';
+				else if (oldLabelFunction != null)
+					return oldLabelFunction(item, column)
+				else
+					return item[column.dataField];
+			}
 		}
 
 		private function enableMenu(menuLabel:String, action:Function,

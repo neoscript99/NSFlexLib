@@ -1,7 +1,5 @@
 package ns.flex.util
 {
-	import mx.utils.ObjectUtil;
-
 	public class ObjectUtils
 	{
 		public static function copyProperties(toObject:Object, fromObject:Object,

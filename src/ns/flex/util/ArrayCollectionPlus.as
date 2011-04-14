@@ -1,8 +1,7 @@
 package ns.flex.util
 {
 	import mx.collections.ArrayCollection;
-	import mx.collections.IList;
-	
+
 	/**
 	 * 集合类
 	 * @author wangchu
@@ -10,18 +9,12 @@ package ns.flex.util
 	public class ArrayCollectionPlus extends ArrayCollection
 	{
 		public static const EMPTY:ArrayCollectionPlus=new ArrayCollectionPlus();
-		
+
 		public function ArrayCollectionPlus(source:Object=null)
 		{
-			var arr:Array;
-			
-			if (source is IList && source != null)
-				arr=source.toArray();
-			else
-				arr=source as Array;
-			super(arr);
+			super(ArrayUtil.toArray(source));
 		}
-		
+
 		/**
 		 * 将集合转化为二维数组，如：[{a:1,b:2},{a:3,b:4}]-->[[1,2],[3,4]]
 		 * @param fields 包含字段，如为空，包含所有字段
@@ -33,7 +26,7 @@ package ns.flex.util
 			toArray().forEach(function(item:*, index:int, ar:Array):void
 			{
 				var innerArray:Array=[];
-				
+
 				if (fields.length > 0)
 					for each (var field:String in fields)
 						innerArray.push(item[field]);
@@ -44,7 +37,7 @@ package ns.flex.util
 			});
 			return array;
 		}
-		
+
 		/**
 		 * 增加到最前面
 		 * @param item 增加的项
@@ -55,7 +48,7 @@ package ns.flex.util
 			addItemAt(item, 0);
 			return this;
 		}
-		
+
 		/**
 		 * 查询项目
 		 * @param f 函数f(item)，返回true代表符合查询条件
@@ -66,13 +59,13 @@ package ns.flex.util
 			for (var i:int=0; i < this.length; i++)
 			{
 				var item:Object=this.getItemAt(i);
-				
+
 				if (f(item))
 					return item;
 			}
 			return null;
 		}
-		
+
 		[Bindable("collectionChange")]
 		/**
 		 * 根据字段查找集合项
@@ -87,7 +80,7 @@ package ns.flex.util
 					return item;
 			return null;
 		}
-		
+
 		/**
 		 * 删除符合条件的所有集合项
 		 * @param f 函数f(item)为true时代表符合条件
@@ -97,18 +90,18 @@ package ns.flex.util
 			for (var i:int=0; i < this.length; i++)
 			{
 				var item:Object=this.getItemAt(i);
-				
+
 				if (f(item))
 					this.removeItemAt(i);
 			}
 		}
-		
+
 		public function each(f:Function):void
 		{
 			for (var i:int=0; i < this.length; i++)
 				f(getItemAt(i))
 		}
-		
+
 		/**
 		 * 相加每个集合项对应的计算值
 		 * @param f 函数f(item)为计算结果
@@ -117,17 +110,17 @@ package ns.flex.util
 		public function sum(f:Function):Object
 		{
 			var value:Object;
-			
+
 			if (this.length > 0)
 				value=f(this.getItemAt(0));
-			
+
 			for (var i:int=1; i < this.length; i++)
 			{
 				value+=f(this.getItemAt(i));
 			}
 			return value;
 		}
-		
+
 		/**
 		 * 查找符合条件的所有集合项的集合
 		 * @param f 函数，f(item)为true代表符合条件
@@ -136,17 +129,17 @@ package ns.flex.util
 		public function grep(f:Function):ArrayCollectionPlus
 		{
 			var acp:ArrayCollectionPlus=new ArrayCollectionPlus();
-			
+
 			for (var i:int=0; i < this.length; i++)
 			{
 				var item:Object=this.getItemAt(i);
-				
+
 				if (f(item))
 					acp.addItem(item);
 			}
 			return acp;
 		}
-		
+
 		static public function withAll(source:Object,
 			labelField:String):ArrayCollectionPlus
 		{
@@ -154,10 +147,11 @@ package ns.flex.util
 			all[labelField]='全部';
 			return withFirst(source, all);
 		}
-		
+
 		static public function withFirst(source:Object, first:Object):ArrayCollectionPlus
 		{
 			return new ArrayCollectionPlus(source).addFirst(first);
 		}
 	}
 }
+

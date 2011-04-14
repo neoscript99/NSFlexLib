@@ -25,6 +25,9 @@ package ns.flex.controls
 		public var asControl:String='Text';
 		[Inspectable(category="General")]
 		public var readonly:Boolean=false;
+		[Inspectable(enumeration="sum,avg,max,min,none", defaultValue="",
+			category="General")]
+		public var groupMethod:String;
 
 		public function DataGridColumnPlus(columnName:String=null)
 		{
@@ -55,6 +58,8 @@ package ns.flex.controls
 		public function set percision(p:int):void
 		{
 			_percision=p;
+			if (!groupMethod)
+				groupMethod='sum';
 			labelFunction=DataGridColumnPlus.getNumberLabel;
 			this.setStyle('textAlign', 'right');
 		}
@@ -93,23 +98,27 @@ package ns.flex.controls
 		static public function getNumberLabel(item:Object,
 			column:DataGridColumnPlus):String
 		{
-			return StringUtil.formatNumber(Number(item[column.dataField]),
+			var label:String=StringUtil.trim(getLabel(item, column));
+			return label.length == 0 ? label : StringUtil.formatNumber(Number(label),
 				column._percision, column.isSeparateThousands);
 		}
 
 		static public function getLabel(item:Object, column:DataGridColumn):String
 		{
+			var label:Object=item;
 			column.dataField.split('.').every(function(it:*, index:int, arr:Array):Boolean
 			{
 				//返回为false时停止every
-				item=item[it]
-				return (item != null);
+				label=label[it]
+				return (label != null);
 			});
 
-			if (item == null)
-				return '';
+			if (label)
+				return String(label);
+			else if (item[column.dataField])
+				return item[column.dataField];
 			else
-				return String(item);
+				return '';
 		}
 	}
 }

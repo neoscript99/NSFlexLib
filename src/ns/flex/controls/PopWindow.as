@@ -140,7 +140,8 @@ package ns.flex.controls
 
 		public function show(parent:DisplayObject, modal:Boolean=true):void
 		{
-			PopUpManager.addPopUp(this, parent, modal);
+			if (!this.isPopUp)
+				PopUpManager.addPopUp(this, parent, modal);
 		}
 
 		public function close():void
