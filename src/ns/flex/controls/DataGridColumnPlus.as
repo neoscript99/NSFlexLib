@@ -113,10 +113,10 @@ package ns.flex.controls
 				return (label != null);
 			});
 
-			if (label)
+			if (label!=null)
 				return String(label);
-			else if (item[column.dataField])
-				return item[column.dataField];
+			else if (item[column.dataField]!=null)
+				return String(item[column.dataField]);
 			else
 				return '';
 		}

@@ -18,12 +18,12 @@ package ns.flex.controls
 	import mx.events.ListEvent;
 	import mx.utils.ObjectProxy;
 	import mx.utils.ObjectUtil;
-	import mx.utils.UIDUtil;
 
 	import ns.flex.event.SaveItemEvent;
 	import ns.flex.support.MenuSupport;
 	import ns.flex.util.ArrayCollectionPlus;
 	import ns.flex.util.ContainerUtil;
+	import ns.flex.util.MathUtil;
 	import ns.flex.util.StringUtil;
 
 	[Event(name="createItem")]
@@ -74,13 +74,14 @@ package ns.flex.controls
 			variableRowHeight=true;
 			addEventListener(ListEvent.ITEM_ROLL_OVER, dgItemRollOver);
 			addEventListener(ListEvent.ITEM_ROLL_OUT, dgItemRollOut);
-			addEventListener(FlexEvent.CREATION_COMPLETE, cc);
+			addEventListener(FlexEvent.INITIALIZE, init);
 			addEventListener(DataGridEvent.HEADER_RELEASE, onHeaderRelease);
 		}
 
 		[Inspectable(category="Data", defaultValue="undefined")]
 		override public function set dataProvider(value:Object):void
 		{
+			trace('set dataProvider');
 			if (showSum && value)
 			{
 				var acp:ArrayCollectionPlus=new ArrayCollectionPlus(value);
@@ -90,14 +91,14 @@ package ns.flex.controls
 				{
 					for each (var col:DataGridColumn in columns)
 						if (col.dataField && col is DataGridColumnPlus &&
-							col['groupMethod'])
+							col['groupMethod'] && col['groupMethod'] != 'none')
 						{
 							hasGroupColumn=true;
+							var valueArray:Array=[];
 							for (var i:int=0; i < acp.length; i++)
-								if (col['groupMethod'] == 'sum')
-									sumItem[col.dataField]=
-										(sumItem[col.dataField] ? sumItem[col.dataField] : 0) + Number(DataGridColumnPlus.getLabel(acp[i],
-										col));
+								valueArray.push(DataGridColumnPlus.getLabel(acp[i], col));
+							sumItem[col.dataField]=
+								MathUtil[col['groupMethod']](valueArray);
 						}
 					if (hasGroupColumn)
 						acp.addItem(sumItem);
@@ -214,22 +215,32 @@ package ns.flex.controls
 				enableMenu("复制到Excel", copyToExcel, true);
 		}
 
-		private function cc(event:FlexEvent):void
+		public function isSumItem(item:Object):Boolean
+		{
+			return item.uniqueIdForSumItem == uid;
+		}
+
+		private function init(event:FlexEvent):void
 		{
 			resetMenu();
-			var dgUid:String=uid;
-			var firstColumn:DataGridColumn=columns[0];
-			var oldLabelFunction:Function=firstColumn.labelFunction;
-			firstColumn.labelFunction=function(item:Object, column:DataGridColumn):String
+			if (showSum)
 			{
-				if (item.uniqueIdForSumItem == dgUid &&
-					!(column is DataGridColumnPlus && column['groupMethod'] &&
-					column['groupMethod'] != 'none'))
-					return '汇总';
-				else if (oldLabelFunction != null)
-					return oldLabelFunction(item, column)
-				else
-					return item[column.dataField];
+				trace('set SumItem labelFunction',uid);
+				var firstColumn:DataGridColumn=columns[0];
+				var oldLabelFunction:Function=firstColumn.labelFunction;
+				firstColumn.labelFunction=
+					function(item:Object, column:DataGridColumn):String
+					{
+						trace('call SumItem labelFunction')
+						if (isSumItem(item) &&
+							!(column is DataGridColumnPlus && column['groupMethod'] &&
+							column['groupMethod'] != 'none'))
+							return '汇总';
+						else if (oldLabelFunction != null)
+							return oldLabelFunction(item, column)
+						else
+							return String(item[column.dataField]);
+				}
 			}
 		}
 

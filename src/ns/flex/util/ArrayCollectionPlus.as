@@ -15,6 +15,16 @@ package ns.flex.util
 			super(ArrayUtil.toArray(source));
 		}
 
+		public function getFieldArray(field:String):Array
+		{
+			var fieldArray:Array=[];
+			for (var i:int=0; i < length; i++)
+			{
+				fieldArray.push(this.getItemAt(i)[field]);
+			}
+			return fieldArray;
+		}
+
 		/**
 		 * 将集合转化为二维数组，如：[{a:1,b:2},{a:3,b:4}]-->[[1,2],[3,4]]
 		 * @param fields 包含字段，如为空，包含所有字段
