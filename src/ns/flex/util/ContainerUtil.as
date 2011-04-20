@@ -10,7 +10,7 @@ package ns.flex.util
 	import mx.core.UIComponent;
 	import mx.utils.ObjectUtil;
 	import ns.flex.controls.PopWindow;
-	
+
 	/**
 	 * 显示容器工具类
 	 * @author wangchu
@@ -37,12 +37,12 @@ package ns.flex.util
 					DateField(diso).selectedDate=null;
 			}
 		}
-		
+
 		static public function findContainerChild(container:Container, type:Class,
 			property:String, value:Object):DisplayObject
 		{
 			var result:DisplayObject;
-			
+
 			for each (var diso:DisplayObject in container.getChildren())
 			{
 				if (diso is type)
@@ -53,20 +53,20 @@ package ns.flex.util
 				else if (diso is Container)
 				{
 					result=findContainerChild(Container(diso), type, property, value);
-					
+
 					if (result)
 						return result;
 				}
 			}
 			return null;
 		}
-		
+
 		/**
 		 * 级联验证容器内输入对象的输入内容
 		 * @param container
 		 */
-		static public function validate(container:Container, isSetFocus:Boolean=
-			true):Boolean
+		static public function validate(container:Container,
+			isSetFocus:Boolean=true):Boolean
 		{
 			for each (var uic:UIComponent in container.getChildren())
 			{
@@ -96,14 +96,14 @@ package ns.flex.util
 			}
 			return true;
 		}
-		
+
 		static public function builderContainer(parent:Container, ... children):Container
 		{
 			for each (var child:* in children)
 				parent.addChild(child);
 			return parent;
 		}
-		
+
 		/**
 		 * 显示对话框
 		 * @param title 标题
@@ -119,20 +119,24 @@ package ns.flex.util
 			pop.show(parent);
 			return pop;
 		}
-		
+
 		static public function initPopUP(title:String, child:DisplayObject, width:int=-1,
-			height:int=-1):PopWindow
+			height:int=-1, horizontalAlign:String=null):PopWindow
 		{
 			var pop:PopWindow=new PopWindow();
 			pop.title=title;
-			
+
 			if (width > -1)
 				pop.width=width;
-			
+
 			if (height > -1)
 				pop.height=height;
+
+			if (horizontalAlign)
+				pop.setStyle('horizontalAlign', horizontalAlign);
 			pop.addChild(child);
 			return pop;
 		}
 	}
 }
+

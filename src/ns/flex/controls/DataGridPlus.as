@@ -90,16 +90,22 @@ package ns.flex.controls
 				if (acp.length > 0)
 				{
 					for each (var col:DataGridColumn in columns)
-						if (col.dataField && col is DataGridColumnPlus &&
-							col['groupMethod'] && col['groupMethod'] != 'none')
-						{
-							hasGroupColumn=true;
-							var valueArray:Array=[];
-							for (var i:int=0; i < acp.length; i++)
-								valueArray.push(DataGridColumnPlus.getLabel(acp[i], col));
-							sumItem[col.dataField]=
-								MathUtil[col['groupMethod']](valueArray);
-						}
+					{
+						if (col.dataField)
+							if (col is DataGridColumnPlus && col['groupMethod'] &&
+								col['groupMethod'] != 'none')
+							{
+								hasGroupColumn=true;
+								var valueArray:Array=[];
+								for (var i:int=0; i < acp.length; i++)
+									valueArray.push(DataGridColumnPlus.getLabel(acp[i],
+										col));
+								sumItem[col.dataField]=
+									MathUtil[col['groupMethod']](valueArray);
+							}
+							else //设空值，防止排序时报错,Error: Find criteria must contain at least one sort field value.
+								sumItem[col.dataField]=null;
+					}
 					if (hasGroupColumn)
 						acp.addItem(sumItem);
 					super.dataProvider=acp;
@@ -225,7 +231,7 @@ package ns.flex.controls
 			resetMenu();
 			if (showSum)
 			{
-				trace('set SumItem labelFunction',uid);
+				trace('set SumItem labelFunction', uid);
 				var firstColumn:DataGridColumn=columns[0];
 				var oldLabelFunction:Function=firstColumn.labelFunction;
 				firstColumn.labelFunction=
@@ -388,7 +394,7 @@ package ns.flex.controls
 				buttonItem.addChild(hbox);
 				form.addChild(buttonItem);
 			}
-			return ContainerUtil.initPopUP('查看', form);
+			return ContainerUtil.initPopUP('查看', form, -1, -1, 'center');
 		}
 
 		private function copyToExcel(evt:Event):void
