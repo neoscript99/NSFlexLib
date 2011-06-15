@@ -218,7 +218,10 @@ package ns.flex.controls
 				enableMenu("删除全部", deleteAll, (separatorCount++ == 0), true);
 
 			if (copyToExcelEnabled)
-				enableMenu("复制到Excel", copyToExcel, true);
+			{
+				enableMenu("复制选择行到Excel", copySelectedToExcel, true);
+				enableMenu("复制全部行到Excel", copyTotalToExcel);
+			}
 		}
 
 		public function isSumItem(item:Object):Boolean
@@ -397,7 +400,17 @@ package ns.flex.controls
 			return ContainerUtil.initPopUP('查看', form, -1, -1, 'center');
 		}
 
-		private function copyToExcel(evt:Event):void
+		private function copySelectedToExcel(evt:Event):void
+		{
+			copyToExcel(false);
+		}
+
+		private function copyTotalToExcel(evt:Event):void
+		{
+			copyToExcel();
+		}
+
+		private function copyToExcel(isTotal:Boolean=true):void
 		{
 			var spiltor:String='	';
 			var ss:String='';
@@ -409,7 +422,7 @@ package ns.flex.controls
 					k == columns.length - 1 ? '' : spiltor);
 			}
 			ss+='\n';
-			var list:Object=selectedItems.length > 1 ? selectedItems : dataProvider;
+			var list:Object=isTotal ? dataProvider : selectedItems;
 
 			for (var i:int=0; i < list.length; i++)
 			{
