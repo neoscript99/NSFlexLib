@@ -48,6 +48,7 @@ package ns.flex.controls
 		private var orderList:ArrayCollectionPlus=new ArrayCollectionPlus();
 		[Inspectable(category="General")]
 		public var showSum:Boolean=false;
+		public var sumColumnLabel:String='汇总';
 		[Inspectable(category="General")]
 		public var deleteEnabled:Boolean=false;
 		[Inspectable(category="General")]
@@ -239,16 +240,16 @@ package ns.flex.controls
 				var oldLabelFunction:Function=firstColumn.labelFunction;
 				firstColumn.labelFunction=
 					function(item:Object, column:DataGridColumn):String
-					{
-						trace('call SumItem labelFunction')
-						if (isSumItem(item) &&
-							!(column is DataGridColumnPlus && column['groupMethod'] &&
-							column['groupMethod'] != 'none'))
-							return '汇总';
-						else if (oldLabelFunction != null)
-							return oldLabelFunction(item, column)
-						else
-							return String(item[column.dataField]);
+				{
+					trace('call SumItem labelFunction')
+					if (isSumItem(item) &&
+						!(column is DataGridColumnPlus && column['groupMethod'] &&
+						column['groupMethod'] != 'none'))
+						return sumColumnLabel;
+					else if (oldLabelFunction != null)
+						return oldLabelFunction(item, column)
+					else
+						return String(item[column.dataField]);
 				}
 			}
 		}
@@ -299,12 +300,12 @@ package ns.flex.controls
 		{
 			Alert.show("确认删除？", null, Alert.YES | Alert.NO, this,
 				function(evt:CloseEvent):void
+			{
+				if (evt.detail == Alert.YES)
 				{
-					if (evt.detail == Alert.YES)
-					{
-						dispatchEvent(new Event('deleteItems'));
-					}
-				})
+					dispatchEvent(new Event('deleteItems'));
+				}
+			})
 		}
 
 		public function closePop():void
@@ -412,7 +413,11 @@ package ns.flex.controls
 
 		private function copyToExcel(isTotal:Boolean=true):void
 		{
-			var spiltor:String='	';
+			System.setClipboard(rowsToString(isTotal, '	'));
+		}
+
+		public function rowsToString(isTotal:Boolean=true, spiltor:String='	'):String
+		{
 			var ss:String='';
 
 			for (var k:int=0; k < columns.length; k++)
@@ -434,19 +439,20 @@ package ns.flex.controls
 				}
 				ss=ss.concat('\n');
 			}
-			System.setClipboard(ss);
+
+			return ss;
 		}
 
 		private function deleteAll(evt:Event):void
 		{
 			Alert.show("确认全部删除？", null, Alert.YES | Alert.NO, this,
 				function(evt:CloseEvent):void
+			{
+				if (evt.detail == Alert.YES)
 				{
-					if (evt.detail == Alert.YES)
-					{
-						dispatchEvent(new Event('deleteAll'));
-					}
-				})
+					dispatchEvent(new Event('deleteAll'));
+				}
+			})
 		}
 	}
 }
