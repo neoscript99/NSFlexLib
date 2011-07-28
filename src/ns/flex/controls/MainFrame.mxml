@@ -24,12 +24,11 @@
 			{
 				if (spareMintues > 0)
 				{
-					timer=new Timer(60 * 1000 * spareMintues);
+					timer=new Timer(60 * 1000, spareMintues);
 					timer.start();
 					timer.addEventListener(TimerEvent.TIMER_COMPLETE,
 						function timerComplete(e:Event):void
 						{
-							MessageUtil.showMessage('timerComplete')
 							dispatchEvent(new Event('timerComplete'));
 						});
 				}
@@ -41,6 +40,8 @@
 				trace('x: ', e.stageX, ' y: ', e.stageY);
 				if (timer)
 				{
+					trace('timer delay:', timer.delay, 'currentCount: ',
+						timer.currentCount);
 					timer.reset();
 					timer.start();
 				}
@@ -59,16 +60,19 @@
 			//所以把键盘事件屏蔽,并且每次初始化一个SWFLoader实例
 			private function menuClick():void
 			{
+				if (!menuTree.selectedItem)
+					return;
 				var nodeApp:String=menuTree.selectedItem.@app;
 
 				if (nodeApp)
 				{
-					views.selectedChild=(views.getChildByName(nodeApp) as Container);
+					views.selectedIndex=views.getChildIndex(views.getChildByName(nodeApp));
 					appWindow.title=menuTree.selectedItem.@label;
 				}
 				else
 					menuTree.expandItem(menuTree.selectedItem,
 						!menuTree.isItemOpen(menuTree.selectedItem), true);
+
 			}
 		]]>
 	</mx:Script>

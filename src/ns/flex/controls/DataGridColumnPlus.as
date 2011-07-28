@@ -52,6 +52,7 @@ package ns.flex.controls
 		public function set nestDataField(nestField:String):void
 		{
 			dataField=nestField;
+			sortable = false;
 			labelFunction=DataGridColumnPlus.getLabel;
 		}
 

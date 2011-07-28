@@ -47,7 +47,7 @@ package ns.flex.controls
 		private var lastRollOverIndex:Number;
 		private var orderList:ArrayCollectionPlus=new ArrayCollectionPlus();
 		[Inspectable(category="General")]
-		public var showSum:Boolean=false;
+		public var _showSum:Boolean=false;
 		public var sumColumnLabel:String='汇总';
 		[Inspectable(category="General")]
 		public var deleteEnabled:Boolean=false;
@@ -83,7 +83,7 @@ package ns.flex.controls
 		override public function set dataProvider(value:Object):void
 		{
 			trace('set dataProvider');
-			if (showSum && value)
+			if (_showSum && value)
 			{
 				var acp:ArrayCollectionPlus=new ArrayCollectionPlus(value);
 				var sumItem:Object={uniqueIdForSumItem: uid};
@@ -124,6 +124,31 @@ package ns.flex.controls
 		public function get orders():Array
 		{
 			return orderList.toBiArray('sortField', 'order');
+		}
+
+		public function set showSum(v:Boolean):void
+		{
+			_showSum=v;
+			if (_showSum)
+			{
+				trace('set SumItem labelFunction', uid);
+				var firstColumn:DataGridColumn=columns[0];
+				var oldLabelFunction:Function=firstColumn.labelFunction;
+				firstColumn.labelFunction=
+					function(item:Object, column:DataGridColumn):String
+					{
+						trace('call SumItem labelFunction')
+						if (isSumItem(item) &&
+							!(column is DataGridColumnPlus && column['groupMethod'] &&
+							column['groupMethod'] != 'none'))
+							return sumColumnLabel;
+						else if (oldLabelFunction != null)
+							return oldLabelFunction(item, column)
+						else
+							return String(item[column.dataField]);
+				}
+				dataProvider=dataProvider;
+			}
 		}
 
 		public function addOrder(sortField:String, order:String=null):void
@@ -233,25 +258,6 @@ package ns.flex.controls
 		private function init(event:FlexEvent):void
 		{
 			resetMenu();
-			if (showSum)
-			{
-				trace('set SumItem labelFunction', uid);
-				var firstColumn:DataGridColumn=columns[0];
-				var oldLabelFunction:Function=firstColumn.labelFunction;
-				firstColumn.labelFunction=
-					function(item:Object, column:DataGridColumn):String
-				{
-					trace('call SumItem labelFunction')
-					if (isSumItem(item) &&
-						!(column is DataGridColumnPlus && column['groupMethod'] &&
-						column['groupMethod'] != 'none'))
-						return sumColumnLabel;
-					else if (oldLabelFunction != null)
-						return oldLabelFunction(item, column)
-					else
-						return String(item[column.dataField]);
-				}
-			}
 		}
 
 		private function enableMenu(menuLabel:String, action:Function,
@@ -300,12 +306,12 @@ package ns.flex.controls
 		{
 			Alert.show("确认删除？", null, Alert.YES | Alert.NO, this,
 				function(evt:CloseEvent):void
-			{
-				if (evt.detail == Alert.YES)
 				{
-					dispatchEvent(new Event('deleteItems'));
-				}
-			})
+					if (evt.detail == Alert.YES)
+					{
+						dispatchEvent(new Event('deleteItems'));
+					}
+				})
 		}
 
 		public function closePop():void
@@ -447,12 +453,12 @@ package ns.flex.controls
 		{
 			Alert.show("确认全部删除？", null, Alert.YES | Alert.NO, this,
 				function(evt:CloseEvent):void
-			{
-				if (evt.detail == Alert.YES)
 				{
-					dispatchEvent(new Event('deleteAll'));
-				}
-			})
+					if (evt.detail == Alert.YES)
+					{
+						dispatchEvent(new Event('deleteAll'));
+					}
+				})
 		}
 	}
 }
