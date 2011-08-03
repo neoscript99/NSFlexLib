@@ -36,12 +36,13 @@ package ns.flex.util
 			ro.count(params, domain);
 
 			//线程安全创建一个新对象，如果直接对param赋值有时会影响count的参数
-			var listParam:Object=
-				{maxResults: [maxResults], firstResult: [firstResult],
-					order: notNestOrders};
-
+			var listParam:Object={}
 			for (var prop:* in params)
 				listParam[prop]=params[prop];
+
+			listParam.maxResults=[maxResults]
+			listParam.firstResult=[firstResult]
+			listParam.order=notNestOrders
 
 			//嵌套字段的排序criteria
 			for each (var order:Array in orders)

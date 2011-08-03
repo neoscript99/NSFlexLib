@@ -39,7 +39,7 @@ package ns.flex.util
 		}
 
 		static public function findContainerChild(container:Container, type:Class,
-			property:String, value:Object):DisplayObject
+			property:String=null, value:Object=null):DisplayObject
 		{
 			var result:DisplayObject;
 
@@ -47,7 +47,8 @@ package ns.flex.util
 			{
 				if (diso is type)
 				{
-					if (ObjectUtil.compare(diso[property], value) == 0)
+					if (property == null ||
+						ObjectUtil.compare(diso[property], value) == 0)
 						return diso;
 				}
 				else if (diso is Container)
