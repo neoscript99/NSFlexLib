@@ -7,6 +7,17 @@ package ns.flex.util
 
 	public class ArrayUtil
 	{
+
+		/**
+		 *
+		 * @param source Array or ArrayCollection and object with length property
+		 * @return
+		 */
+		static public function isEmpty(source:Object):Boolean
+		{
+			return !(source && source.length > 0);
+		}
+
 		static public function findByProperty(array:Array, property:String, source:*):*
 		{
 			for each (var item:* in array)

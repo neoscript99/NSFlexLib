@@ -48,6 +48,7 @@ package ns.flex.controls
 		private var orderList:ArrayCollectionPlus=new ArrayCollectionPlus();
 		[Inspectable(category="General")]
 		public var _showSum:Boolean=false;
+		private var showSumChanged:Boolean=false;
 		public var sumColumnLabel:String='汇总';
 		[Inspectable(category="General")]
 		public var deleteEnabled:Boolean=false;
@@ -77,6 +78,33 @@ package ns.flex.controls
 			addEventListener(ListEvent.ITEM_ROLL_OUT, dgItemRollOut);
 			addEventListener(FlexEvent.INITIALIZE, init);
 			addEventListener(DataGridEvent.HEADER_RELEASE, onHeaderRelease);
+		}
+
+		override protected function commitProperties():void
+		{
+			super.commitProperties();
+			
+			if (showSumChanged&&_showSum)
+			{
+				showSumChanged=false;
+				trace('set SumItem labelFunction', uid);
+				var firstColumn:DataGridColumn=columns[0];
+				var oldLabelFunction:Function=firstColumn.labelFunction;
+				firstColumn.labelFunction=
+					function(item:Object, column:DataGridColumn):String
+				{
+					trace('call SumItem labelFunction')
+					if (isSumItem(item) &&
+						!(column is DataGridColumnPlus && column['groupMethod'] &&
+						column['groupMethod'] != 'none'))
+						return sumColumnLabel;
+					else if (oldLabelFunction != null)
+						return oldLabelFunction(item, column)
+					else
+						return String(item[column.dataField]);
+				}
+				dataProvider=dataProvider;
+			}
 		}
 
 		[Inspectable(category="Data", defaultValue="undefined")]
@@ -126,29 +154,16 @@ package ns.flex.controls
 			return orderList.toBiArray('sortField', 'order');
 		}
 
-		public function set showSum(v:Boolean):void
+		public function set showSum(value:Boolean):void
 		{
-			_showSum=v;
-			if (_showSum)
-			{
-				trace('set SumItem labelFunction', uid);
-				var firstColumn:DataGridColumn=columns[0];
-				var oldLabelFunction:Function=firstColumn.labelFunction;
-				firstColumn.labelFunction=
-					function(item:Object, column:DataGridColumn):String
-					{
-						trace('call SumItem labelFunction')
-						if (isSumItem(item) &&
-							!(column is DataGridColumnPlus && column['groupMethod'] &&
-							column['groupMethod'] != 'none'))
-							return sumColumnLabel;
-						else if (oldLabelFunction != null)
-							return oldLabelFunction(item, column)
-						else
-							return String(item[column.dataField]);
-				}
-				dataProvider=dataProvider;
-			}
+
+			if (value == _showSum)
+				return;
+
+			_showSum=value;
+			showSumChanged=true;
+
+			invalidateProperties();
 		}
 
 		public function addOrder(sortField:String, order:String=null):void
@@ -306,12 +321,12 @@ package ns.flex.controls
 		{
 			Alert.show("确认删除？", null, Alert.YES | Alert.NO, this,
 				function(evt:CloseEvent):void
+			{
+				if (evt.detail == Alert.YES)
 				{
-					if (evt.detail == Alert.YES)
-					{
-						dispatchEvent(new Event('deleteItems'));
-					}
-				})
+					dispatchEvent(new Event('deleteItems'));
+				}
+			})
 		}
 
 		public function closePop():void
@@ -453,12 +468,12 @@ package ns.flex.controls
 		{
 			Alert.show("确认全部删除？", null, Alert.YES | Alert.NO, this,
 				function(evt:CloseEvent):void
+			{
+				if (evt.detail == Alert.YES)
 				{
-					if (evt.detail == Alert.YES)
-					{
-						dispatchEvent(new Event('deleteAll'));
-					}
-				})
+					dispatchEvent(new Event('deleteAll'));
+				}
+			})
 		}
 	}
 }
