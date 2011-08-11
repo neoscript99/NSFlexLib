@@ -71,6 +71,7 @@ package ns.flex.controls
 		{
 			super();
 			allowMultipleSelection=true;
+			showScrollTips=true;
 			//variableRowHeight为true后，再设置rowCount，得到的最终rowCount可能不准确
 			//height=第一行rowHeignt*rowCount
 			variableRowHeight=true;
@@ -83,7 +84,7 @@ package ns.flex.controls
 		override protected function commitProperties():void
 		{
 			super.commitProperties();
-			
+
 			if (showSumChanged&&_showSum)
 			{
 				showSumChanged=false;
@@ -92,16 +93,16 @@ package ns.flex.controls
 				var oldLabelFunction:Function=firstColumn.labelFunction;
 				firstColumn.labelFunction=
 					function(item:Object, column:DataGridColumn):String
-				{
-					trace('call SumItem labelFunction')
-					if (isSumItem(item) &&
-						!(column is DataGridColumnPlus && column['groupMethod'] &&
-						column['groupMethod'] != 'none'))
-						return sumColumnLabel;
-					else if (oldLabelFunction != null)
-						return oldLabelFunction(item, column)
-					else
-						return String(item[column.dataField]);
+					{
+						trace('call SumItem labelFunction')
+						if (isSumItem(item) &&
+							!(column is DataGridColumnPlus && column['groupMethod'] &&
+							column['groupMethod'] != 'none'))
+							return sumColumnLabel;
+						else if (oldLabelFunction != null)
+							return oldLabelFunction(item, column)
+						else
+							return String(item[column.dataField]);
 				}
 				dataProvider=dataProvider;
 			}
@@ -321,12 +322,12 @@ package ns.flex.controls
 		{
 			Alert.show("确认删除？", null, Alert.YES | Alert.NO, this,
 				function(evt:CloseEvent):void
-			{
-				if (evt.detail == Alert.YES)
 				{
-					dispatchEvent(new Event('deleteItems'));
-				}
-			})
+					if (evt.detail == Alert.YES)
+					{
+						dispatchEvent(new Event('deleteItems'));
+					}
+				})
 		}
 
 		public function closePop():void
@@ -468,12 +469,12 @@ package ns.flex.controls
 		{
 			Alert.show("确认全部删除？", null, Alert.YES | Alert.NO, this,
 				function(evt:CloseEvent):void
-			{
-				if (evt.detail == Alert.YES)
 				{
-					dispatchEvent(new Event('deleteAll'));
-				}
-			})
+					if (evt.detail == Alert.YES)
+					{
+						dispatchEvent(new Event('deleteAll'));
+					}
+				})
 		}
 	}
 }

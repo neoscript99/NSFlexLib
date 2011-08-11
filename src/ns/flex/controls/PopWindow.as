@@ -159,7 +159,7 @@ package ns.flex.controls
 
 		public function closeProgress():void
 		{
-			if (popProgress)
+			if (popProgress && popProgress.isPopUp)
 				popProgress.close();
 		}
 	}
