@@ -5,6 +5,7 @@ package ns.flex.controls
 	import flash.system.System;
 	import flash.ui.ContextMenuItem;
 
+	import mx.collections.IList;
 	import mx.containers.Form;
 	import mx.containers.FormItem;
 	import mx.containers.HBox;
@@ -72,6 +73,7 @@ package ns.flex.controls
 			super();
 			allowMultipleSelection=true;
 			showScrollTips=true;
+			toolTip='右键菜单更多功能';
 			//variableRowHeight为true后，再设置rowCount，得到的最终rowCount可能不准确
 			//height=第一行rowHeignt*rowCount
 			variableRowHeight=true;
@@ -85,7 +87,7 @@ package ns.flex.controls
 		{
 			super.commitProperties();
 
-			if (showSumChanged&&_showSum)
+			if (showSumChanged && _showSum)
 			{
 				showSumChanged=false;
 				trace('set SumItem labelFunction', uid);
@@ -449,7 +451,7 @@ package ns.flex.controls
 					k == columns.length - 1 ? '' : spiltor);
 			}
 			ss+='\n';
-			var list:Object=isTotal ? dataProvider : selectedItems;
+			var list:Object=isTotal ? dataProvider : selectedItemsInOriginOrder;
 
 			for (var i:int=0; i < list.length; i++)
 			{
@@ -475,6 +477,29 @@ package ns.flex.controls
 						dispatchEvent(new Event('deleteAll'));
 					}
 				})
+		}
+
+		[Bindable("change")]
+		[Bindable("valueCommit")]
+		[Inspectable(environment="none")]
+
+		/**
+		 *  An array of references to the selected items in the data provider. The
+		 *  items are in order same as dataProvider.
+		 *  @default [ ]
+		 */
+		public function get selectedItemsInOriginOrder():Array
+		{
+			if (collection is IList)
+			{
+				var dp:IList=IList(collection);
+				return selectedItems.sort(function(a:Object, b:Object):Number
+				{
+					return dp.getItemIndex(a) > dp.getItemIndex(b) ? 1 : -1;
+				});
+			}
+			else
+				return selectedItems
 		}
 	}
 }
