@@ -24,6 +24,8 @@
 			[Bindable]
 			private var totalPage:int;
 			[Bindable]
+			private var _offsetValue:int=15;
+			[Bindable]
 			private var pageArray:Array;
 			public var pageArrayNumber:int=5;
 			private var invalidateCurrentPageFlag:Boolean=false;
@@ -87,13 +89,7 @@
 
 			public function set offsetValue(value:int):void
 			{
-				offset.value=int(value / offset.stepSize) * offset.stepSize;
-			}
-
-			[Bindable("changePage")]
-			public function get offsetValue():int
-			{
-				return offset.value;
+				_offsetValue=value;
 			}
 
 			/*
@@ -175,7 +171,7 @@
 	</mx:Script>
 	<mx:Binding destination="totalPage" source="{(totalNumber-1)/offset.value+1}"/>
 	<mx:Label text="每页："/>
-	<mx:NumericStepper id="offset" minimum="5" maximum="95" stepSize="5" value="15"
+	<mx:NumericStepper id="offset" minimum="5" maximum="95" stepSize="5" value="{_offsetValue}"
 					   width="50" change="go(0)"/>
 	<mx:Label text="{curPage+'/'+totalPage+' ('+totalNumber+')'}"/>
 	<mx:LinkBar id="pageLink" dataProvider="{pageArray}" itemClick="selectPage(event)"/>

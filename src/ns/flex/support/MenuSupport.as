@@ -59,17 +59,14 @@ package ns.flex.support
 
 		public function addMenuItem(item:ContextMenuItem, position:int=-1):void
 		{
-			if (position == 0)
-				contextMenu.customItems.unshift(item);
-			else
-				contextMenu.customItems.push(item);
-
-			if (position > 0)
+			if (position > -1)
 			{
-				for (var i:int=position; i < contextMenu.customItems.length - 1; i++)
+				for (var i:int=contextMenu.customItems.length - 1; i >= position; i--)
 					contextMenu.customItems[i + 1]=contextMenu.customItems[i];
 				contextMenu.customItems[position]=item;
 			}
+			else
+				contextMenu.customItems.push(item);
 		}
 
 		private function getMenuCode(item:ContextMenuItem):String
@@ -83,3 +80,4 @@ package ns.flex.support
 		}
 	}
 }
+
