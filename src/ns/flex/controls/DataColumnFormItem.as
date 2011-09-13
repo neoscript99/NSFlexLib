@@ -132,9 +132,12 @@ package ns.flex.controls
 				BindingUtils.bindSetter(function(value:String):void
 				{
 					dgp.showItemProxy[col.dataField]=value
-					label=col.headerText.concat('(', textInput['remainSize'], ')');
+					label=
+						textInput['maxChars'] ? col.headerText.concat('(',
+						textInput['remainSize'], ')') : col.headerText;
 				}, textInput, 'text');
 			return textInput;
 		}
 	}
 }
+

@@ -386,7 +386,7 @@ package ns.flex.controls
 		private function initPop(editable:Boolean=false):PopWindow
 		{
 			var form:Form=new Form();
-
+			var pop:PopWindow=ContainerUtil.initPopUP('查看', form, -1, -1, 'center');
 			for each (var col:DataGridColumn in columns)
 			{
 				if (col is DataGridColumnPlus)
@@ -401,7 +401,7 @@ package ns.flex.controls
 				var hbox:HBox=new HBox;
 				var saveButton:Button=new Button();
 				saveButton.label='保存';
-				saveButton.addEventListener('click', function(e:Event):void
+				var submit:Function=function(e:Event):void
 				{
 					if (!ContainerUtil.validate(form))
 					{
@@ -410,7 +410,9 @@ package ns.flex.controls
 					}
 					popEditing.showProgress();
 					dispatchEvent(new SaveItemEvent(showItemProxy));
-				});
+				}
+				saveButton.addEventListener('click', submit);
+				pop.addEventListener('enterKeyDown', submit);
 				var resetButton:Button=new Button();
 				resetButton.label='重置';
 				resetButton.addEventListener('click', function(e:Event):void
@@ -422,7 +424,7 @@ package ns.flex.controls
 				buttonItem.addChild(hbox);
 				form.addChild(buttonItem);
 			}
-			return ContainerUtil.initPopUP('查看', form, -1, -1, 'center');
+			return pop;
 		}
 
 		private function copySelectedToExcel(evt:Event):void
