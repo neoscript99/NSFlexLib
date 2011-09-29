@@ -7,14 +7,15 @@
 	<mx:Script>
 		<![CDATA[
 			public var minYear:int=2010;
+			public var monthShift:int=-1;
 			private static var lastSelectedYear:int;
 			private static var lastSelectedMonth:int;
 
 			private function init():void
 			{
 				var now:Date=new Date();
-				//上月
-				var showDate:Date=new Date(now.fullYear, now.month - 1);
+				//默认上月
+				var showDate:Date=new Date(now.fullYear, now.month + monthShift);
 
 				var year:int=showDate.fullYear;
 				var yearArray:Array=[];
