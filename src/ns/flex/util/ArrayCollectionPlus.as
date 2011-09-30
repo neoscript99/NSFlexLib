@@ -91,6 +91,15 @@ package ns.flex.util
 			return null;
 		}
 
+		public function findAllByField(field:String, value:*):ArrayCollectionPlus
+		{
+			var acp:ArrayCollectionPlus=new ArrayCollectionPlus();
+			for each (var item:* in this)
+				if (item[field] == value)
+					acp.addItem(item);
+			return acp;
+		}
+
 		/**
 		 * 删除符合条件的所有集合项
 		 * @param f 函数f(item)为true时代表符合条件

@@ -22,12 +22,16 @@
     <classEntry path="ns.flex.controls.TitleWindowPlus"/>
     <classEntry path="ns.flex.event.PageChangeEvent"/>
     <classEntry path="ns.flex.event.SaveItemEvent"/>
+    <classEntry path="ns.flex.module.AbstractModule"/>
     <classEntry path="ns.flex.popup.LegendBox"/>
     <classEntry path="ns.flex.popup.PopChart"/>
     <classEntry path="ns.flex.popup.PopColumnChart"/>
     <classEntry path="ns.flex.popup.PopDataGrid"/>
     <classEntry path="ns.flex.popup.PopLineChart"/>
     <classEntry path="ns.flex.popup.PopPieChart"/>
+    <classEntry path="ns.flex.report.PagedReportModule"/>
+    <classEntry path="ns.flex.report.ReportControlBar"/>
+    <classEntry path="ns.flex.report.ReportModule"/>
     <classEntry path="ns.flex.support.MenuSupport"/>
     <classEntry path="ns.flex.util.ArrayCollectionPlus"/>
     <classEntry path="ns.flex.util.ArrayUtil"/>

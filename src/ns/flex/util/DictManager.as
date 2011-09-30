@@ -53,21 +53,20 @@ package ns.flex.util
 		static public function getListWithAll(listName:String,
 			labelField:String):ArrayCollectionPlus
 		{
-			return getListFromMap('get' + listName + 'List' + '-WithAll', labelField,
-				true);
+			return getListFromMap('get' + listName + 'List', labelField, true);
 		}
 
 		static public function getListWithAskToChoose(listName:String,
 			labelField:String):ArrayCollectionPlus
 		{
-			return getListFromMap('get' + listName + 'List' + '-WithAskToChoose',
-				labelField, false, true);
+			return getListFromMap('get' + listName + 'List', labelField, false, true);
 		}
 
 		static private function getListFromMap(operationName:String,
-			labelField:String=null, withAll:Boolean=false, withAskToChoose:Boolean=false,
-			callTimes:int=0):ArrayCollectionPlus
+			labelField:String=null, withAll:Boolean=false,
+			withAskToChoose:Boolean=false):ArrayCollectionPlus
 		{
+			var key:String=operationName.concat(withAll, withAskToChoose);
 			if (!listMap[operationName])
 			{
 				if (labelField && (withAll || withAskToChoose))
