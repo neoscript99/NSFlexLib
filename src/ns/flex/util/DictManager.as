@@ -33,10 +33,10 @@ package ns.flex.util
 			});
 		}
 
-		static public function getLabel(listName:String, fieldName:String,
+		static public function getLabel(operationName:String, fieldName:String,
 			fieldValue:Object, labelField:String):String
 		{
-			var oo:Object=getList(listName).findByField(fieldName, fieldValue);
+			var oo:Object=getList(operationName).findByField(fieldName, fieldValue);
 			return oo ? oo[labelField] : String(fieldValue);
 		}
 
@@ -45,21 +45,21 @@ package ns.flex.util
 			return dictionaryService.getOperation(operationName).lastResult;
 		}
 
-		static public function getList(listName:String):ArrayCollectionPlus
+		static public function getList(operationName:String):ArrayCollectionPlus
 		{
-			return getListFromMap('get' + listName + 'List');
+			return getListFromMap(operationName);
 		}
 
-		static public function getListWithAll(listName:String,
+		static public function getListWithAll(operationName:String,
 			labelField:String):ArrayCollectionPlus
 		{
-			return getListFromMap('get' + listName + 'List', labelField, true);
+			return getListFromMap(operationName, labelField, true);
 		}
 
-		static public function getListWithAskToChoose(listName:String,
+		static public function getListWithAskToChoose(operationName:String,
 			labelField:String):ArrayCollectionPlus
 		{
-			return getListFromMap('get' + listName + 'List', labelField, false, true);
+			return getListFromMap(operationName, labelField, false, true);
 		}
 
 		static private function getListFromMap(operationName:String,
@@ -73,16 +73,16 @@ package ns.flex.util
 				{
 					var first:Object={};
 					first[labelField]=withAll ? '全部' : '请选择';
-					listMap[operationName]=
+					listMap[key]=
 						ArrayCollectionPlus.withFirst(dictionaryService.getOperation(operationName).lastResult,
 						first);
 				}
 				else
-					listMap[operationName]=
+					listMap[key]=
 						new ArrayCollectionPlus(dictionaryService.getOperation(operationName).lastResult);
 
 			}
-			return listMap[operationName];
+			return listMap[key];
 		}
 	}
 }

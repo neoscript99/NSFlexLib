@@ -3,6 +3,8 @@ package ns.flex.controls
 	import mx.collections.IList;
 	import mx.controls.ComboBox;
 
+	import ns.flex.util.ArrayCollectionPlus;
+
 	public class ComboBoxPlus extends ComboBox
 	{
 		private var _defaultLabel:String;
@@ -69,6 +71,16 @@ package ns.flex.controls
 		public function get defaultLabel():String
 		{
 			return _defaultLabel;
+		}
+
+		public function selectItemByField(value:*, field:String=null):void
+		{
+			if (!field)
+				field=labelField;
+			var findItem:Object=
+				new ArrayCollectionPlus(dataProvider).findByField(field, value);
+			if (findItem)
+				selectedItem=findItem;
 		}
 
 		public function set defaultLabel(value:String):void
