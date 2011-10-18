@@ -60,7 +60,7 @@
 					<mx:AxisRenderer axis="{lineAxis}" canDropLabels="true"/>
 				</mx:horizontalAxisRenderers>
 			</mx:LineChart>
-			<LegendBox chart="{lineChart}" name="{title}"/>
+			<LegendBox chart="{lineChart}" fileName="{title}"/>
 		</mx:HBox>
 		<mx:VBox label="数据" enabled="{showData}" height="100%">
 			<controls:DataGridPlus dataProvider="{chartData}" height="100%"

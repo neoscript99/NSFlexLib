@@ -54,7 +54,7 @@
 									 categoryField="{categoryField}" displayName="{categoryName}"/>
 				</mx:horizontalAxis>
 			</mx:ColumnChart>
-			<LegendBox chart="{columnChart}" name="{title}"/>
+			<LegendBox chart="{columnChart}" fileName="{title}"/>
 		</mx:HBox>
 		<mx:VBox label="数据" enabled="{showData}" height="100%">
 			<controls:DataGridPlus dataProvider="{chartData}" height="100%" columns="{dgpColumns}"/>

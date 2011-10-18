@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" height="100%" horizontalAlign="right" name="">
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" height="100%" horizontalAlign="right">
 	<mx:Script>
 		<![CDATA[
 			import mx.charts.LegendItem;
@@ -9,12 +9,14 @@
 			public var chart:ChartBase;
 			[Bindable]
 			public var chartName:String='';
-			
+			[Bindable]
+			public var fileName:String;
+
 			private function snapshot():void
 			{
 				link.visible=false;
 				new FileReference().save(ImageSnapshot.captureImage(chart.parent).data,
-					name + '.png');
+					fileName + '.png');
 				link.visible=true;
 			}
 		]]>
