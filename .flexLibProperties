@@ -29,6 +29,9 @@
     <classEntry path="ns.flex.popup.PopDataGrid"/>
     <classEntry path="ns.flex.popup.PopLineChart"/>
     <classEntry path="ns.flex.popup.PopPieChart"/>
+    <classEntry path="ns.flex.popup.amcharts.LegendBox"/>
+    <classEntry path="ns.flex.popup.amcharts.PopAmChart"/>
+    <classEntry path="ns.flex.popup.amcharts.PopAmSerialChart"/>
     <classEntry path="ns.flex.report.PagedReportModule"/>
     <classEntry path="ns.flex.report.ReportControlBar"/>
     <classEntry path="ns.flex.report.ReportModule"/>

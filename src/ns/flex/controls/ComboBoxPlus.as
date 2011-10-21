@@ -1,5 +1,7 @@
 package ns.flex.controls
 {
+	import flash.events.Event;
+
 	import mx.collections.IList;
 	import mx.controls.ComboBox;
 
@@ -79,8 +81,11 @@ package ns.flex.controls
 				field=labelField;
 			var findItem:Object=
 				new ArrayCollectionPlus(dataProvider).findByField(field, value);
-			if (findItem)
+			if (findItem && selectedItem != findItem)
+			{
 				selectedItem=findItem;
+				dispatchEvent(new Event('change'))
+			}
 		}
 
 		public function set defaultLabel(value:String):void

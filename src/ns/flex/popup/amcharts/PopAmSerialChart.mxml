@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PopAmChart xmlns:mx="http://www.adobe.com/2006/mxml" xmlns="ns.flex.popup.amcharts.*"
+			width="680" height="400" xmlns:controls="ns.flex.controls.*"
+			xmlns:amcharts="http://www.amcharts.com/com_internal">
+	<mx:Script>
+		<![CDATA[
+			import com.amcharts.axes.ValueAxis;
+			import ns.flex.util.ObjectUtils;
+			import com.amcharts.chartClasses.AmGraph;
+			import ns.flex.controls.DataGridColumnPlus;
+			[Bindable]
+			public var categoryField:String;
+			[Bindable]
+			public var categoryName:String;
+			[Bindable]
+			protected var amGraphs:Array;
+			[Bindable]
+			protected var valueAxes:Array;
+			[Bindable]
+			public var _categoryAxisInfo:Object;
+			private var categoryAxisInfoChanged:Boolean=false;
+			[Bindable]
+			public var _amChartInfo:Object;
+			private var amChartInfoChanged:Boolean=false;
+			[Bindable]
+			public var showData:Boolean=true;
+			[Bindable]
+			protected var dgpColumns:Array;
+
+			public function set categoryAxisInfo(info:Object):void
+			{
+				categoryAxisInfoChanged=true;
+				_categoryAxisInfo=info;
+				invalidateProperties()
+			}
+
+			public function set amChartInfo(info:Object):void
+			{
+				amChartInfoChanged=true;
+				_amChartInfo=info;
+				invalidateProperties()
+			}
+
+			public function set valueAxisInfos(infos:Array):void
+			{
+				valueAxes=[]
+				for each (var info:Object in infos)
+				{
+					var valueAxis:ValueAxis=new ValueAxis
+					ObjectUtils.copyProperties(valueAxis, info);
+					valueAxes.push(valueAxis)
+				}
+			}
+
+			public function set graphsInfos(infos:Array):void
+			{
+				amGraphs=[]
+				dgpColumns=[]
+
+				var dgc:DataGridColumnPlus=new DataGridColumnPlus
+				dgc.dataField=categoryField
+				dgc.headerText=categoryName
+				dgpColumns.push(dgc)
+
+				for each (var info:Object in infos)
+				{
+					var graph:AmGraph=new AmGraph
+					ObjectUtils.copyProperties(graph, info);
+					amGraphs.push(graph)
+
+					dgc=new DataGridColumnPlus
+					dgc.dataField=info.valueField
+					dgc.headerText=info.title
+					dgpColumns.push(dgc)
+				}
+			}
+
+			override protected function commitProperties():void
+			{
+				super.commitProperties();
+				if (amChart && amChartInfoChanged)
+					ObjectUtils.copyProperties(amChart, _amChartInfo);
+				if (amChart && amChart.categoryAxis && categoryAxisInfoChanged)
+					ObjectUtils.copyProperties(amChart.categoryAxis, _categoryAxisInfo);
+			}
+		]]>
+	</mx:Script>
+	<mx:TabNavigator id="tn" width="100%" height="100%" paddingLeft="5" paddingBottom="5">
+		<mx:HBox horizontalAlign="center" width="100%" height="100%" label="图形">
+			<amcharts:AmSerialChart id="amChart" dataProvider="{chartData}" angle="30"
+									depth3D="20" startDuration="1" height="100%"
+									width="100%" graphs="{amGraphs}"
+									valueAxes="{valueAxes}"
+									creationComplete="removeLink(amChart)">
+				<amcharts:categoryAxis>
+					<amcharts:CategoryAxis/>
+				</amcharts:categoryAxis>
+			</amcharts:AmSerialChart>
+			<LegendBox chart="{amChart}" fileName="{title}"/>
+		</mx:HBox>
+		<mx:VBox label="数据" enabled="{showData}" height="100%">
+			<controls:DataGridPlus dataProvider="{chartData}" height="100%"
+								   columns="{dgpColumns}"/>
+		</mx:VBox>
+	</mx:TabNavigator>
+</PopAmChart>

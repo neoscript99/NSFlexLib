@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" height="100%" horizontalAlign="right"
+		 xmlns:amcharts="http://www.amcharts.com/com_internal">
+	<mx:Script>
+		<![CDATA[
+			import com.amcharts.chartClasses.AmChart;
+			import mx.graphics.ImageSnapshot;
+			[Bindable]
+			public var chart:AmChart;
+			[Bindable]
+			public var fileName:String;
+
+			private function snapshot():void
+			{
+				link.visible=false;
+				new FileReference().save(ImageSnapshot.captureImage(chart.parent).data,
+					fileName + '.png');
+				link.visible=true;
+			}
+		]]>
+	</mx:Script>
+	<mx:HBox height="100%">
+		<amcharts:AmLegend dataProvider="{chart}" maxColumns="1" switchable="true"/>
+	</mx:HBox>
+	<mx:LinkButton id="link" label="保存" click="snapshot()"/>
+</mx:VBox>
