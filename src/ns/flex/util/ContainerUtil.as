@@ -38,6 +38,16 @@ package ns.flex.util
 			}
 		}
 
+		static public function findParent(diso:DisplayObject, type:Class):DisplayObject
+		{
+			if (diso.parent && diso.parent is type)
+				return diso.parent
+			else if (diso.parent)
+				return findParent(diso.parent, type)
+			else
+				return null;
+		}
+
 		static public function findContainerChild(container:Container, type:Class,
 			property:String=null, value:Object=null):DisplayObject
 		{

@@ -1,9 +1,14 @@
 package ns.flex.controls
 {
+	import com.as3xls.xls.ExcelFile;
+	import com.as3xls.xls.Sheet;
+
 	import flash.events.ContextMenuEvent;
 	import flash.events.Event;
+	import flash.net.FileReference;
 	import flash.system.System;
 	import flash.ui.ContextMenuItem;
+	import flash.utils.ByteArray;
 
 	import mx.collections.IList;
 	import mx.containers.Form;
@@ -429,44 +434,84 @@ package ns.flex.controls
 
 		private function copySelectedToExcel(evt:Event):void
 		{
-			copyToExcel(false);
+			copyToExcel(selectedItemsInOriginOrder);
 		}
 
 		private function copyTotalToExcel(evt:Event):void
 		{
-			copyToExcel();
+			copyToExcel(dataProvider);
 		}
 
-		private function copyToExcel(isTotal:Boolean=true):void
+		private function copyToExcel(dataList:Object):void
 		{
-			System.setClipboard(rowsToString(isTotal, '	'));
+			System.setClipboard(rowsToString(dataList, '	'));
 		}
 
-		public function rowsToString(isTotal:Boolean=true, spiltor:String='	'):String
+		public function rowsToString(dataList:Object, spiltor:String='	',
+			withHead:Boolean=true):String
 		{
 			var ss:String='';
 
-			for (var k:int=0; k < columns.length; k++)
+			if (withHead)
 			{
-				ss=
-					ss.concat(StringUtil.toLine(columns[k].headerText),
-					k == columns.length - 1 ? '' : spiltor);
-			}
-			ss+='\n';
-			var list:Object=isTotal ? dataProvider : selectedItemsInOriginOrder;
-
-			for (var i:int=0; i < list.length; i++)
-			{
-				for (var j:int=0; j < columns.length; j++)
+				for (var k:int=0; k < columns.length; k++)
 				{
 					ss=
-						ss.concat(StringUtil.toLine(columns[j].itemToLabel(list[i])),
-						j == columns.length - 1 ? '' : spiltor);
+						ss.concat(StringUtil.toLine(columns[k].headerText),
+						k == columns.length - 1 ? '' : spiltor);
 				}
-				ss=ss.concat('\n');
+				ss+='\n';
 			}
 
+			if (dataList)
+				for (var i:int=0; i < dataList.length; i++)
+				{
+					for (var j:int=0; j < columns.length; j++)
+					{
+						ss=
+							ss.concat(StringUtil.toLine(columns[j].itemToLabel(dataList[i])),
+							j == columns.length - 1 ? '' : spiltor);
+					}
+					ss=ss.concat('\n');
+				}
+
 			return ss;
+		}
+
+		/**
+		 * 保存文件必须通过点击按钮等事件触发，如果不符合可通过这个方法实现
+		 * @param dataList
+		 * @param fileName
+		 */
+		public function saveAsExcelWithAlert(dataList:Object, fileName:String):void
+		{
+			Alert.show("导出完成,请保存", null, Alert.OK, this, function(evt:Event):void
+			{
+				saveAsExcel(dataList, fileName)
+			})
+		}
+
+		public function saveAsExcel(dataList:Object, fileName:String):void
+		{
+			new FileReference().save(rowsToExcel(dataList), fileName.concat('.xls'));
+		}
+
+		public function rowsToExcel(dataList:Object):ByteArray
+		{
+			var sheet:Sheet=new Sheet();
+			sheet.resize(dataList ? dataList.length + 1 : 1, columns.length);
+			for (var k:int=0; k < columns.length; k++)
+				sheet.setCell(0, k, columns[k].headerText)
+
+			if (dataList)
+				for (var i:int=0; i < dataList.length; i++)
+					for (var j:int=0; j < columns.length; j++)
+						sheet.setCell(i + 1, j, columns[j].itemToLabel(dataList[i]))
+
+			var xls:ExcelFile=new ExcelFile();
+			xls.sheets.addItem(sheet);
+
+			return xls.saveToByteArray();
 		}
 
 		private function deleteAll(evt:Event):void
