@@ -3,13 +3,14 @@
 		  height="400" xmlns:controls="ns.flex.controls.*">
 	<mx:Script>
 		<![CDATA[
+			import mx.binding.utils.BindingUtils;
 			import ns.flex.controls.DataGridColumnPlus;
 			import mx.charts.series.LineSeries;
 			import ns.flex.util.LabelUtil;
 			[Bindable]
-			public var categoryField:String;
+			public var categoryField:String='';
 			[Bindable]
-			public var categoryName:String;
+			public var categoryName:String='';
 			[Bindable]
 			public var lineSeries:Array;
 			[Bindable]
@@ -19,13 +20,13 @@
 
 			public function set seriesInfos(ss:Array):void
 			{
-				lineSeries=[]
-				dgpColumns=[]
+				var lineSeriesTemp:Array=[]
+				var dgpColumnsTemp:Array=[]
 
 				var dgc:DataGridColumnPlus=new DataGridColumnPlus
-				dgc.dataField=categoryField
-				dgc.headerText=categoryName
-				dgpColumns.push(dgc)
+				BindingUtils.bindProperty(dgc, 'dataField', this, 'categoryField');
+				BindingUtils.bindProperty(dgc, 'headerText', this, 'categoryName');
+				dgpColumnsTemp.push(dgc)
 
 				for each (var s:Object in ss)
 				{
@@ -35,14 +36,15 @@
 					//忽略miss数据，曲线连续
 					ls.interpolateValues=true;
 					ls.setStyle('form', 'curve');
-					lineSeries.push(ls);
+					lineSeriesTemp.push(ls);
 
 					dgc=new DataGridColumnPlus
 					dgc.dataField=s.yField
 					dgc.headerText=s.displayName
-					dgpColumns.push(dgc)
+					dgpColumnsTemp.push(dgc)
 				}
-
+				lineSeries=lineSeriesTemp
+				dgpColumns=dgpColumnsTemp
 			}
 		]]>
 	</mx:Script>

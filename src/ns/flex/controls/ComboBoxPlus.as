@@ -1,10 +1,9 @@
 package ns.flex.controls
 {
-	import flash.events.Event;
-
 	import mx.collections.IList;
 	import mx.controls.ComboBox;
-
+	import mx.events.ListEvent;
+	
 	import ns.flex.util.ArrayCollectionPlus;
 
 	public class ComboBoxPlus extends ComboBox
@@ -84,7 +83,7 @@ package ns.flex.controls
 			if (findItem && selectedItem != findItem)
 			{
 				selectedItem=findItem;
-				dispatchEvent(new Event('change'))
+				dispatchEvent(new ListEvent('change'))
 			}
 		}
 

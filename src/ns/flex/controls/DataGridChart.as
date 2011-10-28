@@ -6,17 +6,19 @@ package ns.flex.controls
 
 	public class DataGridChart extends DataGridPlus
 	{
-		private var lineChart:PopLineChart=new PopLineChart;
+		private var _lineChart:PopLineChart;
+
+		public function get lineChart():PopLineChart
+		{
+			if (!_lineChart)
+				_lineChart=new PopLineChart;
+			return _lineChart
+		}
 
 		public function bindLineData(host:Object, chain:Object,
 			commitOnly:Boolean=false):void
 		{
 			BindingUtils.bindProperty(lineChart, 'chartData', host, chain, commitOnly);
-		}
-
-		public function set lineCategory(categoryField:String):void
-		{
-			lineChart.categoryField=categoryField;
 		}
 
 		/**
@@ -37,7 +39,7 @@ package ns.flex.controls
 
 		public function showLine(title:String='趋势图'):void
 		{
-			lineChart.title=title;
+			lineChart.bindTitle=title;
 			lineChart.show(root);
 		}
 	}
