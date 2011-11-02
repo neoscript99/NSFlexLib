@@ -1,14 +1,16 @@
 package ns.flex.util
 {
 	import flash.display.DisplayObject;
+	import flash.display.DisplayObjectContainer;
+
 	import mx.controls.ComboBox;
 	import mx.controls.DateField;
 	import mx.controls.TextArea;
 	import mx.controls.TextInput;
-	import mx.core.ClassFactory;
 	import mx.core.Container;
 	import mx.core.UIComponent;
 	import mx.utils.ObjectUtil;
+
 	import ns.flex.controls.PopWindow;
 
 	/**
@@ -48,22 +50,22 @@ package ns.flex.util
 				return null;
 		}
 
-		static public function findContainerChild(container:Container, type:Class,
-			property:String=null, value:Object=null):DisplayObject
+		static public function findContainerChild(container:DisplayObjectContainer,
+			type:Class, property:String=null, value:Object=null):DisplayObject
 		{
 			var result:DisplayObject;
-
-			for each (var diso:DisplayObject in container.getChildren())
+			for (var i:int=0; i < container.numChildren; i++)
 			{
+				var diso:DisplayObject=container.getChildAt(i);
 				if (diso is type)
 				{
 					if (property == null ||
 						ObjectUtil.compare(diso[property], value) == 0)
 						return diso;
 				}
-				else if (diso is Container)
+				else if (diso is DisplayObjectContainer)
 				{
-					result=findContainerChild(Container(diso), type, property, value);
+					result=findContainerChild(DisplayObjectContainer(diso), type, property, value);
 
 					if (result)
 						return result;

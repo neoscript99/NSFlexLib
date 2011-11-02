@@ -20,7 +20,11 @@
 		]]>
 	</mx:Script>
 	<mx:HBox height="100%">
-		<amcharts:AmLegend dataProvider="{chart}" maxColumns="1" switchable="true"/>
+		<!--valueText=''可以不显示数字-->
+		<amcharts:AmLegend id="legend" dataProvider="{chart}" adjustWidth="true"
+						   useMarkerColorForLabels="true" valueText="" width="120"
+						   maxColumns="1" switchable="true" textClickEnabled="false"
+						   marginTop="10" marginLeft="0" marginRight="0" marginBottom="0"/>
 	</mx:HBox>
 	<mx:LinkButton id="link" label="保存" click="snapshot()"/>
 </mx:VBox>

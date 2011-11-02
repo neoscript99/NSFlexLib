@@ -4,6 +4,7 @@
 			xmlns:amcharts="http://www.amcharts.com/com_internal">
 	<mx:Script>
 		<![CDATA[
+			import ns.flex.util.UIUtil;
 			import com.amcharts.axes.ValueAxis;
 			import ns.flex.util.ObjectUtils;
 			import com.amcharts.chartClasses.AmGraph;
@@ -17,30 +18,21 @@
 			[Bindable]
 			protected var valueAxes:Array;
 			[Bindable]
-			public var _categoryAxisInfo:Object;
-			private var categoryAxisInfoChanged:Boolean=false;
-			[Bindable]
-			public var _amChartInfo:Object;
-			private var amChartInfoChanged:Boolean=false;
-			[Bindable]
 			public var showData:Boolean=true;
 			[Bindable]
 			protected var dgpColumns:Array;
+			[Bindable]
+			protected var caParseDates:Boolean=false;
+			[Bindable]
+			protected var caMinPeriod:String='DD';
+			[Bindable]
+			protected var caDateFormats:Array=
+				[{period: 'DD', format: 'MM-DD'}, {period: 'MM', format: 'YYYY-MM'},
+				{period: 'YYYY', format: 'YYYY'}];
 
-			public function set categoryAxisInfo(info:Object):void
-			{
-				categoryAxisInfoChanged=true;
-				_categoryAxisInfo=info;
-				invalidateProperties()
-			}
-
-			public function set amChartInfo(info:Object):void
-			{
-				amChartInfoChanged=true;
-				_amChartInfo=info;
-				invalidateProperties()
-			}
-
+			/*
+			 *graph如果使用不同的ValueAxis，set valueAxisInfos必须在set graphsInfos之前调用
+			 */
 			public function set valueAxisInfos(infos:Array):void
 			{
 				valueAxes=[]
@@ -48,6 +40,7 @@
 				{
 					var valueAxis:ValueAxis=new ValueAxis
 					ObjectUtils.copyProperties(valueAxis, info);
+					UIUtil.setStyles(valueAxis, info.styles)
 					valueAxes.push(valueAxis)
 				}
 			}
@@ -66,6 +59,13 @@
 				{
 					var graph:AmGraph=new AmGraph
 					ObjectUtils.copyProperties(graph, info);
+					UIUtil.setStyles(graph, info.styles)
+					//多轴图表,ChangeWatcher.watch可以监控私有属性
+					if (info.valueAxisName)
+						for each (var va:ValueAxis in valueAxes)
+							if (va.name == info.valueAxisName)
+								graph.valueAxis=va;
+
 					amGraphs.push(graph)
 
 					dgc=new DataGridColumnPlus
@@ -75,28 +75,34 @@
 				}
 			}
 
-			override protected function commitProperties():void
+			/*
+			 *graphs valueAxes不支持绑定,原因不明
+			 */
+			private function amChartInit():void
 			{
-				super.commitProperties();
-				if (amChart && amChartInfoChanged)
-					ObjectUtils.copyProperties(amChart, _amChartInfo);
-				if (amChart && amChart.categoryAxis && categoryAxisInfoChanged)
-					ObjectUtils.copyProperties(amChart.categoryAxis, _categoryAxisInfo);
+				amChart.graphs=amGraphs;
+				amChart.valueAxes=valueAxes;
 			}
 		]]>
 	</mx:Script>
 	<mx:TabNavigator id="tn" width="100%" height="100%" paddingLeft="5" paddingBottom="5">
 		<mx:HBox horizontalAlign="center" width="100%" height="100%" label="图形">
-			<amcharts:AmSerialChart id="amChart" dataProvider="{chartData}" angle="30"
-									depth3D="20" startDuration="1" height="100%"
-									width="100%" graphs="{amGraphs}"
-									valueAxes="{valueAxes}"
-									creationComplete="removeLink(amChart)">
+			<amcharts:AmSerialChart id="amChart" dataProvider="{chartData}"
+									categoryField="{categoryField}" startDuration="1"
+									height="100%" width="100%" initialize="amChartInit()">
 				<amcharts:categoryAxis>
-					<amcharts:CategoryAxis/>
+					<amcharts:CategoryAxis parseDates="{caParseDates}"
+										   minPeriod="{caMinPeriod}"
+										   dateFormats="{caDateFormats}"/>
 				</amcharts:categoryAxis>
+				<amcharts:chartCursor>
+					<amcharts:ChartCursor cursorPosition="mouse"/>
+				</amcharts:chartCursor>
+				<amcharts:chartScrollbar>
+					<amcharts:ChartScrollbar height="15"/>
+				</amcharts:chartScrollbar>
 			</amcharts:AmSerialChart>
-			<LegendBox chart="{amChart}" fileName="{title}"/>
+			<AmLegendBox chart="{amChart}" fileName="{title}"/>
 		</mx:HBox>
 		<mx:VBox label="数据" enabled="{showData}" height="100%">
 			<controls:DataGridPlus dataProvider="{chartData}" height="100%"
