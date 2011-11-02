@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" height="100%" horizontalAlign="right"
-		 xmlns:amcharts="http://www.amcharts.com/com_internal">
+<mx:Box xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" horizontalAlign="right"
+		xmlns:amcharts="http://www.amcharts.com/com_internal" direction="horizontal">
 	<mx:Script>
 		<![CDATA[
 			import com.amcharts.chartClasses.AmChart;
@@ -9,6 +9,8 @@
 			public var chart:AmChart;
 			[Bindable]
 			public var fileName:String;
+			[Bindable]
+			public var maxColumns:Number;
 
 			private function snapshot():void
 			{
@@ -19,12 +21,10 @@
 			}
 		]]>
 	</mx:Script>
-	<mx:HBox height="100%">
-		<!--valueText=''可以不显示数字-->
-		<amcharts:AmLegend id="legend" dataProvider="{chart}" adjustWidth="true"
-						   useMarkerColorForLabels="true" valueText="" width="120"
-						   maxColumns="1" switchable="true" textClickEnabled="false"
-						   marginTop="10" marginLeft="0" marginRight="0" marginBottom="0"/>
-	</mx:HBox>
+	<!--valueText=''可以不显示数字-->
+	<amcharts:AmLegend id="legend" dataProvider="{chart}" adjustWidth="true" width="100%"
+					   useMarkerColorForLabels="false" valueText="" switchable="true"
+					   textClickEnabled="false" marginTop="0" marginLeft="0"
+					   marginRight="0" marginBottom="0" maxColumns="{maxColumns}"/>
 	<mx:LinkButton id="link" label="保存" click="snapshot()"/>
-</mx:VBox>
+</mx:Box>

@@ -86,7 +86,7 @@
 		]]>
 	</mx:Script>
 	<mx:TabNavigator id="tn" width="100%" height="100%" paddingLeft="5" paddingBottom="5">
-		<mx:HBox horizontalAlign="center" width="100%" height="100%" label="图形">
+		<mx:VBox horizontalAlign="center" width="100%" height="100%" label="图形">
 			<amcharts:AmSerialChart id="amChart" dataProvider="{chartData}"
 									categoryField="{categoryField}" startDuration="1"
 									height="100%" width="100%" initialize="amChartInit()">
@@ -103,7 +103,7 @@
 				</amcharts:chartScrollbar>
 			</amcharts:AmSerialChart>
 			<AmLegendBox chart="{amChart}" fileName="{title}"/>
-		</mx:HBox>
+		</mx:VBox>
 		<mx:VBox label="数据" enabled="{showData}" height="100%">
 			<controls:DataGridPlus dataProvider="{chartData}" height="100%"
 								   columns="{dgpColumns}"/>
