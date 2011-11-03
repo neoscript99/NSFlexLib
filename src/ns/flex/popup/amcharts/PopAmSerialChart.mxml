@@ -60,6 +60,7 @@
 					var graph:AmGraph=new AmGraph
 					ObjectUtils.copyProperties(graph, info);
 					UIUtil.setStyles(graph, info.styles)
+					UIUtil.setEvents(graph,info.events)
 					//多轴图表,ChangeWatcher.watch可以监控私有属性
 					if (info.valueAxisName)
 						for each (var va:ValueAxis in valueAxes)

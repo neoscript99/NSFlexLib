@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PopWindow xmlns="ns.flex.controls.*" xmlns:mx="http://www.adobe.com/2006/mxml"
-		   title="{bindTitle}" creationComplete="removeLink()">
+		   title="{bindTitle}" creationComplete="cc()">
 	<mx:Script>
 		<![CDATA[
-			import mx.core.IUITextField;
+			import ns.flex.util.UIUtil;
+			import mx.core.UITextField;
 			import mx.core.UIComponent;
 			import ns.flex.util.ContainerUtil;
 			import com.amcharts.chartClasses.AmChart;
@@ -14,16 +15,9 @@
 			[Bindable]
 			public var bindTitle:String;
 
-			/*
-			 * 隐藏免费版链接
-			 */
-			private function removeLink():void
+			private function cc():void
 			{
-				var link:DisplayObject=
-					ContainerUtil.findContainerChild(this, IUITextField, 'text',
-					"chart by amCharts.com")
-				if (link)
-					link.parent.visible=false
+				UIUtil.removeAmLink(this);
 			}
 		]]>
 	</mx:Script>

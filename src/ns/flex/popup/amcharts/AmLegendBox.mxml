@@ -3,6 +3,7 @@
 		xmlns:amcharts="http://www.amcharts.com/com_internal" direction="horizontal">
 	<mx:Script>
 		<![CDATA[
+			import ns.flex.util.UIUtil;
 			import com.amcharts.chartClasses.AmChart;
 			import mx.graphics.ImageSnapshot;
 			[Bindable]
@@ -15,8 +16,7 @@
 			private function snapshot():void
 			{
 				link.visible=false;
-				new FileReference().save(ImageSnapshot.captureImage(chart.parent).data,
-					fileName + '.png');
+				UIUtil.snapshot(chart.parent, fileName)
 				link.visible=true;
 			}
 		]]>

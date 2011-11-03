@@ -41,6 +41,24 @@ package ns.flex.util
 				array));
 		}
 
+		/**
+		 * convert Array to Object, example: toObject(['a','b','c'],{p:1}) --> {a:{b:{c:{p:1}}}}
+		 * @param array
+		 * @return
+		 */
+		public static function toObject(array:Array, innerOjbect:Object):Object
+		{
+			if (array.length > 0)
+			{
+				var field:String=String(array.shift());
+				var nestObject:Object=new Object
+				nestObject[field]=toObject(array, innerOjbect)
+				return nestObject
+			}
+			else
+				return innerOjbect
+		}
+
 		public static function toArray(source:Object):Array
 		{
 			if (!source)

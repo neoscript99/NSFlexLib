@@ -3,7 +3,7 @@ package ns.flex.controls
 	import mx.collections.IList;
 	import mx.controls.ComboBox;
 	import mx.events.ListEvent;
-	
+
 	import ns.flex.util.ArrayCollectionPlus;
 
 	public class ComboBoxPlus extends ComboBox
@@ -42,7 +42,8 @@ package ns.flex.controls
 		override protected function commitProperties():void
 		{
 			super.commitProperties();
-			selectDefaultLabel();
+			if (_defaultLabel)
+				selectDefaultLabel();
 		}
 
 		private function selectDefaultLabel():void

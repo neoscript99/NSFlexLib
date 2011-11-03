@@ -10,15 +10,12 @@ package ns.flex.controls
 	import mx.managers.PopUpManager;
 	import mx.managers.SystemManager;
 
-	import ns.flex.support.MenuSupport;
-
 	public class PopWindow extends TitleWindowPlus
 	{
 		private var originWidth:Number;
 		private var originHeight:Number;
 		private var originX:Number;
 		private var originY:Number;
-		public var menuSupport:MenuSupport;
 
 		//这个功能应该只在针对静态内容时开启，
 		//如果内容为动态，width或height被赋值后，窗口大小就不会跟着内容变化
@@ -91,8 +88,7 @@ package ns.flex.controls
 					height+=this.horizontalScrollBar.height * 2;
 			}
 			center();
-			menuSupport=new MenuSupport(this);
-			menuSupport.createMenuItem('关闭', onClose, false, true);
+			menuSupport.createMenuItem('关闭', onClose, false, true, 0);
 		}
 
 		//导致重影，无法解决

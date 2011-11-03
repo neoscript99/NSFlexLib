@@ -36,7 +36,10 @@ package ns.flex.util
 				else if (diso is ComboBox)
 					ComboBox(diso).selectedIndex=0;
 				else if (diso is DateField && DateField(diso).editable)
+				{
 					DateField(diso).selectedDate=null;
+					DateField(diso).text='';
+				}
 			}
 		}
 
@@ -65,7 +68,9 @@ package ns.flex.util
 				}
 				else if (diso is DisplayObjectContainer)
 				{
-					result=findContainerChild(DisplayObjectContainer(diso), type, property, value);
+					result=
+						findContainerChild(DisplayObjectContainer(diso), type, property,
+						value);
 
 					if (result)
 						return result;
