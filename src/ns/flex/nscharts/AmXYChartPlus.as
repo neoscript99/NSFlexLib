@@ -1,10 +1,10 @@
 package ns.flex.nscharts
 {
-	import com.amcharts.AmPieChart;
+	import com.amcharts.AmXYChart;
 
 	import ns.flex.util.UIUtil;
 
-	public class AmPieChartPlus extends AmPieChart
+	public class AmXYChartPlus extends AmXYChart
 	{
 		override protected function createChildren():void
 		{
