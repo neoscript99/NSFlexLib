@@ -45,7 +45,6 @@ package ns.flex.util
 				link.text=''
 				link.visible=false
 				link.parent.visible=false
-				link.parent.removeChild(link);
 			}
 		}
 	}

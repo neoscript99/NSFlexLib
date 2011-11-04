@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PopAmChart xmlns:mx="http://www.adobe.com/2006/mxml" xmlns="ns.flex.popup.amcharts.*"
+<PopAmChart xmlns:mx="http://www.adobe.com/2006/mxml" xmlns="ns.flex.amcharts.*"
 			width="680" height="400" xmlns:controls="ns.flex.controls.*"
 			xmlns:amcharts="http://www.amcharts.com/com_internal">
 	<mx:Script>
