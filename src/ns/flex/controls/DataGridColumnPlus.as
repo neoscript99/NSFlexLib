@@ -49,11 +49,39 @@ package ns.flex.controls
 				itemRenderer=new ClassFactory(Text);
 		}
 
+		/**
+		 * Flex 3.6已增加功能支持嵌套字段
+		 * 这里只是保持老代码正确
+		 * @param nestField
+		 */
 		public function set nestDataField(nestField:String):void
 		{
 			dataField=nestField;
-			sortable = false;
-			labelFunction=DataGridColumnPlus.getLabel;
+			//Flex 3.6已增加功能支持嵌套字段
+			//sortable = false;
+			//labelFunction=DataGridColumnPlus.getLabel;
+		}
+
+		public function set cnDataField(cnField:String):void
+		{
+			dataField=cnField;
+		}
+
+		override protected function complexColumnSortCompare(obj1:Object, obj2:Object):int
+		{
+			if (!obj1 && !obj2)
+				return 0;
+
+			if (!obj1)
+				return 1;
+
+			if (!obj2)
+				return -1;
+
+			var obj1Data:String=deriveComplexColumnData(obj1).toString();
+			var obj2Data:String=deriveComplexColumnData(obj2).toString();
+
+			return obj1Data.localeCompare(obj2Data);
 		}
 
 		public function set percision(p:int):void
@@ -114,9 +142,9 @@ package ns.flex.controls
 				return (label != null);
 			});
 
-			if (label!=null)
+			if (label != null)
 				return String(label);
-			else if (item[column.dataField]!=null)
+			else if (item[column.dataField] != null)
 				return String(item[column.dataField]);
 			else
 				return '';

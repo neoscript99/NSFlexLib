@@ -61,7 +61,7 @@ package ns.flex.report
 
 		protected function get item():Object
 		{
-			return dgp.selectedItem;
+			return dgp.selectedOriItem;
 		}
 	}
 }

@@ -53,8 +53,7 @@ package ns.flex.controls
 		private var lastRollOverIndex:Number;
 		private var orderList:ArrayCollectionPlus=new ArrayCollectionPlus();
 		[Inspectable(category="General")]
-		public var _showSum:Boolean=false;
-		private var showSumChanged:Boolean=false;
+		public var showSum:Boolean=false;
 		public var sumColumnLabel:String='汇总';
 		[Inspectable(category="General")]
 		public var deleteEnabled:Boolean=false;
@@ -88,38 +87,11 @@ package ns.flex.controls
 			addEventListener(DataGridEvent.HEADER_RELEASE, onHeaderRelease);
 		}
 
-		override protected function commitProperties():void
-		{
-			super.commitProperties();
-
-			if (showSumChanged && _showSum)
-			{
-				showSumChanged=false;
-				trace('set SumItem labelFunction', uid);
-				var firstColumn:DataGridColumn=columns[0];
-				var oldLabelFunction:Function=firstColumn.labelFunction;
-				firstColumn.labelFunction=
-					function(item:Object, column:DataGridColumn):String
-					{
-						trace('call SumItem labelFunction')
-						if (isSumItem(item) &&
-							!(column is DataGridColumnPlus && column['groupMethod'] &&
-							column['groupMethod'] != 'none'))
-							return sumColumnLabel;
-						else if (oldLabelFunction != null)
-							return oldLabelFunction(item, column)
-						else
-							return String(item[column.dataField]);
-				}
-				dataProvider=dataProvider;
-			}
-		}
-
 		[Inspectable(category="Data", defaultValue="undefined")]
 		override public function set dataProvider(value:Object):void
 		{
 			trace('set dataProvider');
-			if (_showSum && value)
+			if (showSum && value)
 			{
 				var acp:ArrayCollectionPlus=new ArrayCollectionPlus(value);
 				var sumItem:Object={uniqueIdForSumItem: uid};
@@ -140,8 +112,24 @@ package ns.flex.controls
 								sumItem[col.dataField]=
 									MathUtil[col['groupMethod']](valueArray);
 							}
-							else //设空值，防止排序时报错,Error: Find criteria must contain at least one sort field value.
-								sumItem[col.dataField]=null;
+							else //设值
+							{
+								var nestItem:Object=sumItem;
+								col.dataField.split('.').forEach(function(element:*,
+										index:int, arr:Array):void
+										{
+											if (!nestItem[element])
+											{
+												if (index < arr.length - 1)
+													nestItem[element]={}
+												else if (col == columns[0])
+													nestItem[element]=sumColumnLabel
+												else
+													nestItem[element]=''
+											}
+											nestItem=nestItem[element]
+										})
+							}
 					}
 					if (hasGroupColumn)
 						acp.addItem(sumItem);
@@ -160,18 +148,6 @@ package ns.flex.controls
 		public function get orders():Array
 		{
 			return orderList.toBiArray('sortField', 'order');
-		}
-
-		public function set showSum(value:Boolean):void
-		{
-
-			if (value == _showSum)
-				return;
-
-			_showSum=value;
-			showSumChanged=true;
-
-			invalidateProperties();
 		}
 
 		public function addOrder(sortField:String, order:String=null):void
@@ -273,9 +249,14 @@ package ns.flex.controls
 			}
 		}
 
-		public function isSumItem(item:Object):Boolean
+		/**
+		 * 不选择汇总项
+		 * @return
+		 */
+		public function get selectedOriItem():Object
 		{
-			return item.uniqueIdForSumItem == uid;
+			return (selectedItem &&
+				selectedItem.uniqueIdForSumItem == uid) ? null : selectedItem;
 		}
 
 		private function init(event:FlexEvent):void
