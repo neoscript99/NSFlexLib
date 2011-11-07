@@ -4,7 +4,6 @@ package ns.flex.controls
 	import flash.events.Event;
 	import flash.events.KeyboardEvent;
 	import flash.ui.Keyboard;
-
 	import mx.events.CloseEvent;
 	import mx.events.FlexEvent;
 	import mx.managers.PopUpManager;
@@ -12,15 +11,15 @@ package ns.flex.controls
 
 	public class PopWindow extends TitleWindowPlus
 	{
-		private var originWidth:Number;
-		private var originHeight:Number;
-		private var originX:Number;
-		private var originY:Number;
 
 		//这个功能应该只在针对静态内容时开启，
 		//如果内容为动态，width或height被赋值后，窗口大小就不会跟着内容变化
 		[Inspectable(category="General")]
 		public var tryToRemoveScrollBar:Boolean=true;
+		private var originHeight:Number;
+		private var originWidth:Number;
+		private var originX:Number;
+		private var originY:Number;
 		private var popProgress:ProgressBox;
 
 		public function PopWindow()
@@ -40,37 +39,35 @@ package ns.flex.controls
 			maxHeight=SystemManager.getSWFRoot(this).stage.stageHeight * .9;
 		}
 
-		/**
-		 * 必须设置explicitWidth和explicitHeight，
-		 * 如果设置width和height，窗口将不能随内容动态扩展
-		 * @param e
-		 */
-		private function switchSize(e:Event):void
+		public function center():void
 		{
-			if (isNaN(originX))
-			{
-				originWidth=explicitWidth;
-				originHeight=explicitHeight;
-			}
+			if (this.isPopUp)
+				PopUpManager.centerPopUp(this);
+		}
 
-			if (isNaN(explicitWidth) || isNaN(explicitHeight) ||
-				(originWidth == explicitWidth && originHeight == explicitHeight))
-			{
-				explicitWidth=parent.width;
-				explicitHeight=parent.height;
-				originX=x;
-				originY=y;
-				x=0;
-				y=0;
-			}
-			else
-			{
-				explicitWidth=originWidth;
-				explicitHeight=originHeight;
-				x=originX;
-				y=originY;
-			}
-			trace(width, height, explicitWidth, explicitHeight);
+		public function close():void
+		{
+			this.dispatchEvent(new CloseEvent(CloseEvent.CLOSE));
+			trace('CloseEvent');
+		}
+
+		public function closeProgress():void
+		{
+			if (popProgress && popProgress.isPopUp)
+				popProgress.close();
+		}
+
+		public function show(parent:DisplayObject, modal:Boolean=true):void
+		{
+			if (!this.isPopUp)
+				PopUpManager.addPopUp(this, parent, modal);
+		}
+
+		public function showProgress():void
+		{
+			if (!popProgress)
+				popProgress=new ProgressBox();
+			popProgress.show(this);
 		}
 
 		private function cc(e:Event):void
@@ -114,12 +111,6 @@ package ns.flex.controls
 			y=moveToY;
 		}
 
-		private function onKeyDown(evt:KeyboardEvent):void
-		{
-			if (evt.keyCode == Keyboard.ESCAPE)
-				close();
-		}
-
 		private function onClose(evt:Event=null):void
 		{
 			closeProgress();
@@ -128,35 +119,43 @@ package ns.flex.controls
 				PopUpManager.removePopUp(this);
 		}
 
-		public function center():void
+		private function onKeyDown(evt:KeyboardEvent):void
 		{
-			if (this.isPopUp)
-				PopUpManager.centerPopUp(this);
+			if (evt.keyCode == Keyboard.ESCAPE)
+				close();
 		}
 
-		public function show(parent:DisplayObject, modal:Boolean=true):void
+		/**
+		 * 必须设置explicitWidth和explicitHeight，
+		 * 如果设置width和height，窗口将不能随内容动态扩展
+		 * @param e
+		 */
+		private function switchSize(e:Event):void
 		{
-			if (!this.isPopUp)
-				PopUpManager.addPopUp(this, parent, modal);
-		}
+			if (isNaN(originX))
+			{
+				originWidth=explicitWidth;
+				originHeight=explicitHeight;
+			}
 
-		public function close():void
-		{
-			this.dispatchEvent(new CloseEvent(CloseEvent.CLOSE));
-			trace('CloseEvent');
-		}
-
-		public function showProgress():void
-		{
-			if (!popProgress)
-				popProgress=new ProgressBox();
-			popProgress.show(this);
-		}
-
-		public function closeProgress():void
-		{
-			if (popProgress && popProgress.isPopUp)
-				popProgress.close();
+			if (isNaN(explicitWidth) || isNaN(explicitHeight) ||
+				(originWidth == explicitWidth && originHeight == explicitHeight))
+			{
+				explicitWidth=parent.width;
+				explicitHeight=parent.height;
+				originX=x;
+				originY=y;
+				x=0;
+				y=0;
+			}
+			else
+			{
+				explicitWidth=originWidth;
+				explicitHeight=originHeight;
+				x=originX;
+				y=originY;
+			}
+			trace(width, height, explicitWidth, explicitHeight);
 		}
 	}
 }

@@ -2,14 +2,12 @@ package ns.flex.controls
 {
 	import com.as3xls.xls.ExcelFile;
 	import com.as3xls.xls.Sheet;
-
 	import flash.events.ContextMenuEvent;
 	import flash.events.Event;
 	import flash.net.FileReference;
 	import flash.system.System;
 	import flash.ui.ContextMenuItem;
 	import flash.utils.ByteArray;
-
 	import mx.collections.IList;
 	import mx.containers.Form;
 	import mx.containers.FormItem;
@@ -24,7 +22,6 @@ package ns.flex.controls
 	import mx.events.ListEvent;
 	import mx.utils.ObjectProxy;
 	import mx.utils.ObjectUtil;
-
 	import ns.flex.event.SaveItemEvent;
 	import ns.flex.support.MenuSupport;
 	import ns.flex.util.ArrayCollectionPlus;
@@ -41,36 +38,36 @@ package ns.flex.controls
 	public class DataGridPlus extends DataGrid
 	{
 		[Inspectable(category="General")]
-		public var globalSort:Boolean=false;
+		public var copyToExcelEnabled:Boolean=true;
 		[Inspectable(category="General")]
-		public var multiSort:Boolean=false;
+		public var createEnabled:Boolean=false;
 		[Inspectable(enumeration="asc,desc", defaultValue="desc", category="General")]
 		public var defaultOrder:String='desc';
+		[Inspectable(category="General")]
+		public var deleteAllEnabled:Boolean=false;
+		[Inspectable(category="General")]
+		public var deleteEnabled:Boolean=false;
+		[Inspectable(category="General")]
+		public var globalSort:Boolean=false;
+		public var menuSupport:MenuSupport;
+		[Inspectable(category="General")]
+		public var modifyEnabled:Boolean=false;
+		[Inspectable(category="General")]
+		public var multiSort:Boolean=false;
 		[Inspectable(enumeration="none,new,view,edit,new-edit,view-edit,new-view-edit",
 			defaultValue="none", category="General")]
 		public var showDetail:String='none';
 		[Bindable]
-		private var lastRollOverIndex:Number;
-		private var orderList:ArrayCollectionPlus=new ArrayCollectionPlus();
+		public var showItemProxy:ObjectProxy=new ObjectProxy();
 		[Inspectable(category="General")]
 		public var showSum:Boolean=false;
 		public var sumColumnLabel:String='汇总';
-		[Inspectable(category="General")]
-		public var deleteEnabled:Boolean=false;
-		[Inspectable(category="General")]
-		public var deleteAllEnabled:Boolean=false;
-		[Inspectable(category="General")]
-		public var createEnabled:Boolean=false;
-		[Inspectable(category="General")]
-		public var modifyEnabled:Boolean=false;
-		[Inspectable(category="General")]
-		public var copyToExcelEnabled:Boolean=true;
-		public var menuSupport:MenuSupport;
-		[Bindable]
-		public var showItemProxy:ObjectProxy=new ObjectProxy();
-		private var showItem:Object;
 		protected var popEditing:PopWindow;
 		protected var popView:PopWindow;
+		[Bindable]
+		private var lastRollOverIndex:Number;
+		private var orderList:ArrayCollectionPlus=new ArrayCollectionPlus();
+		private var showItem:Object;
 
 		public function DataGridPlus()
 		{
@@ -85,6 +82,26 @@ package ns.flex.controls
 			addEventListener(ListEvent.ITEM_ROLL_OUT, dgItemRollOut);
 			addEventListener(FlexEvent.INITIALIZE, init);
 			addEventListener(DataGridEvent.HEADER_RELEASE, onHeaderRelease);
+		}
+
+		public function addOrder(sortField:String, order:String=null):void
+		{
+			pushOrder(sortField, order);
+		}
+
+		public function closePop():void
+		{
+			if (popEditing)
+				popEditing.close();
+
+			if (popView)
+				popView.close();
+		}
+
+		public function closeProgress():void
+		{
+			if (popEditing)
+				popEditing.closeProgress();
 		}
 
 		[Inspectable(category="Data", defaultValue="undefined")]
@@ -140,9 +157,16 @@ package ns.flex.controls
 			super.dataProvider=value;
 		}
 
-		public function updateCMDMenu(enabled:Boolean):void
+		public function initPopEditing():PopWindow
 		{
-			deleteEnabled=deleteAllEnabled=createEnabled=modifyEnabled=enabled;
+			if (popEditing)
+				return popEditing;
+			popEditing=initPop(true);
+			addEventListener('resetEditItem', function(e:Event):void
+			{
+				showItemProxy=new ObjectProxy(ObjectUtil.copy(showItem));
+			});
+			return popEditing;
 		}
 
 		public function get orders():Array
@@ -150,9 +174,303 @@ package ns.flex.controls
 			return orderList.toBiArray('sortField', 'order');
 		}
 
-		public function addOrder(sortField:String, order:String=null):void
+		public function resetMenu():void
 		{
-			pushOrder(sortField, order);
+			menuSupport=new MenuSupport(this, contextMenu_menuSelect);
+			var separatorCount:int=0;
+
+			if (createEnabled)
+				enableMenu("新增", createItem, (separatorCount++ == 0), true);
+			else if (showDetail.indexOf('new') > -1)
+				enableMenu("新增", function(evt:Event):void
+				{
+					showItemDetail(null, true);
+				}, (separatorCount++ == 0), true);
+
+			if (showDetail.indexOf('view') > -1)
+				enableMenu('查看', function(evt:Event):void
+				{
+					showItemDetail(selectedItem, false);
+				}, (separatorCount++ == 0), false, true);
+
+			if (modifyEnabled)
+				enableMenu("修改", modifyItem, (separatorCount++ == 0), false, true);
+			else if (showDetail.indexOf('edit') > -1)
+				enableMenu("修改", function(evt:Event):void
+				{
+					showItemDetail(selectedItem, true);
+				}, (separatorCount++ == 0), false, true);
+
+			if (deleteEnabled)
+				enableMenu("删除选中", deleteItems, (separatorCount++ == 0));
+
+			if (deleteAllEnabled)
+				enableMenu("删除全部", deleteAll, (separatorCount++ == 0), true);
+
+			if (copyToExcelEnabled)
+			{
+				enableMenu("复制选择行到Excel", copySelectedToExcel, true);
+				enableMenu("复制全部行到Excel", copyTotalToExcel);
+			}
+		}
+
+		public function rowsToExcel(dataList:Object):ByteArray
+		{
+			var sheet:Sheet=new Sheet();
+			sheet.resize(dataList ? dataList.length + 1 : 1, columns.length);
+			for (var k:int=0; k < columns.length; k++)
+				sheet.setCell(0, k, columns[k].headerText)
+
+			if (dataList)
+				for (var i:int=0; i < dataList.length; i++)
+					for (var j:int=0; j < columns.length; j++)
+						sheet.setCell(i + 1, j, columns[j].itemToLabel(dataList[i]))
+
+			var xls:ExcelFile=new ExcelFile();
+			xls.sheets.addItem(sheet);
+
+			return xls.saveToByteArray();
+		}
+
+		public function rowsToString(dataList:Object, spiltor:String='	',
+			withHead:Boolean=true):String
+		{
+			var ss:String='';
+
+			if (withHead)
+			{
+				for (var k:int=0; k < columns.length; k++)
+				{
+					ss=
+						ss.concat(StringUtil.toLine(columns[k].headerText),
+						k == columns.length - 1 ? '' : spiltor);
+				}
+				ss+='\n';
+			}
+
+			if (dataList)
+				for (var i:int=0; i < dataList.length; i++)
+				{
+					for (var j:int=0; j < columns.length; j++)
+					{
+						ss=
+							ss.concat(StringUtil.toLine(columns[j].itemToLabel(dataList[i])),
+							j == columns.length - 1 ? '' : spiltor);
+					}
+					ss=ss.concat('\n');
+				}
+
+			return ss;
+		}
+
+		public function saveAsExcel(dataList:Object, fileName:String):void
+		{
+			new FileReference().save(rowsToExcel(dataList), fileName.concat('.xls'));
+		}
+
+		/**
+		 * 保存文件必须通过点击按钮等事件触发，如果不符合可通过这个方法实现
+		 * @param dataList
+		 * @param fileName
+		 */
+		public function saveAsExcelWithAlert(dataList:Object, fileName:String):void
+		{
+			Alert.show("导出完成,请保存", null, Alert.OK, this, function(evt:Event):void
+			{
+				saveAsExcel(dataList, fileName)
+			})
+		}
+
+		[Bindable("change")]
+		[Bindable("valueCommit")]
+		[Inspectable(environment="none")]
+
+		/**
+		 *  An array of references to the selected items in the data provider. The
+		 *  items are in order same as dataProvider.
+		 *  @default [ ]
+		 */
+		public function get selectedItemsInOriginOrder():Array
+		{
+			if (collection is IList)
+			{
+				var dp:IList=IList(collection);
+				return selectedItems.sort(function(a:Object, b:Object):Number
+				{
+					return dp.getItemIndex(a) > dp.getItemIndex(b) ? 1 : -1;
+				});
+			}
+			else
+				return selectedItems
+		}
+
+		/**
+		 * 不选择汇总项
+		 * @return
+		 */
+		public function get selectedOriItem():Object
+		{
+			return (selectedItem &&
+				selectedItem.uniqueIdForSumItem == uid) ? null : selectedItem;
+		}
+
+		/**
+		 * 生成默认的详细对话框
+		 * @param evt
+		 */
+		public function showItemDetail(item:Object, editable:Boolean=false):void
+		{
+			showItem=item;
+			showItemProxy=new ObjectProxy(ObjectUtil.copy(showItem));
+
+			if (editable)
+			{
+				if (!popEditing)
+					initPopEditing();
+				popEditing.show(root);
+				popEditing.title=showItem ? '修改' : '新增';
+			}
+			else
+			{
+				if (!popView)
+					popView=initPop(false);
+				popView.show(root);
+			}
+		}
+
+		public function updateCMDMenu(enabled:Boolean):void
+		{
+			deleteEnabled=deleteAllEnabled=createEnabled=modifyEnabled=enabled;
+		}
+
+		private function contextMenu_menuSelect(evt:ContextMenuEvent):void
+		{
+			this.selectedIndex=lastRollOverIndex;
+		}
+
+		private function copySelectedToExcel(evt:Event):void
+		{
+			copyToExcel(selectedItemsInOriginOrder);
+		}
+
+		private function copyToExcel(dataList:Object):void
+		{
+			System.setClipboard(rowsToString(dataList, '	'));
+		}
+
+		private function copyTotalToExcel(evt:Event):void
+		{
+			copyToExcel(dataProvider);
+		}
+
+		private function createItem(evt:Event):void
+		{
+			dispatchEvent(new Event('createItem'));
+		}
+
+		private function deleteAll(evt:Event):void
+		{
+			Alert.show("确认全部删除？", null, Alert.YES | Alert.NO, this,
+				function(evt:CloseEvent):void
+				{
+					if (evt.detail == Alert.YES)
+					{
+						dispatchEvent(new Event('deleteAll'));
+					}
+				})
+		}
+
+		private function deleteItems(evt:Event):void
+		{
+			Alert.show("确认删除？", null, Alert.YES | Alert.NO, this,
+				function(evt:CloseEvent):void
+				{
+					if (evt.detail == Alert.YES)
+					{
+						dispatchEvent(new Event('deleteItems'));
+					}
+				})
+		}
+
+		private function dgItemRollOut(event:ListEvent):void
+		{
+			for each (var menu:ContextMenuItem in contextMenu.customItems)
+				menu.enabled=menuSupport.isAlwaysEnabled(menu);
+		}
+
+		private function dgItemRollOver(event:ListEvent):void
+		{
+			lastRollOverIndex=event.rowIndex;
+
+			for each (var menu:ContextMenuItem in contextMenu.customItems)
+				menu.enabled=true;
+		}
+
+		private function enableMenu(menuLabel:String, action:Function,
+			separatorBefore:Boolean=false, alwaysEnabled:Boolean=false,
+			withDoubleClick:Boolean=false):void
+		{
+			menuSupport.createMenuItem(menuLabel, action, separatorBefore, alwaysEnabled);
+
+			if (withDoubleClick && !doubleClickEnabled)
+			{
+				this.doubleClickEnabled=true;
+				this.addEventListener(ListEvent.ITEM_DOUBLE_CLICK, action);
+			}
+		}
+
+		private function init(event:FlexEvent):void
+		{
+			resetMenu();
+		}
+
+		private function initPop(editable:Boolean=false):PopWindow
+		{
+			var form:Form=new Form();
+			var pop:PopWindow=ContainerUtil.initPopUP('查看', form, -1, -1, 'center');
+			for each (var col:DataGridColumn in columns)
+			{
+				if (col is DataGridColumnPlus)
+					if (DataGridColumnPlus(col).readonly && editable)
+						continue;
+				form.addChild(new DataColumnFormItem(this, col, editable));
+			}
+
+			if (editable)
+			{
+				var buttonItem:FormItem=new FormItem();
+				var hbox:HBox=new HBox;
+				var saveButton:Button=new Button();
+				saveButton.label='保存';
+				var submit:Function=function(e:Event):void
+				{
+					if (!ContainerUtil.validate(form))
+					{
+						popEditing.playShake();
+						return;
+					}
+					popEditing.showProgress();
+					dispatchEvent(new SaveItemEvent(showItemProxy));
+				}
+				saveButton.addEventListener('click', submit);
+				pop.addEventListener('enterKeyDown', submit);
+				var resetButton:Button=new Button();
+				resetButton.label='重置';
+				resetButton.addEventListener('click', function(e:Event):void
+				{
+					dispatchEvent(new Event('resetEditItem'));
+				});
+				hbox.addChild(saveButton);
+				hbox.addChild(resetButton);
+				buttonItem.addChild(hbox);
+				form.addChild(buttonItem);
+			}
+			return pop;
+		}
+
+		private function modifyItem(evt:Event):void
+		{
+			dispatchEvent(new Event('modifyItem'));
 		}
 
 		private function onHeaderRelease(event:DataGridEvent):void
@@ -207,327 +525,6 @@ package ns.flex.controls
 								multiSort ? i + 1 : '');
 						}
 			}
-		}
-
-		public function resetMenu():void
-		{
-			menuSupport=new MenuSupport(this, contextMenu_menuSelect);
-			var separatorCount:int=0;
-
-			if (createEnabled)
-				enableMenu("新增", createItem, (separatorCount++ == 0), true);
-			else if (showDetail.indexOf('new') > -1)
-				enableMenu("新增", function(evt:Event):void
-				{
-					showItemDetail(null, true);
-				}, (separatorCount++ == 0), true);
-
-			if (showDetail.indexOf('view') > -1)
-				enableMenu('查看', function(evt:Event):void
-				{
-					showItemDetail(selectedItem, false);
-				}, (separatorCount++ == 0), false, true);
-
-			if (modifyEnabled)
-				enableMenu("修改", modifyItem, (separatorCount++ == 0), false, true);
-			else if (showDetail.indexOf('edit') > -1)
-				enableMenu("修改", function(evt:Event):void
-				{
-					showItemDetail(selectedItem, true);
-				}, (separatorCount++ == 0), false, true);
-
-			if (deleteEnabled)
-				enableMenu("删除选中", deleteItems, (separatorCount++ == 0));
-
-			if (deleteAllEnabled)
-				enableMenu("删除全部", deleteAll, (separatorCount++ == 0), true);
-
-			if (copyToExcelEnabled)
-			{
-				enableMenu("复制选择行到Excel", copySelectedToExcel, true);
-				enableMenu("复制全部行到Excel", copyTotalToExcel);
-			}
-		}
-
-		/**
-		 * 不选择汇总项
-		 * @return
-		 */
-		public function get selectedOriItem():Object
-		{
-			return (selectedItem &&
-				selectedItem.uniqueIdForSumItem == uid) ? null : selectedItem;
-		}
-
-		private function init(event:FlexEvent):void
-		{
-			resetMenu();
-		}
-
-		private function enableMenu(menuLabel:String, action:Function,
-			separatorBefore:Boolean=false, alwaysEnabled:Boolean=false,
-			withDoubleClick:Boolean=false):void
-		{
-			menuSupport.createMenuItem(menuLabel, action, separatorBefore, alwaysEnabled);
-
-			if (withDoubleClick && !doubleClickEnabled)
-			{
-				this.doubleClickEnabled=true;
-				this.addEventListener(ListEvent.ITEM_DOUBLE_CLICK, action);
-			}
-		}
-
-		private function contextMenu_menuSelect(evt:ContextMenuEvent):void
-		{
-			this.selectedIndex=lastRollOverIndex;
-		}
-
-		private function dgItemRollOver(event:ListEvent):void
-		{
-			lastRollOverIndex=event.rowIndex;
-
-			for each (var menu:ContextMenuItem in contextMenu.customItems)
-				menu.enabled=true;
-		}
-
-		private function dgItemRollOut(event:ListEvent):void
-		{
-			for each (var menu:ContextMenuItem in contextMenu.customItems)
-				menu.enabled=menuSupport.isAlwaysEnabled(menu);
-		}
-
-		private function createItem(evt:Event):void
-		{
-			dispatchEvent(new Event('createItem'));
-		}
-
-		private function modifyItem(evt:Event):void
-		{
-			dispatchEvent(new Event('modifyItem'));
-		}
-
-		private function deleteItems(evt:Event):void
-		{
-			Alert.show("确认删除？", null, Alert.YES | Alert.NO, this,
-				function(evt:CloseEvent):void
-				{
-					if (evt.detail == Alert.YES)
-					{
-						dispatchEvent(new Event('deleteItems'));
-					}
-				})
-		}
-
-		public function closePop():void
-		{
-			if (popEditing)
-				popEditing.close();
-
-			if (popView)
-				popView.close();
-		}
-
-		public function closeProgress():void
-		{
-			if (popEditing)
-				popEditing.closeProgress();
-		}
-
-		/**
-		 * 生成默认的详细对话框
-		 * @param evt
-		 */
-		public function showItemDetail(item:Object, editable:Boolean=false):void
-		{
-			showItem=item;
-			showItemProxy=new ObjectProxy(ObjectUtil.copy(showItem));
-
-			if (editable)
-			{
-				if (!popEditing)
-					initPopEditing();
-				popEditing.show(root);
-				popEditing.title=showItem ? '修改' : '新增';
-			}
-			else
-			{
-				if (!popView)
-					popView=initPop(false);
-				popView.show(root);
-			}
-		}
-
-		public function initPopEditing():PopWindow
-		{
-			if (popEditing)
-				return popEditing;
-			popEditing=initPop(true);
-			addEventListener('resetEditItem', function(e:Event):void
-			{
-				showItemProxy=new ObjectProxy(ObjectUtil.copy(showItem));
-			});
-			return popEditing;
-		}
-
-		private function initPop(editable:Boolean=false):PopWindow
-		{
-			var form:Form=new Form();
-			var pop:PopWindow=ContainerUtil.initPopUP('查看', form, -1, -1, 'center');
-			for each (var col:DataGridColumn in columns)
-			{
-				if (col is DataGridColumnPlus)
-					if (DataGridColumnPlus(col).readonly && editable)
-						continue;
-				form.addChild(new DataColumnFormItem(this, col, editable));
-			}
-
-			if (editable)
-			{
-				var buttonItem:FormItem=new FormItem();
-				var hbox:HBox=new HBox;
-				var saveButton:Button=new Button();
-				saveButton.label='保存';
-				var submit:Function=function(e:Event):void
-				{
-					if (!ContainerUtil.validate(form))
-					{
-						popEditing.playShake();
-						return;
-					}
-					popEditing.showProgress();
-					dispatchEvent(new SaveItemEvent(showItemProxy));
-				}
-				saveButton.addEventListener('click', submit);
-				pop.addEventListener('enterKeyDown', submit);
-				var resetButton:Button=new Button();
-				resetButton.label='重置';
-				resetButton.addEventListener('click', function(e:Event):void
-				{
-					dispatchEvent(new Event('resetEditItem'));
-				});
-				hbox.addChild(saveButton);
-				hbox.addChild(resetButton);
-				buttonItem.addChild(hbox);
-				form.addChild(buttonItem);
-			}
-			return pop;
-		}
-
-		private function copySelectedToExcel(evt:Event):void
-		{
-			copyToExcel(selectedItemsInOriginOrder);
-		}
-
-		private function copyTotalToExcel(evt:Event):void
-		{
-			copyToExcel(dataProvider);
-		}
-
-		private function copyToExcel(dataList:Object):void
-		{
-			System.setClipboard(rowsToString(dataList, '	'));
-		}
-
-		public function rowsToString(dataList:Object, spiltor:String='	',
-			withHead:Boolean=true):String
-		{
-			var ss:String='';
-
-			if (withHead)
-			{
-				for (var k:int=0; k < columns.length; k++)
-				{
-					ss=
-						ss.concat(StringUtil.toLine(columns[k].headerText),
-						k == columns.length - 1 ? '' : spiltor);
-				}
-				ss+='\n';
-			}
-
-			if (dataList)
-				for (var i:int=0; i < dataList.length; i++)
-				{
-					for (var j:int=0; j < columns.length; j++)
-					{
-						ss=
-							ss.concat(StringUtil.toLine(columns[j].itemToLabel(dataList[i])),
-							j == columns.length - 1 ? '' : spiltor);
-					}
-					ss=ss.concat('\n');
-				}
-
-			return ss;
-		}
-
-		/**
-		 * 保存文件必须通过点击按钮等事件触发，如果不符合可通过这个方法实现
-		 * @param dataList
-		 * @param fileName
-		 */
-		public function saveAsExcelWithAlert(dataList:Object, fileName:String):void
-		{
-			Alert.show("导出完成,请保存", null, Alert.OK, this, function(evt:Event):void
-			{
-				saveAsExcel(dataList, fileName)
-			})
-		}
-
-		public function saveAsExcel(dataList:Object, fileName:String):void
-		{
-			new FileReference().save(rowsToExcel(dataList), fileName.concat('.xls'));
-		}
-
-		public function rowsToExcel(dataList:Object):ByteArray
-		{
-			var sheet:Sheet=new Sheet();
-			sheet.resize(dataList ? dataList.length + 1 : 1, columns.length);
-			for (var k:int=0; k < columns.length; k++)
-				sheet.setCell(0, k, columns[k].headerText)
-
-			if (dataList)
-				for (var i:int=0; i < dataList.length; i++)
-					for (var j:int=0; j < columns.length; j++)
-						sheet.setCell(i + 1, j, columns[j].itemToLabel(dataList[i]))
-
-			var xls:ExcelFile=new ExcelFile();
-			xls.sheets.addItem(sheet);
-
-			return xls.saveToByteArray();
-		}
-
-		private function deleteAll(evt:Event):void
-		{
-			Alert.show("确认全部删除？", null, Alert.YES | Alert.NO, this,
-				function(evt:CloseEvent):void
-				{
-					if (evt.detail == Alert.YES)
-					{
-						dispatchEvent(new Event('deleteAll'));
-					}
-				})
-		}
-
-		[Bindable("change")]
-		[Bindable("valueCommit")]
-		[Inspectable(environment="none")]
-
-		/**
-		 *  An array of references to the selected items in the data provider. The
-		 *  items are in order same as dataProvider.
-		 *  @default [ ]
-		 */
-		public function get selectedItemsInOriginOrder():Array
-		{
-			if (collection is IList)
-			{
-				var dp:IList=IList(collection);
-				return selectedItems.sort(function(a:Object, b:Object):Number
-				{
-					return dp.getItemIndex(a) > dp.getItemIndex(b) ? 1 : -1;
-				});
-			}
-			else
-				return selectedItems
 		}
 	}
 }

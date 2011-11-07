@@ -5,11 +5,9 @@ package ns.flex.controls
 	import flash.events.MouseEvent;
 	import flash.system.System;
 	import flash.ui.Keyboard;
-
 	import mx.containers.TitleWindow;
 	import mx.effects.Sequence;
 	import mx.events.FlexEvent;
-
 	import ns.flex.support.MenuSupport;
 	import ns.flex.util.EffectUtil;
 
@@ -17,8 +15,8 @@ package ns.flex.controls
 	[Event(name="titleDoubleClick", type="flash.events.MouseEvent")]
 	public class TitleWindowPlus extends TitleWindow
 	{
-		private var shake:Sequence;
 		public var menuSupport:MenuSupport;
+		private var shake:Sequence;
 
 		public function TitleWindowPlus()
 		{
@@ -29,6 +27,18 @@ package ns.flex.controls
 			shake=
 				EffectUtil.createSequence({duration: 100, repeatCount: 2}, this,
 				EffectUtil.createMove({xBy: 10}), EffectUtil.createMove({xBy: -10}));
+		}
+
+		public function playShake():void
+		{
+			shake.play();
+		}
+
+		protected function onTitleDoubleClick(e:MouseEvent):void
+		{
+			dispatchEvent(new MouseEvent('titleDoubleClick', e.bubbles, e.cancelable,
+				e.localX, e.localY, e.relatedObject, e.ctrlKey, e.altKey, e.shiftKey,
+				e.buttonDown, e.delta));
 		}
 
 		private function cc(e:FlexEvent):void
@@ -43,22 +53,10 @@ package ns.flex.controls
 			System.setClipboard(title);
 		}
 
-		protected function onTitleDoubleClick(e:MouseEvent):void
-		{
-			dispatchEvent(new MouseEvent('titleDoubleClick', e.bubbles, e.cancelable,
-				e.localX, e.localY, e.relatedObject, e.ctrlKey, e.altKey, e.shiftKey,
-				e.buttonDown, e.delta));
-		}
-
 		private function onKeyDown(evt:KeyboardEvent):void
 		{
 			if (evt.keyCode == Keyboard.ENTER)
 				this.dispatchEvent(new Event('enterKeyDown'));
-		}
-
-		public function playShake():void
-		{
-			shake.play();
 		}
 	}
 }

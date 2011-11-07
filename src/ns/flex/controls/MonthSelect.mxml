@@ -6,10 +6,17 @@
 	</mx:Metadata>
 	<mx:Script>
 		<![CDATA[
+			private static var lastSelectedMonth:int;
+			private static var lastSelectedYear:int;
+
 			public var minYear:int=2010;
 			public var monthShift:int=-1;
-			private static var lastSelectedYear:int;
-			private static var lastSelectedMonth:int;
+
+			[Bindable("change")]
+			public function get month():String
+			{
+				return String(yearSelect.selectedItem).concat(monthSelect.selectedItem);
+			}
 
 			private function init():void
 			{
@@ -31,12 +38,6 @@
 				}
 				yearSelect.defaultLabel=String(lastSelectedYear);
 				monthSelect.defaultLabel=String(lastSelectedMonth);
-			}
-
-			[Bindable("change")]
-			public function get month():String
-			{
-				return String(yearSelect.selectedItem).concat(monthSelect.selectedItem);
 			}
 		]]>
 	</mx:Script>

@@ -1,7 +1,7 @@
 package ns.flex.controls
 {
 	import mx.controls.Label;
-	
+
 	/**
 	 * datagrid数据展现render类，改为text可以复制
 	 * @author wangchu
@@ -15,3 +15,4 @@ package ns.flex.controls
 		}
 	}
 }
+

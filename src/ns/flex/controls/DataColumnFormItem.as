@@ -5,7 +5,6 @@ package ns.flex.controls
 	import mx.controls.CheckBox;
 	import mx.controls.dataGridClasses.DataGridColumn;
 	import mx.core.UIComponent;
-
 	import ns.flex.util.ObjectUtils;
 
 	public class DataColumnFormItem extends FormItem
@@ -36,6 +35,43 @@ package ns.flex.controls
 			else
 				uic=asText(dgp, col, editable);
 			addChild(uic);
+		}
+
+		private function asCheckBox(dgp:DataGridPlus, col:DataGridColumn,
+			editable:Boolean):UIComponent
+		{
+			var cb:CheckBox=new CheckBox();
+			cb.enabled=editable;
+			BindingUtils.bindSetter(function(value:Object):void
+			{
+				cb.selected=value[col.dataField];
+			}, dgp, 'showItemProxy');
+
+			if (editable)
+				BindingUtils.bindSetter(function(value:String):void
+				{
+					dgp.showItemProxy[col.dataField]=value;
+				}, cb, 'selected');
+			return cb;
+		}
+
+		private function asComboBox(dgp:DataGridPlus, colp:DataGridColumnPlus):UIComponent
+		{
+			var cbp:ComboBoxPlus=new ComboBoxPlus();
+			ObjectUtils.copyProperties(cbp, colp.comboBoxInfo);
+			BindingUtils.bindSetter(function(value:Object):void
+			{
+				if (value[colp.dataField])
+					cbp.defaultLabel=colp.itemToLabel(value);
+				else
+					cbp.selectedIndex=0;
+			}, dgp, 'showItemProxy');
+			BindingUtils.bindSetter(function(value:Object):void
+			{
+				if (value)
+					dgp.showItemProxy[colp.dataField]=value[colp.comboBoxInfo.dataField];
+			}, cbp, 'selectedItem');
+			return cbp;
 		}
 
 		private function asDateField(dgp:DataGridPlus,
@@ -73,43 +109,6 @@ package ns.flex.controls
 				}, dfp, 'selectedDate');
 			}
 			return dfp;
-		}
-
-		private function asComboBox(dgp:DataGridPlus, colp:DataGridColumnPlus):UIComponent
-		{
-			var cbp:ComboBoxPlus=new ComboBoxPlus();
-			ObjectUtils.copyProperties(cbp, colp.comboBoxInfo);
-			BindingUtils.bindSetter(function(value:Object):void
-			{
-				if (value[colp.dataField])
-					cbp.defaultLabel=colp.itemToLabel(value);
-				else
-					cbp.selectedIndex=0;
-			}, dgp, 'showItemProxy');
-			BindingUtils.bindSetter(function(value:Object):void
-			{
-				if (value)
-					dgp.showItemProxy[colp.dataField]=value[colp.comboBoxInfo.dataField];
-			}, cbp, 'selectedItem');
-			return cbp;
-		}
-
-		private function asCheckBox(dgp:DataGridPlus, col:DataGridColumn,
-			editable:Boolean):UIComponent
-		{
-			var cb:CheckBox=new CheckBox();
-			cb.enabled=editable;
-			BindingUtils.bindSetter(function(value:Object):void
-			{
-				cb.selected=value[col.dataField];
-			}, dgp, 'showItemProxy');
-
-			if (editable)
-				BindingUtils.bindSetter(function(value:String):void
-				{
-					dgp.showItemProxy[col.dataField]=value;
-				}, cb, 'selected');
-			return cb;
 		}
 
 		private function asText(dgp:DataGridPlus, col:DataGridColumn, editable:Boolean,

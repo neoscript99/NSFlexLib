@@ -9,15 +9,16 @@
 	</mx:Metadata>
 	<mx:Script>
 		<![CDATA[
-			import ns.flex.util.MessageUtil;
-			import mx.core.Container;
 			import mx.containers.ViewStack;
+			import mx.core.Container;
 			import mx.managers.HistoryManager;
-			private var _historyManager:HistoryManager;
+			import ns.flex.util.MessageUtil;
+
 			[Bindable]
 			public var menus:XML;
 			public var spareMintues:int;
 			public var views:ViewStack;
+			private var _historyManager:HistoryManager;
 			private var timer:Timer;
 
 			private function cc():void
@@ -33,26 +34,6 @@
 						});
 				}
 				appWindow.addChild(views);
-			}
-
-			private function onStageClick(e:MouseEvent):void
-			{
-				trace('x: ', e.stageX, ' y: ', e.stageY);
-				if (timer)
-				{
-					trace('timer delay:', timer.delay, 'currentCount: ',
-						timer.currentCount);
-					timer.reset();
-					timer.start();
-				}
-			}
-
-			private function switchMenu():void
-			{
-				if (hdb.numChildren > 1)
-					hdb.removeChild(menuPanel);
-				else
-					hdb.addChildAt(menuPanel, 0);
 			}
 
 			//用上下键切换菜单时，可能由于SWFLoader未及时完成的原因，报空指针错误
@@ -73,6 +54,26 @@
 					menuTree.expandItem(menuTree.selectedItem,
 						!menuTree.isItemOpen(menuTree.selectedItem), true);
 
+			}
+
+			private function onStageClick(e:MouseEvent):void
+			{
+				trace('x: ', e.stageX, ' y: ', e.stageY);
+				if (timer)
+				{
+					trace('timer delay:', timer.delay, 'currentCount: ',
+						timer.currentCount);
+					timer.reset();
+					timer.start();
+				}
+			}
+
+			private function switchMenu():void
+			{
+				if (hdb.numChildren > 1)
+					hdb.removeChild(menuPanel);
+				else
+					hdb.addChildAt(menuPanel, 0);
 			}
 		]]>
 	</mx:Script>

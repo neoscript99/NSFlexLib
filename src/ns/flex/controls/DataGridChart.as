@@ -1,24 +1,23 @@
 package ns.flex.controls
 {
 	import mx.binding.utils.BindingUtils;
-
 	import ns.flex.popup.PopLineChart;
 
 	public class DataGridChart extends DataGridPlus
 	{
 		private var _lineChart:PopLineChart;
 
+		public function bindLineData(host:Object, chain:Object,
+			commitOnly:Boolean=false):void
+		{
+			BindingUtils.bindProperty(lineChart, 'chartData', host, chain, commitOnly);
+		}
+
 		public function get lineChart():PopLineChart
 		{
 			if (!_lineChart)
 				_lineChart=new PopLineChart;
 			return _lineChart
-		}
-
-		public function bindLineData(host:Object, chain:Object,
-			commitOnly:Boolean=false):void
-		{
-			BindingUtils.bindProperty(lineChart, 'chartData', host, chain, commitOnly);
 		}
 
 		/**

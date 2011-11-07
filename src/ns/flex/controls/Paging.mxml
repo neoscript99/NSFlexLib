@@ -17,18 +17,20 @@
 		<![CDATA[
 			import mx.events.ItemClickEvent;
 			import ns.flex.event.PageChangeEvent;
+
+			public var pageArrayNumber:int=5;
 			[Bindable]
 			public var totalNumber:int;
-			[Bindable]
-			private var curPage:int=0;
-			[Bindable]
-			private var totalPage:int;
+
 			[Bindable]
 			private var _offsetValue:int=15;
 			[Bindable]
-			private var pageArray:Array;
-			public var pageArrayNumber:int=5;
+			private var curPage:int=0;
 			private var invalidateCurrentPageFlag:Boolean=false;
+			[Bindable]
+			private var pageArray:Array;
+			[Bindable]
+			private var totalPage:int;
 
 			/*
 			 *检查当前查询的firstResult是否小于0，是的话标识重置当前页
@@ -45,46 +47,11 @@
 			}
 
 			/*
-			 *新查询返回总数结果后，也就是totalPage已得到，必须调用本方法
-			 *如：<mx:method name="count" result="paging.updateDispaly()"/>
-			 *    ss.getOperation('count').addEventListener(ResultEvent.RESULT,paging.updateDispaly)
-			 */
-			public function updateDispaly(e:Event=null):void
-			{
-				if (invalidateCurrentPageFlag)
-				{
-					curPage=(totalPage == 0) ? 0 : 1;
-					invalidateCurrentPageFlag=false;
-				}
-				generatePageArray();
-			}
-
-			/*
 			 *重置当前页标识
 			 */
 			public function invalidateCurrentPage():void
 			{
 				invalidateCurrentPageFlag=true;
-			}
-
-			/*
-			 *向前或向后多少页
-			 *num可以为负数
-			 */
-			private function go(num:int):void
-			{
-				changePage(curPage + num);
-			}
-
-			/*
-			 *在页码列表中选择页码
-			 */
-			private function selectPage(e:ItemClickEvent):void
-			{
-				if (e.label == '..')
-					changePage(parseInt(e.item.value));
-				else
-					changePage(parseInt(e.label));
 			}
 
 			public function set offsetValue(value:int):void
@@ -98,6 +65,21 @@
 			public function reCurrentPage(e:Event=null):void
 			{
 				go(0)
+			}
+
+			/*
+			 *新查询返回总数结果后，也就是totalPage已得到，必须调用本方法
+			 *如：<mx:method name="count" result="paging.updateDispaly()"/>
+			 *    ss.getOperation('count').addEventListener(ResultEvent.RESULT,paging.updateDispaly)
+			 */
+			public function updateDispaly(e:Event=null):void
+			{
+				if (invalidateCurrentPageFlag)
+				{
+					curPage=(totalPage == 0) ? 0 : 1;
+					invalidateCurrentPageFlag=false;
+				}
+				generatePageArray();
 			}
 
 			/*
@@ -167,12 +149,32 @@
 				}
 				return array;
 			}
+
+			/*
+			 *向前或向后多少页
+			 *num可以为负数
+			 */
+			private function go(num:int):void
+			{
+				changePage(curPage + num);
+			}
+
+			/*
+			 *在页码列表中选择页码
+			 */
+			private function selectPage(e:ItemClickEvent):void
+			{
+				if (e.label == '..')
+					changePage(parseInt(e.item.value));
+				else
+					changePage(parseInt(e.label));
+			}
 		]]>
 	</mx:Script>
 	<mx:Binding destination="totalPage" source="{(totalNumber-1)/offset.value+1}"/>
 	<mx:Label text="每页："/>
-	<mx:NumericStepper id="offset" minimum="5" maximum="95" stepSize="5" value="{_offsetValue}"
-					   width="50" change="go(0)"/>
+	<mx:NumericStepper id="offset" minimum="5" maximum="95" stepSize="5"
+					   value="{_offsetValue}" width="50" change="go(0)"/>
 	<mx:Label text="{curPage+'/'+totalPage+' ('+totalNumber+')'}"/>
 	<mx:LinkBar id="pageLink" dataProvider="{pageArray}" itemClick="selectPage(event)"/>
 	<mx:Button click="go(-1)" enabled="{curPage>1}" label="&lt;"

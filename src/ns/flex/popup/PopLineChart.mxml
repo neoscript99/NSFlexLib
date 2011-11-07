@@ -41,6 +41,7 @@
 					dgc=new DataGridColumnPlus
 					dgc.dataField=s.yField
 					dgc.headerText=s.displayName
+					dgc.percision=2
 					dgpColumnsTemp.push(dgc)
 				}
 				lineSeries=lineSeriesTemp

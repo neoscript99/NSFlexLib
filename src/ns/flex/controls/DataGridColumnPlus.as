@@ -3,7 +3,6 @@ package ns.flex.controls
 	import mx.controls.Text;
 	import mx.controls.dataGridClasses.DataGridColumn;
 	import mx.core.ClassFactory;
-
 	import ns.flex.util.DateUtil;
 	import ns.flex.util.StringUtil;
 
@@ -14,20 +13,20 @@ package ns.flex.controls
 	 */
 	public class DataGridColumnPlus extends DataGridColumn
 	{
-		private var _percision:int;
-		[Inspectable(category="General")]
-		public var isSeparateThousands:Boolean=true;
-		// @see TextInputPlus,TextAreaPlus,DateFieldPlus
-		public var constraints:Object;
-		public var comboBoxInfo:Object; //for asComboBox
 		[Inspectable(enumeration="Text,TextArea,CheckBox,DateString", defaultValue="Text",
 			category="General")]
 		public var asControl:String='Text';
-		[Inspectable(category="General")]
-		public var readonly:Boolean=false;
+		public var comboBoxInfo:Object; //for asComboBox
+		// @see TextInputPlus,TextAreaPlus,DateFieldPlus
+		public var constraints:Object;
 		[Inspectable(enumeration="sum,avg,max,min,none", defaultValue="",
 			category="General")]
 		public var groupMethod:String;
+		[Inspectable(category="General")]
+		public var isSeparateThousands:Boolean=true;
+		[Inspectable(category="General")]
+		public var readonly:Boolean=false;
+		private var _percision:int;
 
 		public function DataGridColumnPlus(columnName:String=null)
 		{
@@ -36,63 +35,30 @@ package ns.flex.controls
 			itemRenderer=new ClassFactory(SelectableLabel);
 		}
 
-		/**
-		 * 默认使用SelectableLabel的truncateToFit
-		 * 如果设wordWrap为ture，改用Text，可以多行，对话框控件改用TextArea
-		 * 如果想保留truncateToFit，但对话框控件是TextArea，可设置asControl=TextArea
-		 * @param value
-		 */
-		override public function set wordWrap(value:*):void
+		public static function getLabel(item:Object, column:DataGridColumn):String
 		{
-			super.wordWrap=value;
-			if (value == true)
-				itemRenderer=new ClassFactory(Text);
+			var label:Object=item;
+			column.dataField.split('.').every(function(it:*, index:int, arr:Array):Boolean
+			{
+				//返回为false时停止every
+				label=label[it]
+				return (label != null);
+			});
+
+			if (label != null)
+				return String(label);
+			else if (item[column.dataField] != null)
+				return String(item[column.dataField]);
+			else
+				return '';
 		}
 
-		/**
-		 * Flex 3.6已增加功能支持嵌套字段
-		 * 这里只是保持老代码正确
-		 * @param nestField
-		 */
-		public function set nestDataField(nestField:String):void
+		public static function getNumberLabel(item:Object,
+			column:DataGridColumnPlus):String
 		{
-			dataField=nestField;
-			//Flex 3.6已增加功能支持嵌套字段
-			//sortable = false;
-			//labelFunction=DataGridColumnPlus.getLabel;
-		}
-
-		[Inspectable(category="General")]
-		public function set chineseSort(value:Boolean):void
-		{
-			if (value)
-				this.sortCompareFunction=StringUtil.chineseCompare;
-		}
-
-		override protected function complexColumnSortCompare(obj1:Object, obj2:Object):int
-		{
-			if (!obj1 && !obj2)
-				return 0;
-
-			if (!obj1)
-				return 1;
-
-			if (!obj2)
-				return -1;
-
-			var obj1Data:String=deriveComplexColumnData(obj1).toString();
-			var obj2Data:String=deriveComplexColumnData(obj2).toString();
-			return StringUtil.chineseCompare(obj1Data, obj2Data);
-
-		}
-
-		public function set percision(p:int):void
-		{
-			_percision=p;
-			if (!groupMethod)
-				groupMethod='sum';
-			labelFunction=DataGridColumnPlus.getNumberLabel;
-			this.setStyle('textAlign', 'right');
+			var label:String=StringUtil.trim(getLabel(item, column));
+			return label.length == 0 ? label : StringUtil.formatNumber(Number(label),
+				column._percision, column.isSeparateThousands);
 		}
 
 		/**
@@ -126,30 +92,63 @@ package ns.flex.controls
 			}
 		}
 
-		static public function getNumberLabel(item:Object,
-			column:DataGridColumnPlus):String
+		[Inspectable(category="General")]
+		public function set chineseSort(value:Boolean):void
 		{
-			var label:String=StringUtil.trim(getLabel(item, column));
-			return label.length == 0 ? label : StringUtil.formatNumber(Number(label),
-				column._percision, column.isSeparateThousands);
+			if (value)
+				this.sortCompareFunction=StringUtil.chineseCompare;
 		}
 
-		static public function getLabel(item:Object, column:DataGridColumn):String
+		/**
+		 * Flex 3.6已增加功能支持嵌套字段
+		 * 这里只是保持老代码正确
+		 * @param nestField
+		 */
+		public function set nestDataField(nestField:String):void
 		{
-			var label:Object=item;
-			column.dataField.split('.').every(function(it:*, index:int, arr:Array):Boolean
-			{
-				//返回为false时停止every
-				label=label[it]
-				return (label != null);
-			});
+			dataField=nestField;
+			//Flex 3.6已增加功能支持嵌套字段
+			//sortable = false;
+			//labelFunction=DataGridColumnPlus.getLabel;
+		}
 
-			if (label != null)
-				return String(label);
-			else if (item[column.dataField] != null)
-				return String(item[column.dataField]);
-			else
-				return '';
+		public function set percision(p:int):void
+		{
+			_percision=p;
+			if (!groupMethod)
+				groupMethod='sum';
+			labelFunction=DataGridColumnPlus.getNumberLabel;
+			this.setStyle('textAlign', 'right');
+		}
+
+		/**
+		 * 默认使用SelectableLabel的truncateToFit
+		 * 如果设wordWrap为ture，改用Text，可以多行，对话框控件改用TextArea
+		 * 如果想保留truncateToFit，但对话框控件是TextArea，可设置asControl=TextArea
+		 * @param value
+		 */
+		override public function set wordWrap(value:*):void
+		{
+			super.wordWrap=value;
+			if (value == true)
+				itemRenderer=new ClassFactory(Text);
+		}
+
+		override protected function complexColumnSortCompare(obj1:Object, obj2:Object):int
+		{
+			if (!obj1 && !obj2)
+				return 0;
+
+			if (!obj1)
+				return 1;
+
+			if (!obj2)
+				return -1;
+
+			var obj1Data:String=deriveComplexColumnData(obj1).toString();
+			var obj2Data:String=deriveComplexColumnData(obj2).toString();
+			return StringUtil.chineseCompare(obj1Data, obj2Data);
+
 		}
 	}
 }

@@ -4,21 +4,21 @@
 	<mx:Script>
 		<![CDATA[
 			import mx.managers.PopUpManager;
-			
-			private function cc():void
-			{
-				PopUpManager.centerPopUp(this);
-			}
-			
-			public function show(parent:DisplayObject):void
-			{
-				PopUpManager.addPopUp(this, parent, true);
-			}
-			
+
 			public function close():void
 			{
 				if (this.isPopUp)
 					PopUpManager.removePopUp(this);
+			}
+
+			public function show(parent:DisplayObject):void
+			{
+				PopUpManager.addPopUp(this, parent, true);
+			}
+
+			private function cc():void
+			{
+				PopUpManager.centerPopUp(this);
 			}
 		]]>
 	</mx:Script>

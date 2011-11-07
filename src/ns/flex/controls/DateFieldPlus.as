@@ -2,18 +2,17 @@ package ns.flex.controls
 {
 	import mx.controls.DateField;
 	import mx.events.FlexEvent;
-	
 	import ns.flex.util.DateUtil;
 	import ns.flex.util.DateValidatorPlus;
 	import ns.flex.util.ObjectUtils;
 	import ns.flex.util.ValidatorUtil;
-	
+
 	public class DateFieldPlus extends DateField
 	{
-		private var today:Date=new Date();
 		private var _defaultDate:String='today';
+		private var today:Date=new Date();
 		private var validator:DateValidatorPlus;
-		
+
 		public function DateFieldPlus()
 		{
 			super();
@@ -27,13 +26,7 @@ package ns.flex.controls
 			dayNames=['日', '一', '二', '三', '四', '五', '六'];
 			resetDefault();
 		}
-		
-		[Bindable("valueCommit")]
-		public function get validated():Boolean
-		{
-			return ValidatorUtil.validate(validator);
-		}
-		
+
 		public function set constraints(value:Object):void
 		{
 			if (value)
@@ -44,16 +37,7 @@ package ns.flex.controls
 				ObjectUtils.copyProperties(validator, value);
 			}
 		}
-		
-		override public function set editable(value:Boolean):void
-		{
-			super.editable=value;
-			
-			if (!validator)
-				validator=new DateValidatorPlus(this);
-		
-		}
-		
+
 		[Inspectable(enumeration="today,yesterday,last_month_final,last_year_final,none",
 			defaultValue="today", category="General")]
 		public function set defaultDate(dd:String):void
@@ -61,7 +45,26 @@ package ns.flex.controls
 			_defaultDate=dd;
 			resetDefault();
 		}
-		
+
+		override public function set editable(value:Boolean):void
+		{
+			super.editable=value;
+
+			if (!validator)
+				validator=new DateValidatorPlus(this);
+
+		}
+
+		public function getTomorrow():Date
+		{
+			return DateUtil.shiftDays(selectedDate, 1);
+		}
+
+		public function getYesterday():Date
+		{
+			return DateUtil.shiftDays(selectedDate, -1);
+		}
+
 		public function resetDefault():void
 		{
 			switch (_defaultDate)
@@ -82,15 +85,12 @@ package ns.flex.controls
 					selectedDate=null;
 			}
 		}
-		
-		public function getTomorrow():Date
+
+		[Bindable("valueCommit")]
+		public function get validated():Boolean
 		{
-			return DateUtil.shiftDays(selectedDate, 1);
-		}
-		
-		public function getYesterday():Date
-		{
-			return DateUtil.shiftDays(selectedDate, -1);
+			return ValidatorUtil.validate(validator);
 		}
 	}
 }
+
