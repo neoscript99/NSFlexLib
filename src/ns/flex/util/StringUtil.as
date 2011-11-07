@@ -1,5 +1,7 @@
 package ns.flex.util
 {
+	import flash.utils.ByteArray;
+
 
 	public class StringUtil
 	{
@@ -26,6 +28,28 @@ package ns.flex.util
 		static public function parseNumber(str:String):Number
 		{
 			return Number(str ? str.replace(/\,/g, '') : str);
+		}
+
+		static public function chineseCompare(str1:String, str2:String):int
+		{
+			var encode:String="hz-gb-2312";
+			if (!str1 && !str2)
+				return 0;
+			if (!str1)
+				return 1;
+			if (!str2)
+				return -1;
+			var byte1:ByteArray=new ByteArray();
+			var byte2:ByteArray=new ByteArray();
+			byte1.writeMultiByte(str1, encode);
+			byte2.writeMultiByte(str2, encode);
+
+			if (byte1 > byte2)
+				return 1
+			else if (byte1 < byte2)
+				return -1
+			else
+				return 0
 		}
 
 		/**

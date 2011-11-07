@@ -62,9 +62,11 @@ package ns.flex.controls
 			//labelFunction=DataGridColumnPlus.getLabel;
 		}
 
-		public function set cnDataField(cnField:String):void
+		[Inspectable(category="General")]
+		public function set chineseSort(value:Boolean):void
 		{
-			dataField=cnField;
+			if (value)
+				this.sortCompareFunction=StringUtil.chineseCompare;
 		}
 
 		override protected function complexColumnSortCompare(obj1:Object, obj2:Object):int
@@ -80,8 +82,8 @@ package ns.flex.controls
 
 			var obj1Data:String=deriveComplexColumnData(obj1).toString();
 			var obj2Data:String=deriveComplexColumnData(obj2).toString();
+			return StringUtil.chineseCompare(obj1Data, obj2Data);
 
-			return obj1Data.localeCompare(obj2Data);
 		}
 
 		public function set percision(p:int):void
