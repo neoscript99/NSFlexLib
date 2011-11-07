@@ -93,6 +93,10 @@ package ns.flex.controls
 		}
 
 		[Inspectable(category="General")]
+		/**
+		 * 嵌套字段已根据中文排序，不能再在这里设置
+		 * @param value
+		 */
 		public function set chineseSort(value:Boolean):void
 		{
 			if (value)
