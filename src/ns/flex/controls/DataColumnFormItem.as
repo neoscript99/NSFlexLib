@@ -6,6 +6,7 @@ package ns.flex.controls
 	import mx.controls.dataGridClasses.DataGridColumn;
 	import mx.core.UIComponent;
 	import ns.flex.util.ObjectUtils;
+	import ns.flex.util.StringUtil;
 
 	public class DataColumnFormItem extends FormItem
 	{
@@ -15,7 +16,7 @@ package ns.flex.controls
 		{
 			super();
 			var uic:UIComponent;
-			label=col.headerText.replace(/[↑↓]\d*/, '');
+			label=StringUtil.toLine(col.headerText.replace(/[↑↓]\d*/, ''));
 			editable=(editable && col.dataField);
 
 			if (col is DataGridColumnPlus)
