@@ -35,30 +35,12 @@ package ns.flex.controls
 			itemRenderer=new ClassFactory(SelectableLabel);
 		}
 
-		public static function getLabel(item:Object, column:DataGridColumn):String
-		{
-			var label:Object=item;
-			column.dataField.split('.').every(function(it:*, index:int, arr:Array):Boolean
-			{
-				//返回为false时停止every
-				label=label[it]
-				return (label != null);
-			});
-
-			if (label != null)
-				return String(label);
-			else if (item[column.dataField] != null)
-				return String(item[column.dataField]);
-			else
-				return '';
-		}
-
 		public static function getNumberLabel(item:Object,
 			column:DataGridColumnPlus):String
 		{
-			var label:String=StringUtil.trim(getLabel(item, column));
-			return label.length == 0 ? label : StringUtil.formatNumber(Number(label),
-				column._percision, column.isSeparateThousands);
+			var value:Number=Number(column.getValue(item));
+			return (!isNaN(value)) ? StringUtil.formatNumber(value, column._percision,
+				column.isSeparateThousands) : String(value);
 		}
 
 		/**
@@ -101,6 +83,11 @@ package ns.flex.controls
 		{
 			if (value)
 				this.sortCompareFunction=StringUtil.chineseCompare;
+		}
+
+		public function getValue(item:Object):Object
+		{
+			return (!hasComplexFieldName) ? item[dataField] : deriveComplexColumnData(item);
 		}
 
 		/**
@@ -153,6 +140,19 @@ package ns.flex.controls
 			var obj2Data:String=deriveComplexColumnData(obj2).toString();
 			return StringUtil.chineseCompare(obj1Data, obj2Data);
 
+		}
+
+		override protected function deriveComplexColumnData(data:Object):Object
+		{
+			var currentRef:Object=data;
+			if (complexFieldNameComponents)
+			{
+				for (var i:int=0; i < complexFieldNameComponents.length; i++)
+					if (currentRef)
+						currentRef=currentRef[complexFieldNameComponents[i]];
+			}
+
+			return currentRef;
 		}
 	}
 }

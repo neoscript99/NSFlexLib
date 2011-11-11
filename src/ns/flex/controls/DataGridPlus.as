@@ -115,38 +115,45 @@ package ns.flex.controls
 				var hasGroupColumn:Boolean=false;
 				if (acp.length > 0)
 				{
-					for each (var col:DataGridColumn in columns)
+					var minVisible:int=-1;
+					for (var ci:int=0; ci < columns.length; ci++)
 					{
+						var col:DataGridColumn=columns[ci];
+						if (minVisible < 0 && col.visible)
+							minVisible=ci;
 						if (col.dataField)
-							if (col is DataGridColumnPlus && col['groupMethod'] &&
-								col['groupMethod'] != 'none')
+						{
+							//嵌套对象生成
+							var nestItem:Object=sumItem;
+							col.dataField.split('.').forEach(function(element:*,
+									index:int, arr:Array):void
 							{
-								hasGroupColumn=true;
-								var valueArray:Array=[];
-								for (var i:int=0; i < acp.length; i++)
-									valueArray.push(DataGridColumnPlus.getLabel(acp[i],
-										col));
-								sumItem[col.dataField]=
-									MathUtil[col['groupMethod']](valueArray);
-							}
-							else //设值
-							{
-								var nestItem:Object=sumItem;
-								col.dataField.split('.').forEach(function(element:*,
-										index:int, arr:Array):void
+								if (!nestItem[element])
+								{
+									if (index < arr.length - 1)
+										nestItem[element]={}
+									else
+									{
+										if (col is DataGridColumnPlus &&
+											col['groupMethod'] &&
+											col['groupMethod'] != 'none')
 										{
-											if (!nestItem[element])
-											{
-												if (index < arr.length - 1)
-													nestItem[element]={}
-												else if (col == columns[0])
-													nestItem[element]=sumColumnLabel
-												else
-													nestItem[element]=''
-											}
-											nestItem=nestItem[element]
-										})
-							}
+											hasGroupColumn=true;
+											var valueArray:Array=[];
+											for (var i:int=0; i < acp.length; i++)
+												valueArray.push((col as DataGridColumnPlus).getValue(acp[i]));
+											nestItem[element]=
+												MathUtil[col['groupMethod']](valueArray);
+										}
+										else if (minVisible == ci)
+											nestItem[element]=sumColumnLabel
+										else
+											nestItem[element]=''
+									}
+								}
+								nestItem=nestItem[element]
+							})
+						}
 					}
 					if (hasGroupColumn)
 						acp.addItem(sumItem);
@@ -167,6 +174,11 @@ package ns.flex.controls
 				showItemProxy=new ObjectProxy(ObjectUtil.copy(showItem));
 			});
 			return popEditing;
+		}
+
+		public function isSumItem(item:Object):Boolean
+		{
+			return item.uniqueIdForSumItem == uid;
 		}
 
 		public function get orders():Array
@@ -372,24 +384,24 @@ package ns.flex.controls
 		{
 			Alert.show("确认全部删除？", null, Alert.YES | Alert.NO, this,
 				function(evt:CloseEvent):void
+			{
+				if (evt.detail == Alert.YES)
 				{
-					if (evt.detail == Alert.YES)
-					{
-						dispatchEvent(new Event('deleteAll'));
-					}
-				})
+					dispatchEvent(new Event('deleteAll'));
+				}
+			})
 		}
 
 		private function deleteItems(evt:Event):void
 		{
 			Alert.show("确认删除？", null, Alert.YES | Alert.NO, this,
 				function(evt:CloseEvent):void
+			{
+				if (evt.detail == Alert.YES)
 				{
-					if (evt.detail == Alert.YES)
-					{
-						dispatchEvent(new Event('deleteItems'));
-					}
-				})
+					dispatchEvent(new Event('deleteItems'));
+				}
+			})
 		}
 
 		private function dgItemRollOut(event:ListEvent):void
