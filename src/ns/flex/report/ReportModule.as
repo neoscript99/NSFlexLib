@@ -1,10 +1,9 @@
 package ns.flex.report
 {
 	import flash.events.Event;
-
 	import mx.events.FlexEvent;
+	import mx.rpc.events.ResultEvent;
 	import mx.rpc.remoting.mxml.RemoteObject;
-
 	import ns.flex.controls.DataGridPlus;
 	import ns.flex.controls.Paging;
 	import ns.flex.module.AbstractModule;
@@ -13,7 +12,6 @@ package ns.flex.report
 
 	public class ReportModule extends AbstractModule
 	{
-		public var paged:Boolean=false;
 		protected var map:Object={};
 		[Bindable]
 		protected var reportService:RemoteObject;
@@ -28,10 +26,10 @@ package ns.flex.report
 
 		public function query():void
 		{
-			if (paged)
+			if (paging)
 				queryPage(-1)
 			else
-				reportService.list(queryParam, domain);
+				SQLUtil.list(reportService, queryParam, -1, 0, dgp.orders, domain);
 		}
 
 		public function queryPage(first:int):void
@@ -43,6 +41,9 @@ package ns.flex.report
 		protected function cc(e:Event):void
 		{
 			query();
+			if (paging)
+				reportService.getOperation('count').addEventListener(ResultEvent.RESULT,
+					paging.updateDispaly);
 		}
 
 		protected function get dgp():DataGridPlus

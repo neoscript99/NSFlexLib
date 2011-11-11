@@ -2,7 +2,6 @@ package ns.flex.util
 {
 	import flash.display.DisplayObject;
 	import flash.display.DisplayObjectContainer;
-
 	import mx.controls.ComboBox;
 	import mx.controls.DateField;
 	import mx.controls.TextArea;
@@ -10,7 +9,6 @@ package ns.flex.util
 	import mx.core.Container;
 	import mx.core.UIComponent;
 	import mx.utils.ObjectUtil;
-
 	import ns.flex.controls.PopWindow;
 
 	/**
@@ -19,11 +17,19 @@ package ns.flex.util
 	 */
 	public class ContainerUtil
 	{
+
+		public static function builderContainer(parent:Container, ... children):Container
+		{
+			for each (var child:* in children)
+				parent.addChild(child);
+			return parent;
+		}
+
 		/**
 		 * 级联清空容器内输入对象的输入内容
 		 * @param container
 		 */
-		static public function clearInput(container:Container):void
+		public static function clearInput(container:Container):void
 		{
 			for each (var diso:DisplayObject in container.getChildren())
 			{
@@ -43,17 +49,7 @@ package ns.flex.util
 			}
 		}
 
-		static public function findParent(diso:DisplayObject, type:Class):DisplayObject
-		{
-			if (diso.parent && diso.parent is type)
-				return diso.parent
-			else if (diso.parent)
-				return findParent(diso.parent, type)
-			else
-				return null;
-		}
-
-		static public function findContainerChild(container:DisplayObjectContainer,
+		public static function findContainerChild(container:DisplayObjectContainer,
 			type:Class, property:String=null, value:Object=null):DisplayObject
 		{
 			var result:DisplayObject;
@@ -79,11 +75,68 @@ package ns.flex.util
 			return null;
 		}
 
+		public static function findParent(diso:DisplayObject, type:Class):DisplayObject
+		{
+			if (diso.parent && diso.parent is type)
+				return diso.parent
+			else if (diso.parent)
+				return findParent(diso.parent, type)
+			else
+				return null;
+		}
+
+		public static function initPopUP(title:String, child:DisplayObject, width:int=-1,
+			height:int=-1, horizontalAlign:String=null):PopWindow
+		{
+			var pop:PopWindow=new PopWindow();
+			pop.title=title;
+
+			if (width > -1)
+				pop.width=width;
+
+			if (height > -1)
+				pop.height=height;
+
+			if (horizontalAlign)
+				pop.setStyle('horizontalAlign', horizontalAlign);
+			pop.addChild(child);
+			return pop;
+		}
+
+		public static function removeChildrenByName(container:DisplayObjectContainer,
+			names:Array):void
+		{
+			for each (var name:String in names)
+			{
+				var child:DisplayObject=
+					ContainerUtil.findContainerChild(container, DisplayObject, 'name',
+					name);
+				if (child)
+					child.parent.removeChild(child);
+			}
+		}
+
+		/**
+		 * 显示对话框
+		 * @param title 标题
+		 * @param parent 父显示对象
+		 * @param child 显示内容
+		 * @param width 宽
+		 * @param height 高
+		 */
+		public static function showPopUP(title:String, parent:DisplayObject,
+			child:DisplayObject, width:int=-1, height:int=-1):PopWindow
+		{
+			var pop:PopWindow=initPopUP(title, child, width, height);
+			pop.show(parent);
+			return pop;
+		}
+
 		/**
 		 * 级联验证容器内输入对象的输入内容
 		 * @param container
 		 */
-		static public function validate(container:Container,
+		public static function validate(container:Container,
 			isSetFocus:Boolean=true):Boolean
 		{
 			for each (var uic:UIComponent in container.getChildren())
@@ -113,47 +166,6 @@ package ns.flex.util
 				}
 			}
 			return true;
-		}
-
-		static public function builderContainer(parent:Container, ... children):Container
-		{
-			for each (var child:* in children)
-				parent.addChild(child);
-			return parent;
-		}
-
-		/**
-		 * 显示对话框
-		 * @param title 标题
-		 * @param parent 父显示对象
-		 * @param child 显示内容
-		 * @param width 宽
-		 * @param height 高
-		 */
-		static public function showPopUP(title:String, parent:DisplayObject,
-			child:DisplayObject, width:int=-1, height:int=-1):PopWindow
-		{
-			var pop:PopWindow=initPopUP(title, child, width, height);
-			pop.show(parent);
-			return pop;
-		}
-
-		static public function initPopUP(title:String, child:DisplayObject, width:int=-1,
-			height:int=-1, horizontalAlign:String=null):PopWindow
-		{
-			var pop:PopWindow=new PopWindow();
-			pop.title=title;
-
-			if (width > -1)
-				pop.width=width;
-
-			if (height > -1)
-				pop.height=height;
-
-			if (horizontalAlign)
-				pop.setStyle('horizontalAlign', horizontalAlign);
-			pop.addChild(child);
-			return pop;
 		}
 	}
 }

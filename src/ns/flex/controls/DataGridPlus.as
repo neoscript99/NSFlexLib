@@ -219,12 +219,14 @@ package ns.flex.controls
 			var sheet:Sheet=new Sheet();
 			sheet.resize(dataList ? dataList.length + 1 : 1, columns.length);
 			for (var k:int=0; k < columns.length; k++)
-				sheet.setCell(0, k, columns[k].headerText)
+				if (columns[k].visible)
+					sheet.setCell(0, k, columns[k].headerText)
 
 			if (dataList)
 				for (var i:int=0; i < dataList.length; i++)
 					for (var j:int=0; j < columns.length; j++)
-						sheet.setCell(i + 1, j, columns[j].itemToLabel(dataList[i]))
+						if (columns[j].visible)
+							sheet.setCell(i + 1, j, columns[j].itemToLabel(dataList[i]))
 
 			var xls:ExcelFile=new ExcelFile();
 			xls.sheets.addItem(sheet);
@@ -240,11 +242,10 @@ package ns.flex.controls
 			if (withHead)
 			{
 				for (var k:int=0; k < columns.length; k++)
-				{
-					ss=
-						ss.concat(StringUtil.toLine(columns[k].headerText),
-						k == columns.length - 1 ? '' : spiltor);
-				}
+					if (columns[k].visible)
+						ss=
+							ss.concat(StringUtil.toLine(columns[k].headerText),
+							k == columns.length - 1 ? '' : spiltor);
 				ss+='\n';
 			}
 
@@ -252,11 +253,10 @@ package ns.flex.controls
 				for (var i:int=0; i < dataList.length; i++)
 				{
 					for (var j:int=0; j < columns.length; j++)
-					{
-						ss=
-							ss.concat(StringUtil.toLine(columns[j].itemToLabel(dataList[i])),
-							j == columns.length - 1 ? '' : spiltor);
-					}
+						if (columns[j].visible)
+							ss=
+								ss.concat(StringUtil.toLine(columns[j].itemToLabel(dataList[i])),
+								j == columns.length - 1 ? '' : spiltor);
 					ss=ss.concat('\n');
 				}
 
@@ -433,7 +433,8 @@ package ns.flex.controls
 				if (col is DataGridColumnPlus)
 					if (DataGridColumnPlus(col).readonly && editable)
 						continue;
-				form.addChild(new DataColumnFormItem(this, col, editable));
+				if (col.visible)
+					form.addChild(new DataColumnFormItem(this, col, editable));
 			}
 
 			if (editable)

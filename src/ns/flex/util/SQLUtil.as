@@ -9,15 +9,24 @@ package ns.flex.util
 	 */
 	public class SQLUtil
 	{
+
 		/**
-		 * 右模糊
-		 * @param param 查询条件
-		 * @return  右模糊后的查询条件
+		 * 清除远程对象的查询结果
+		 * @param ro
+		 * @param methods 方法数组
 		 */
-		static public function fuzzyRight(param:String):String
+		public static function clearResults(ro:RemoteObject, ... methods):void
 		{
-			param=param == null ? '' : param;
-			return param.concat('%');
+			for each (var method:String in methods)
+			{
+				ro.getOperation(method).clearResult();
+				ro.getOperation(method).dispatchEvent(new ResultEvent(ResultEvent.RESULT));
+			}
+		}
+
+		public static function count(ro:RemoteObject, params:Object, domain:String):void
+		{
+			ro.count(params, domain);
 		}
 
 		/**
@@ -29,19 +38,36 @@ package ns.flex.util
 		 * @param orders
 		 * @param domain
 		 */
-		static public function countAndList(ro:RemoteObject, params:Object,
+		public static function countAndList(ro:RemoteObject, params:Object,
 			maxResults:int, firstResult:int, orders:Array=null, domain:String=null):void
 		{
-			var notNestOrders:Array=[];
-			ro.count(params, domain);
 
+			count(ro, params, domain);
+			list(ro, params, maxResults, firstResult, orders, domain);
+		}
+
+		/**
+		 * 右模糊
+		 * @param param 查询条件
+		 * @return  右模糊后的查询条件
+		 */
+		public static function fuzzyRight(param:String):String
+		{
+			param=param == null ? '' : param;
+			return param.concat('%');
+		}
+
+		public static function list(ro:RemoteObject, params:Object, maxResults:int,
+			firstResult:int, orders:Array, domain:String):void
+		{
 			//线程安全创建一个新对象，如果直接对param赋值有时会影响count的参数
-			var listParam:Object={}
-			for (var prop:* in params)
-				listParam[prop]=params[prop];
-
-			listParam.maxResults=[maxResults]
-			listParam.firstResult=[firstResult]
+			var listParam:Object=ObjectUtils.clone(params)
+			if (maxResults > -1)
+			{
+				listParam.maxResults=[maxResults]
+				listParam.firstResult=[firstResult]
+			}
+			var notNestOrders:Array=[];
 			listParam.order=notNestOrders
 
 			//嵌套字段的排序criteria
@@ -69,20 +95,6 @@ package ns.flex.util
 				}
 			}
 			ro.list(listParam, domain);
-		}
-
-		/**
-		 * 清除远程对象的查询结果
-		 * @param ro
-		 * @param methods 方法数组
-		 */
-		static public function clearResults(ro:RemoteObject, ... methods):void
-		{
-			for each (var method:String in methods)
-			{
-				ro.getOperation(method).clearResult();
-				ro.getOperation(method).dispatchEvent(new ResultEvent(ResultEvent.RESULT));
-			}
 		}
 	}
 }
