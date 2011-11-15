@@ -5,10 +5,10 @@ package ns.flex.report
 	import mx.containers.ApplicationControlBar;
 	import ns.flex.util.ContainerUtil;
 
+	[Event(name="export")]
 	[Event(name="change")]
 	public class ReportControlBar extends ApplicationControlBar
 	{
-
 		public function get queryParam():Object
 		{
 			return null;

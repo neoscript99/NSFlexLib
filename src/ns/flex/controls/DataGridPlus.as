@@ -127,32 +127,32 @@ package ns.flex.controls
 							var nestItem:Object=sumItem;
 							col.dataField.split('.').forEach(function(element:*,
 									index:int, arr:Array):void
-							{
-								if (!nestItem[element])
-								{
-									if (index < arr.length - 1)
-										nestItem[element]={}
-									else
 									{
-										if (col is DataGridColumnPlus &&
-											col['groupMethod'] &&
-											col['groupMethod'] != 'none')
+										if (!nestItem[element])
 										{
-											hasGroupColumn=true;
-											var valueArray:Array=[];
-											for (var i:int=0; i < acp.length; i++)
-												valueArray.push((col as DataGridColumnPlus).getValue(acp[i]));
-											nestItem[element]=
-												MathUtil[col['groupMethod']](valueArray);
+											if (index < arr.length - 1)
+												nestItem[element]={}
+											else
+											{
+												if (col is DataGridColumnPlus &&
+													col['groupMethod'] &&
+													col['groupMethod'] != 'none')
+												{
+													hasGroupColumn=true;
+													var valueArray:Array=[];
+													for (var i:int=0; i < acp.length; i++)
+														valueArray.push((col as DataGridColumnPlus).getValue(acp[i]));
+													nestItem[element]=
+														MathUtil[col['groupMethod']](valueArray);
+												}
+												else if (minVisible == ci)
+													nestItem[element]=sumColumnLabel
+												else
+													nestItem[element]=''
+											}
 										}
-										else if (minVisible == ci)
-											nestItem[element]=sumColumnLabel
-										else
-											nestItem[element]=''
-									}
-								}
-								nestItem=nestItem[element]
-							})
+										nestItem=nestItem[element]
+									})
 						}
 					}
 					if (hasGroupColumn)
@@ -228,17 +228,16 @@ package ns.flex.controls
 
 		public function rowsToExcel(dataList:Object):ByteArray
 		{
+			var cols:Array=visibleColumns;
 			var sheet:Sheet=new Sheet();
-			sheet.resize(dataList ? dataList.length + 1 : 1, columns.length);
-			for (var k:int=0; k < columns.length; k++)
-				if (columns[k].visible)
-					sheet.setCell(0, k, columns[k].headerText)
+			sheet.resize(dataList ? dataList.length + 1 : 1, cols.length);
+			for (var k:int=0; k < cols.length; k++)
+				sheet.setCell(0, k, cols[k].headerText)
 
 			if (dataList)
 				for (var i:int=0; i < dataList.length; i++)
-					for (var j:int=0; j < columns.length; j++)
-						if (columns[j].visible)
-							sheet.setCell(i + 1, j, columns[j].itemToLabel(dataList[i]))
+					for (var j:int=0; j < cols.length; j++)
+						sheet.setCell(i + 1, j, cols[j].itemToLabel(dataList[i]))
 
 			var xls:ExcelFile=new ExcelFile();
 			xls.sheets.addItem(sheet);
@@ -250,25 +249,23 @@ package ns.flex.controls
 			withHead:Boolean=true):String
 		{
 			var ss:String='';
-
+			var cols:Array=visibleColumns;
 			if (withHead)
 			{
-				for (var k:int=0; k < columns.length; k++)
-					if (columns[k].visible)
-						ss=
-							ss.concat(StringUtil.toLine(columns[k].headerText),
-							k == columns.length - 1 ? '' : spiltor);
+				for (var k:int=0; k < cols.length; k++)
+					ss=
+						ss.concat(StringUtil.toLine(cols[k].headerText),
+						k == cols.length - 1 ? '' : spiltor);
 				ss+='\n';
 			}
 
 			if (dataList)
 				for (var i:int=0; i < dataList.length; i++)
 				{
-					for (var j:int=0; j < columns.length; j++)
-						if (columns[j].visible)
-							ss=
-								ss.concat(StringUtil.toLine(columns[j].itemToLabel(dataList[i])),
-								j == columns.length - 1 ? '' : spiltor);
+					for (var j:int=0; j < cols.length; j++)
+						ss=
+							ss.concat(StringUtil.toLine(cols[j].itemToLabel(dataList[i])),
+							j == cols.length - 1 ? '' : spiltor);
 					ss=ss.concat('\n');
 				}
 
@@ -355,6 +352,15 @@ package ns.flex.controls
 			deleteEnabled=deleteAllEnabled=createEnabled=modifyEnabled=enabled;
 		}
 
+		public function get visibleColumns():Array
+		{
+			return columns.filter(function(item:DataGridColumn, index:int,
+					array:Array):Boolean
+					{
+						return item.visible;
+					})
+		}
+
 		private function contextMenu_menuSelect(evt:ContextMenuEvent):void
 		{
 			this.selectedIndex=lastRollOverIndex;
@@ -384,24 +390,24 @@ package ns.flex.controls
 		{
 			Alert.show("确认全部删除？", null, Alert.YES | Alert.NO, this,
 				function(evt:CloseEvent):void
-			{
-				if (evt.detail == Alert.YES)
 				{
-					dispatchEvent(new Event('deleteAll'));
-				}
-			})
+					if (evt.detail == Alert.YES)
+					{
+						dispatchEvent(new Event('deleteAll'));
+					}
+				})
 		}
 
 		private function deleteItems(evt:Event):void
 		{
 			Alert.show("确认删除？", null, Alert.YES | Alert.NO, this,
 				function(evt:CloseEvent):void
-			{
-				if (evt.detail == Alert.YES)
 				{
-					dispatchEvent(new Event('deleteItems'));
-				}
-			})
+					if (evt.detail == Alert.YES)
+					{
+						dispatchEvent(new Event('deleteItems'));
+					}
+				})
 		}
 
 		private function dgItemRollOut(event:ListEvent):void
@@ -440,13 +446,12 @@ package ns.flex.controls
 		{
 			var form:Form=new Form();
 			var pop:PopWindow=ContainerUtil.initPopUP('查看', form, -1, -1, 'center');
-			for each (var col:DataGridColumn in columns)
+			for each (var col:DataGridColumn in visibleColumns)
 			{
 				if (col is DataGridColumnPlus)
 					if (DataGridColumnPlus(col).readonly && editable)
 						continue;
-				if (col.visible)
-					form.addChild(new DataColumnFormItem(this, col, editable));
+				form.addChild(new DataColumnFormItem(this, col, editable));
 			}
 
 			if (editable)

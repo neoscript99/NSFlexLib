@@ -39,8 +39,8 @@ package ns.flex.controls
 			column:DataGridColumnPlus):String
 		{
 			var value:Number=Number(column.getValue(item));
-			return (!isNaN(value)) ? StringUtil.formatNumber(value, column._percision,
-				column.isSeparateThousands) : String(value);
+			return StringUtil.formatNumber(value, column._percision,
+				column.isSeparateThousands);
 		}
 
 		/**
@@ -108,7 +108,8 @@ package ns.flex.controls
 			_percision=p;
 			if (!groupMethod)
 				groupMethod='sum';
-			labelFunction=DataGridColumnPlus.getNumberLabel;
+			if (labelFunction == null)
+				labelFunction=DataGridColumnPlus.getNumberLabel;
 			this.setStyle('textAlign', 'right');
 		}
 
