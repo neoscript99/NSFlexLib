@@ -62,7 +62,7 @@ package ns.flex.util
 						ObjectUtil.compare(diso[property], value) == 0)
 						return diso;
 				}
-				else if (diso is DisplayObjectContainer)
+				if (diso is DisplayObjectContainer)
 				{
 					result=
 						findContainerChild(DisplayObjectContainer(diso), type, property,
@@ -104,7 +104,7 @@ package ns.flex.util
 		}
 
 		public static function removeChildrenByName(container:DisplayObjectContainer,
-			names:Array):void
+			... names):void
 		{
 			for each (var name:String in names)
 			{

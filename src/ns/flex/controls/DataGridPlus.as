@@ -64,6 +64,7 @@ package ns.flex.controls
 		public var sumColumnLabel:String='汇总';
 		protected var popEditing:PopWindow;
 		protected var popView:PopWindow;
+		private var _itemDoubleClickHandler:Function;
 		[Bindable]
 		private var lastRollOverIndex:Number;
 		private var orderList:ArrayCollectionPlus=new ArrayCollectionPlus();
@@ -127,32 +128,32 @@ package ns.flex.controls
 							var nestItem:Object=sumItem;
 							col.dataField.split('.').forEach(function(element:*,
 									index:int, arr:Array):void
+							{
+								if (!nestItem[element])
+								{
+									if (index < arr.length - 1)
+										nestItem[element]={}
+									else
 									{
-										if (!nestItem[element])
+										if (col is DataGridColumnPlus &&
+											col['groupMethod'] &&
+											col['groupMethod'] != 'none')
 										{
-											if (index < arr.length - 1)
-												nestItem[element]={}
-											else
-											{
-												if (col is DataGridColumnPlus &&
-													col['groupMethod'] &&
-													col['groupMethod'] != 'none')
-												{
-													hasGroupColumn=true;
-													var valueArray:Array=[];
-													for (var i:int=0; i < acp.length; i++)
-														valueArray.push((col as DataGridColumnPlus).getValue(acp[i]));
-													nestItem[element]=
-														MathUtil[col['groupMethod']](valueArray);
-												}
-												else if (minVisible == ci)
-													nestItem[element]=sumColumnLabel
-												else
-													nestItem[element]=''
-											}
+											hasGroupColumn=true;
+											var valueArray:Array=[];
+											for (var i:int=0; i < acp.length; i++)
+												valueArray.push((col as DataGridColumnPlus).getValue(acp[i]));
+											nestItem[element]=
+												MathUtil[col['groupMethod']](valueArray);
 										}
-										nestItem=nestItem[element]
-									})
+										else if (minVisible == ci)
+											nestItem[element]=sumColumnLabel
+										else
+											nestItem[element]=''
+									}
+								}
+								nestItem=nestItem[element]
+							})
 						}
 					}
 					if (hasGroupColumn)
@@ -179,6 +180,16 @@ package ns.flex.controls
 		public function isSumItem(item:Object):Boolean
 		{
 			return item.uniqueIdForSumItem == uid;
+		}
+
+		public function set itemDoubleClickHandler(fun:Function):void
+		{
+			this.doubleClickEnabled=true;
+			if (_itemDoubleClickHandler != null)
+				this.removeEventListener(ListEvent.ITEM_DOUBLE_CLICK,
+					_itemDoubleClickHandler);
+			this.addEventListener(ListEvent.ITEM_DOUBLE_CLICK, fun);
+			_itemDoubleClickHandler=fun;
 		}
 
 		public function get orders():Array
@@ -356,9 +367,9 @@ package ns.flex.controls
 		{
 			return columns.filter(function(item:DataGridColumn, index:int,
 					array:Array):Boolean
-					{
-						return item.visible;
-					})
+			{
+				return item.visible;
+			})
 		}
 
 		private function contextMenu_menuSelect(evt:ContextMenuEvent):void
@@ -390,24 +401,24 @@ package ns.flex.controls
 		{
 			Alert.show("确认全部删除？", null, Alert.YES | Alert.NO, this,
 				function(evt:CloseEvent):void
+			{
+				if (evt.detail == Alert.YES)
 				{
-					if (evt.detail == Alert.YES)
-					{
-						dispatchEvent(new Event('deleteAll'));
-					}
-				})
+					dispatchEvent(new Event('deleteAll'));
+				}
+			})
 		}
 
 		private function deleteItems(evt:Event):void
 		{
 			Alert.show("确认删除？", null, Alert.YES | Alert.NO, this,
 				function(evt:CloseEvent):void
+			{
+				if (evt.detail == Alert.YES)
 				{
-					if (evt.detail == Alert.YES)
-					{
-						dispatchEvent(new Event('deleteItems'));
-					}
-				})
+					dispatchEvent(new Event('deleteItems'));
+				}
+			})
 		}
 
 		private function dgItemRollOut(event:ListEvent):void
@@ -430,11 +441,8 @@ package ns.flex.controls
 		{
 			menuSupport.createMenuItem(menuLabel, action, separatorBefore, alwaysEnabled);
 
-			if (withDoubleClick && !doubleClickEnabled)
-			{
-				this.doubleClickEnabled=true;
-				this.addEventListener(ListEvent.ITEM_DOUBLE_CLICK, action);
-			}
+			if (withDoubleClick)
+				itemDoubleClickHandler=action;
 		}
 
 		private function init(event:FlexEvent):void

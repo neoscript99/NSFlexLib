@@ -3,6 +3,7 @@ package ns.flex.report
 	import flash.events.Event;
 	import mx.containers.Panel;
 	import mx.events.FlexEvent;
+	import mx.events.ListEvent;
 	import mx.rpc.events.ResultEvent;
 	import mx.rpc.remoting.mxml.RemoteObject;
 	import ns.flex.controls.DataGridPlus;
@@ -90,6 +91,7 @@ package ns.flex.report
 			dgp.menuSupport.createMenuItem('向下钻取', drillDown, true);
 			dgp.menuSupport.createMenuItem('向上钻取', drillUp);
 			dgp.menuSupport.createMenuItem('返回顶层', drillTop, false, true);
+			dgp.itemDoubleClickHandler=drillDown;
 		}
 
 		protected function get drillMaxDepth():int
