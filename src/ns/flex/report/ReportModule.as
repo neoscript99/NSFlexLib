@@ -53,12 +53,25 @@ package ns.flex.report
 		{
 			query();
 			if (paging)
+			{
 				reportService.getOperation('count').addEventListener(ResultEvent.RESULT,
 					paging.updateDispaly);
+				reportService.getOperation('countDistinct').addEventListener(ResultEvent.RESULT,
+					paging.updateDispaly);
+			}
 			reportService.getOperation('export').addEventListener(ResultEvent.RESULT,
 				exportFile);
 			if (drillable)
 				drillInit();
+		}
+
+		protected function countDistinctAndList(first:int, projections:Object):void
+		{
+			var param:Object=queryParam;
+			param.projections=projections
+			reportService.countDistinct(param, domain);
+			SQLUtil.list(reportService, queryParam, paging.offset.value,
+				paging.forFirst(first), dgp.orders, domain);
 		}
 
 		protected function get dgp():DataGridPlus

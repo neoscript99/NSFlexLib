@@ -27,6 +27,7 @@ package ns.flex.controls
 	import ns.flex.util.ArrayCollectionPlus;
 	import ns.flex.util.ContainerUtil;
 	import ns.flex.util.MathUtil;
+	import ns.flex.util.ObjectUtils;
 	import ns.flex.util.StringUtil;
 
 	[Event(name="createItem")]
@@ -117,43 +118,27 @@ package ns.flex.controls
 				if (acp.length > 0)
 				{
 					var minVisible:int=-1;
-					for (var ci:int=0; ci < columns.length; ci++)
+					var cols:Array=columns;
+					for (var ci:int=0; ci < cols.length; ci++)
 					{
-						var col:DataGridColumn=columns[ci];
-						if (minVisible < 0 && col.visible)
-							minVisible=ci;
+						var col:DataGridColumn=cols[ci];
 						if (col.dataField)
 						{
-							//嵌套对象生成
-							var nestItem:Object=sumItem;
-							col.dataField.split('.').forEach(function(element:*,
-									index:int, arr:Array):void
-									{
-										if (!nestItem[element])
-										{
-											if (index < arr.length - 1)
-												nestItem[element]={}
-											else
-											{
-												if (col is DataGridColumnPlus &&
-													col['groupMethod'] &&
-													col['groupMethod'] != 'none')
-												{
-													hasGroupColumn=true;
-													var valueArray:Array=[];
-													for (var i:int=0; i < acp.length; i++)
-														valueArray.push((col as DataGridColumnPlus).getValue(acp[i]));
-													nestItem[element]=
-														MathUtil[col['groupMethod']](valueArray);
-												}
-												else if (minVisible == ci)
-													nestItem[element]=sumColumnLabel
-												else
-													nestItem[element]=''
-											}
-										}
-										nestItem=nestItem[element]
-									})
+							if (minVisible < 0 && col.visible)
+								minVisible=ci;
+							var genValue:Object=''
+							if (col is DataGridColumnPlus && col['groupMethod'] &&
+								col['groupMethod'] != 'none')
+							{
+								hasGroupColumn=true;
+								var valueArray:Array=[];
+								for (var i:int=0; i < acp.length; i++)
+									valueArray.push((col as DataGridColumnPlus).getValue(acp[i]));
+								genValue=MathUtil[col['groupMethod']](valueArray);
+							}
+							else if (minVisible == ci)
+								genValue=sumColumnLabel
+							ObjectUtils.setValue(sumItem, col.dataField, genValue);
 						}
 					}
 					if (hasGroupColumn)
@@ -456,10 +441,8 @@ package ns.flex.controls
 			var pop:PopWindow=ContainerUtil.initPopUP('查看', form, -1, -1, 'center');
 			for each (var col:DataGridColumn in visibleColumns)
 			{
-				if (col is DataGridColumnPlus)
-					if (DataGridColumnPlus(col).readonly && editable)
-						continue;
-				form.addChild(new DataColumnFormItem(this, col, editable));
+				if (col.editable || !editable)
+					form.addChild(new DataColumnFormItem(this, col, editable));
 			}
 
 			if (editable)

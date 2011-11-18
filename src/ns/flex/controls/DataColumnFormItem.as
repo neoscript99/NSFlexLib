@@ -62,7 +62,7 @@ package ns.flex.controls
 			ObjectUtils.copyProperties(cbp, colp.comboBoxInfo);
 			BindingUtils.bindSetter(function(value:Object):void
 			{
-				if (value[colp.dataField])
+				if (value)
 					cbp.defaultLabel=colp.itemToLabel(value);
 				else
 					cbp.selectedIndex=0;
@@ -70,7 +70,14 @@ package ns.flex.controls
 			BindingUtils.bindSetter(function(value:Object):void
 			{
 				if (value)
-					dgp.showItemProxy[colp.dataField]=value[colp.comboBoxInfo.dataField];
+				{
+					//write col.dataField if dataField is set
+					if (colp.comboBoxInfo.dataField)
+						dgp.showItemProxy[colp.dataField]=
+							value[colp.comboBoxInfo.dataField];
+					else //set nest first field
+						dgp.showItemProxy[colp.dataField.split('.')[0]]=value;
+				}
 			}, cbp, 'selectedItem');
 			return cbp;
 		}

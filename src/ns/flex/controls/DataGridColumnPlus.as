@@ -25,8 +25,6 @@ package ns.flex.controls
 		public var groupMethod:String;
 		[Inspectable(category="General")]
 		public var isSeparateThousands:Boolean=true;
-		[Inspectable(category="General")]
-		public var readonly:Boolean=false;
 		private var _percision:int;
 
 		public function DataGridColumnPlus(columnName:String=null)
@@ -83,7 +81,7 @@ package ns.flex.controls
 		public function set chineseSort(value:Boolean):void
 		{
 			if (value)
-				this.sortCompareFunction=StringUtil.chineseCompare;
+				this.sortCompareFunction=complexColumnSortCompare;
 		}
 
 		public function getValue(item:Object):Object

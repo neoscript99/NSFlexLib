@@ -40,6 +40,22 @@ package ns.flex.util
 				copyProperties(merger, obj, true);
 			return merger;
 		}
+
+		public static function setValue(obj:Object, field:String, value:*):void
+		{
+			var nestItem:Object=obj;
+			field.split('.').forEach(function(element:*, index:int, arr:Array):void
+			{
+				if (index < arr.length - 1)
+				{
+					if (!nestItem[element])
+						nestItem[element]={}
+					nestItem=nestItem[element]
+				}
+				else
+					nestItem[element]=value
+			})
+		}
 	}
 }
 
