@@ -4,6 +4,7 @@ package ns.flex.controls
 	import mx.controls.dataGridClasses.DataGridColumn;
 	import mx.core.ClassFactory;
 	import ns.flex.util.DateUtil;
+	import ns.flex.util.ObjectUtils;
 	import ns.flex.util.StringUtil;
 
 	/**
@@ -145,15 +146,7 @@ package ns.flex.controls
 
 		override protected function deriveComplexColumnData(data:Object):Object
 		{
-			var currentRef:Object=data;
-			if (complexFieldNameComponents)
-			{
-				for (var i:int=0; i < complexFieldNameComponents.length; i++)
-					if (currentRef)
-						currentRef=currentRef[complexFieldNameComponents[i]];
-			}
-
-			return currentRef;
+			return ObjectUtils.getValue(data, dataField);
 		}
 	}
 }

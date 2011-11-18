@@ -22,6 +22,16 @@ package ns.flex.util
 						toObject[prop]=fromObject[prop];
 		}
 
+		public static function getValue(obj:Object, field:String):Object
+		{
+			var cur:Object=obj;
+			var chain:Array=field.split('.');
+			for (var i:int=0; i < chain.length; i++)
+				if (cur)
+					cur=cur[chain[i]];
+			return cur;
+		}
+
 		public static function mergeObject(... objs):Object
 		{
 			var merger:Object={};
@@ -32,3 +42,4 @@ package ns.flex.util
 		}
 	}
 }
+

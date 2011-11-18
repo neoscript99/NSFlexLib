@@ -15,6 +15,77 @@ package ns.flex.util
 			super(ArrayUtil.toArray(source));
 		}
 
+		public static function withAll(source:Object,
+			labelField:String):ArrayCollectionPlus
+		{
+			var all:Object={}
+			all[labelField]='全部';
+			return withFirst(source, all);
+		}
+
+		public static function withFirst(source:Object, first:Object):ArrayCollectionPlus
+		{
+			return new ArrayCollectionPlus(source).addFirst(first);
+		}
+
+		/**
+		 * 增加到最前面
+		 * @param item 增加的项
+		 * @return 集合本身
+		 */
+		public function addFirst(item:Object):ArrayCollectionPlus
+		{
+			addItemAt(item, 0);
+			return this;
+		}
+
+		public function each(f:Function):void
+		{
+			for (var i:int=0; i < this.length; i++)
+				f(getItemAt(i))
+		}
+
+		/**
+		 * 查询项目
+		 * @param f 函数f(item)，返回true代表符合查询条件
+		 * @return 查找到的项或null
+		 */
+		public function find(f:Function):Object
+		{
+			for (var i:int=0; i < this.length; i++)
+			{
+				var item:Object=this.getItemAt(i);
+
+				if (f(item))
+					return item;
+			}
+			return null;
+		}
+
+		public function findAllByField(field:String, value:*):ArrayCollectionPlus
+		{
+			var acp:ArrayCollectionPlus=new ArrayCollectionPlus();
+			for each (var item:* in this)
+				if (ObjectUtils.getValue(item, field) == value)
+					acp.addItem(item);
+			return acp;
+		}
+
+		[Bindable("collectionChange")]
+		/**
+		 * 根据字段查找集合项
+		 * @param field 字段名称
+		 * @param value 值
+		 * @return  找到的集合项或null
+		 */
+		public function findByField(field:String, value:*):Object
+		{
+			for each (var item:* in this)
+				if (ObjectUtils.getValue(item, field) == value)
+					return item;
+			return null;
+		}
+
 		public function getFieldArray(field:String):Array
 		{
 			var fieldArray:Array=[];
@@ -23,6 +94,59 @@ package ns.flex.util
 				fieldArray.push(this.getItemAt(i)[field]);
 			}
 			return fieldArray;
+		}
+
+		/**
+		 * 查找符合条件的所有集合项的集合
+		 * @param f 函数，f(item)为true代表符合条件
+		 * @return  新集合
+		 */
+		public function grep(f:Function):ArrayCollectionPlus
+		{
+			var acp:ArrayCollectionPlus=new ArrayCollectionPlus();
+
+			for (var i:int=0; i < this.length; i++)
+			{
+				var item:Object=this.getItemAt(i);
+
+				if (f(item))
+					acp.addItem(item);
+			}
+			return acp;
+		}
+
+		/**
+		 * 删除符合条件的所有集合项
+		 * @param f 函数f(item)为true时代表符合条件
+		 */
+		public function remove(f:Function):void
+		{
+			for (var i:int=0; i < this.length; i++)
+			{
+				var item:Object=this.getItemAt(i);
+
+				if (f(item))
+					this.removeItemAt(i);
+			}
+		}
+
+		/**
+		 * 相加每个集合项对应的计算值
+		 * @param f 函数f(item)为计算结果
+		 * @return 总和
+		 */
+		public function sum(f:Function):Object
+		{
+			var value:Object;
+
+			if (this.length > 0)
+				value=f(this.getItemAt(0));
+
+			for (var i:int=1; i < this.length; i++)
+			{
+				value+=f(this.getItemAt(i));
+			}
+			return value;
 		}
 
 		/**
@@ -46,130 +170,6 @@ package ns.flex.util
 				array.push(innerArray);
 			});
 			return array;
-		}
-
-		/**
-		 * 增加到最前面
-		 * @param item 增加的项
-		 * @return 集合本身
-		 */
-		public function addFirst(item:Object):ArrayCollectionPlus
-		{
-			addItemAt(item, 0);
-			return this;
-		}
-
-		/**
-		 * 查询项目
-		 * @param f 函数f(item)，返回true代表符合查询条件
-		 * @return 查找到的项或null
-		 */
-		public function find(f:Function):Object
-		{
-			for (var i:int=0; i < this.length; i++)
-			{
-				var item:Object=this.getItemAt(i);
-
-				if (f(item))
-					return item;
-			}
-			return null;
-		}
-
-		[Bindable("collectionChange")]
-		/**
-		 * 根据字段查找集合项
-		 * @param field 字段名称
-		 * @param value 值
-		 * @return  找到的集合项或null
-		 */
-		public function findByField(field:String, value:*):Object
-		{
-			for each (var item:* in this)
-				if (item[field] == value)
-					return item;
-			return null;
-		}
-
-		public function findAllByField(field:String, value:*):ArrayCollectionPlus
-		{
-			var acp:ArrayCollectionPlus=new ArrayCollectionPlus();
-			for each (var item:* in this)
-				if (item[field] == value)
-					acp.addItem(item);
-			return acp;
-		}
-
-		/**
-		 * 删除符合条件的所有集合项
-		 * @param f 函数f(item)为true时代表符合条件
-		 */
-		public function remove(f:Function):void
-		{
-			for (var i:int=0; i < this.length; i++)
-			{
-				var item:Object=this.getItemAt(i);
-
-				if (f(item))
-					this.removeItemAt(i);
-			}
-		}
-
-		public function each(f:Function):void
-		{
-			for (var i:int=0; i < this.length; i++)
-				f(getItemAt(i))
-		}
-
-		/**
-		 * 相加每个集合项对应的计算值
-		 * @param f 函数f(item)为计算结果
-		 * @return 总和
-		 */
-		public function sum(f:Function):Object
-		{
-			var value:Object;
-
-			if (this.length > 0)
-				value=f(this.getItemAt(0));
-
-			for (var i:int=1; i < this.length; i++)
-			{
-				value+=f(this.getItemAt(i));
-			}
-			return value;
-		}
-
-		/**
-		 * 查找符合条件的所有集合项的集合
-		 * @param f 函数，f(item)为true代表符合条件
-		 * @return  新集合
-		 */
-		public function grep(f:Function):ArrayCollectionPlus
-		{
-			var acp:ArrayCollectionPlus=new ArrayCollectionPlus();
-
-			for (var i:int=0; i < this.length; i++)
-			{
-				var item:Object=this.getItemAt(i);
-
-				if (f(item))
-					acp.addItem(item);
-			}
-			return acp;
-		}
-
-		static public function withAll(source:Object,
-			labelField:String):ArrayCollectionPlus
-		{
-			var all:Object={}
-			all[labelField]='全部';
-			return withFirst(source, all);
-		}
-
-		static public function withFirst(source:Object, first:Object):ArrayCollectionPlus
-		{
-			return new ArrayCollectionPlus(source).addFirst(first);
 		}
 	}
 }

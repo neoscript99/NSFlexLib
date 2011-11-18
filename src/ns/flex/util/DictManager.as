@@ -28,7 +28,6 @@ package ns.flex.util
 				{
 					initCompleted=true;
 					pb.close();
-					pb=null;
 				}
 			});
 		}
