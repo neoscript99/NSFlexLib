@@ -65,15 +65,6 @@ package ns.flex.report
 				drillInit();
 		}
 
-		protected function countDistinctAndList(first:int, projections:Object):void
-		{
-			var param:Object=queryParam;
-			param.projections=projections
-			reportService.countDistinct(param, domain);
-			SQLUtil.list(reportService, queryParam, paging.offset.value,
-				paging.forFirst(first), dgp.orders, domain);
-		}
-
 		protected function get dgp():DataGridPlus
 		{
 			if (!map.dgp)

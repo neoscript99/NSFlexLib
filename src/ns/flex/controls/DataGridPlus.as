@@ -88,7 +88,25 @@ package ns.flex.controls
 
 		public function addOrder(sortField:String, order:String=null):void
 		{
-			pushOrder(sortField, order);
+			var item:Object;
+
+			for (var i:int=0; i < orderList.length; i++)
+				if (orderList[i].sortField == sortField)
+				{
+					item=orderList[i];
+					item.order=(item.order == 'asc' ? 'desc' : 'asc');
+					orderList.removeItemAt(i);
+					break;
+				}
+
+			//是否可以多列排序
+			if (!multiSort)
+				orderList.removeAll();
+
+			if (item == null)
+				item={sortField: sortField, order: order == null ? defaultOrder : order};
+			orderList.addFirst(item);
+			refreshHeadText();
 		}
 
 		public function closePop():void
@@ -491,32 +509,9 @@ package ns.flex.controls
 
 			if (col.sortable && col.dataField)
 			{
-				pushOrder(col.dataField);
+				addOrder(col.dataField);
+				dispatchEvent(new Event('changeOrder'));
 			}
-		}
-
-		private function pushOrder(sortField:String, order:String=null):void
-		{
-			var item:Object;
-
-			for (var i:int=0; i < orderList.length; i++)
-				if (orderList[i].sortField == sortField)
-				{
-					item=orderList[i];
-					item.order=(item.order == 'asc' ? 'desc' : 'asc');
-					orderList.removeItemAt(i);
-					break;
-				}
-
-			//是否可以多列排序
-			if (!multiSort)
-				orderList.removeAll();
-
-			if (item == null)
-				item={sortField: sortField, order: order == null ? defaultOrder : order};
-			orderList.addFirst(item);
-			refreshHeadText();
-			dispatchEvent(new Event('changeOrder'));
 		}
 
 		private function refreshHeadText():void

@@ -24,26 +24,43 @@ package ns.flex.util
 			}
 		}
 
-		public static function count(ro:RemoteObject, params:Object, domain:String):void
-		{
-			ro.count(params, domain);
-		}
-
 		/**
 		 * 查询并统计总结果数
 		 * @param ro
-		 * @param params
+		 * @param param
 		 * @param maxResults
 		 * @param firstResult
 		 * @param orders
 		 * @param domain
 		 */
-		public static function countAndList(ro:RemoteObject, params:Object,
-			maxResults:int, firstResult:int, orders:Array=null, domain:String=null):void
+		public static function countAndList(ro:RemoteObject, param:Object, maxResults:int,
+			firstResult:int, orders:Array=null, domain:String=null):void
 		{
+			ro.count(param, domain);
+			list(ro, param, maxResults, firstResult, orders, domain);
+		}
 
-			count(ro, params, domain);
-			list(ro, params, maxResults, firstResult, orders, domain);
+		/**
+		 * 通过Distinct统计记录数，主要用于group查询
+		 * @param ro
+		 * @param param
+		 * @param countField 可以是嵌套字段，如 org.code
+		 * @param maxResults
+		 * @param firstResult
+		 * @param orders
+		 * @param domain
+		 */
+		public static function countDistinctAndList(ro:RemoteObject, param:Object,
+			countField:String, maxResults:int, firstResult:int, orders:Array=null,
+			domain:String=null):void
+		{
+			var countParam:Object=ObjectUtils.clone(param);
+			var fa:Array=countField.split('.');
+			var field:String=fa.pop();
+			countParam.projections=
+				ArrayUtil.toObject(fa, {countDistinct: [[field, 'countDistinct']]})
+			ro.countDistinct(countParam, domain);
+			list(ro, param, maxResults, firstResult, orders, domain);
 		}
 
 		/**
@@ -57,11 +74,11 @@ package ns.flex.util
 			return param.concat('%');
 		}
 
-		public static function list(ro:RemoteObject, params:Object, maxResults:int,
+		public static function list(ro:RemoteObject, param:Object, maxResults:int,
 			firstResult:int, orders:Array, domain:String):void
 		{
 			//线程安全创建一个新对象，如果直接对param赋值有时会影响count的参数
-			var listParam:Object=ObjectUtils.clone(params)
+			var listParam:Object=ObjectUtils.clone(param)
 			if (maxResults > -1)
 			{
 				listParam.maxResults=[maxResults]
