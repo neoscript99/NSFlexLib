@@ -19,7 +19,8 @@ package ns.flex.report
 		[Inspectable(category="General")]
 		[Bindable]
 		public var drillable:Boolean=false;
-		protected var drillDepth:int=0;
+		[Bindable]
+		public var drillDepth:int=0;
 		protected var drillLast:Object;
 		protected var map:Object={};
 		[Bindable]
