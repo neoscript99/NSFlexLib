@@ -25,6 +25,8 @@ package ns.flex.controls
 		public var groupMethod:String;
 		[Inspectable(category="General")]
 		public var isSeparateThousands:Boolean=true;
+		//use for set visiable,not work if is '*ignore*'
+		public var type:String;
 		private var _percision:int;
 
 		public function DataGridColumnPlus(columnName:String=null)

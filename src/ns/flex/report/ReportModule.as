@@ -15,17 +15,18 @@ package ns.flex.report
 
 	public class ReportModule extends AbstractModule
 	{
+		[Bindable]
+		public var drillDepth:int=0;
 
 		[Inspectable(category="General")]
 		[Bindable]
 		public var drillable:Boolean=false;
-		[Bindable]
-		public var drillDepth:int=0;
 		protected var drillLast:Object;
 		protected var map:Object={};
 		[Bindable]
 		protected var reportService:RemoteObject;
 		private var drillHist:Array=[];
+		private var drillPageHist:Array=[];
 		private var popProgress:ProgressBox=new ProgressBox;
 
 		/**
@@ -36,10 +37,10 @@ package ns.flex.report
 			addEventListener(FlexEvent.CREATION_COMPLETE, cc);
 		}
 
-		public function query():void
+		public function query(first:int=-1):void
 		{
 			if (paging)
-				queryPage(-1)
+				queryPage(first)
 			else
 				SQLUtil.list(reportService, queryParam, -1, 0, dgp.orders, domain);
 		}
@@ -83,6 +84,7 @@ package ns.flex.report
 		{
 			if (drillDepth < drillMaxDepth - 1 && dgp.selectedOriItem)
 			{
+				drillPageHist.push(paging ? paging.first : -1);
 				if (drillLast)
 					drillHist.push(drillLast);
 				drillLast=drillNow;
@@ -114,7 +116,8 @@ package ns.flex.report
 			drillDepth=0;
 			drillLast=null;
 			drillHist=[];
-			query();
+			query(drillPageHist[0]);
+			drillPageHist=[]
 		}
 
 		protected function drillUp(e:Event):void
@@ -123,7 +126,7 @@ package ns.flex.report
 			{
 				drillLast=drillHist.pop();
 				drillDepth--;
-				query();
+				query(drillPageHist.pop());
 			}
 		}
 

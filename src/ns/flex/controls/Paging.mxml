@@ -16,6 +16,8 @@
 	<mx:Script>
 		<![CDATA[
 			import mx.events.ItemClickEvent;
+			import mx.rpc.events.ResultEvent;
+			import mx.rpc.remoting.mxml.Operation;
 			import ns.flex.event.PageChangeEvent;
 
 			public var pageArrayNumber:int=5;
@@ -26,32 +28,52 @@
 			private var _offsetValue:int=15;
 			[Bindable]
 			private var curPage:int=0;
-			private var invalidateCurrentPageFlag:Boolean=false;
 			[Bindable]
 			private var pageArray:Array;
 			[Bindable]
 			private var totalPage:int;
+
+			public function set countMethod(method:Operation):void
+			{
+				method.addEventListener(ResultEvent.RESULT, function(e:ResultEvent):void
+				{
+					totalNumber=int(e.result);
+					updateDispaly();
+				})
+			}
+
+			public function get first():int
+			{
+				return (curPage - 1) * offset.value
+			}
 
 			/*
 			 *检查当前查询的firstResult是否小于0，是的话标识重置当前页
 			 */
 			public function forFirst(first:int):int
 			{
-				if (first < 0)
-				{
-					invalidateCurrentPage();
-					return 0;
-				}
-				else
-					return first;
+				var realFirst:int=first > 0 ? first : 0;
+				curPage=realFirst / offset.value + 1;
+				return realFirst;
 			}
 
 			/*
-			 *重置当前页标识
+			 *向前或向后多少页
+			 *num可以为负数
 			 */
-			public function invalidateCurrentPage():void
+			public function go(num:int):void
 			{
-				invalidateCurrentPageFlag=true;
+				gotoPage(curPage + num);
+			}
+
+			/*
+			 *跳转到某页，触发换页事件
+			 */
+			public function gotoPage(pageIndex:int):void
+			{
+				curPage=
+					(pageIndex > totalPage) ? totalPage : ((pageIndex < 1) ? 1 : pageIndex)
+				dispatchEvent(new PageChangeEvent((curPage - 1) * offset.value));
 			}
 
 			public function set offsetValue(value:int):void
@@ -71,25 +93,13 @@
 			 *新查询返回总数结果后，也就是totalPage已得到，必须调用本方法
 			 *如：<mx:method name="count" result="paging.updateDispaly()"/>
 			 *    ss.getOperation('count').addEventListener(ResultEvent.RESULT,paging.updateDispaly)
+			 *
 			 */
 			public function updateDispaly(e:Event=null):void
 			{
-				if (invalidateCurrentPageFlag)
-				{
-					curPage=(totalPage == 0) ? 0 : 1;
-					invalidateCurrentPageFlag=false;
-				}
+				if (curPage > totalPage)
+					curPage=totalPage
 				generatePageArray();
-			}
-
-			/*
-			 *跳转到某页，触发换页事件
-			 */
-			private function changePage(pageIndex:int):void
-			{
-				this.curPage=
-					(pageIndex > totalPage) ? totalPage : ((pageIndex < 1) ? 1 : pageIndex)
-				dispatchEvent(new PageChangeEvent((this.curPage - 1) * offset.value));
 			}
 
 			/*
@@ -151,23 +161,14 @@
 			}
 
 			/*
-			 *向前或向后多少页
-			 *num可以为负数
-			 */
-			private function go(num:int):void
-			{
-				changePage(curPage + num);
-			}
-
-			/*
 			 *在页码列表中选择页码
 			 */
 			private function selectPage(e:ItemClickEvent):void
 			{
 				if (e.label == '..')
-					changePage(parseInt(e.item.value));
+					gotoPage(parseInt(e.item.value));
 				else
-					changePage(parseInt(e.label));
+					gotoPage(parseInt(e.label));
 			}
 		]]>
 	</mx:Script>
