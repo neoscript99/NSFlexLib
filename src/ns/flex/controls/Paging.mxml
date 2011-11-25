@@ -21,11 +21,11 @@
 			import ns.flex.event.PageChangeEvent;
 
 			public var pageArrayNumber:int=5;
-			[Bindable]
-			public var totalNumber:int;
 
 			[Bindable]
 			private var _offsetValue:int=15;
+			[Bindable]
+			private var _totalNumber:int;
 			[Bindable]
 			private var curPage:int=0;
 			[Bindable]
@@ -37,7 +37,7 @@
 			{
 				method.addEventListener(ResultEvent.RESULT, function(e:ResultEvent):void
 				{
-					totalNumber=int(e.result);
+					_totalNumber=int(e.result);
 					updateDispaly();
 				})
 			}
@@ -84,22 +84,9 @@
 			/*
 			 *刷新当前页
 			 */
-			public function reCurrentPage(e:Event=null):void
+			public function refresh(e:Event=null):void
 			{
 				go(0)
-			}
-
-			/*
-			 *新查询返回总数结果后，也就是totalPage已得到，必须调用本方法
-			 *如：<mx:method name="count" result="paging.updateDispaly()"/>
-			 *    ss.getOperation('count').addEventListener(ResultEvent.RESULT,paging.updateDispaly)
-			 *
-			 */
-			public function updateDispaly(e:Event=null):void
-			{
-				if (curPage > totalPage)
-					curPage=totalPage
-				generatePageArray();
 			}
 
 			/*
@@ -170,13 +157,23 @@
 				else
 					gotoPage(parseInt(e.label));
 			}
+
+			/*
+			 *新查询返回总数结果后，也就是totalPage已得到，必须调用本方法
+			 */
+			private function updateDispaly():void
+			{
+				if (curPage > totalPage)
+					curPage=totalPage
+				generatePageArray();
+			}
 		]]>
 	</mx:Script>
-	<mx:Binding destination="totalPage" source="{(totalNumber-1)/offset.value+1}"/>
+	<mx:Binding destination="totalPage" source="{(_totalNumber-1)/offset.value+1}"/>
 	<mx:Label text="每页："/>
 	<mx:NumericStepper id="offset" minimum="5" maximum="95" stepSize="5"
 					   value="{_offsetValue}" width="50" change="go(0)"/>
-	<mx:Label text="{curPage+'/'+totalPage+' ('+totalNumber+')'}"/>
+	<mx:Label text="{curPage+'/'+totalPage+' ('+_totalNumber+')'}"/>
 	<mx:LinkBar id="pageLink" dataProvider="{pageArray}" itemClick="selectPage(event)"/>
 	<mx:Button click="go(-1)" enabled="{curPage>1}" label="&lt;"
 			   toolTip="{curPage>1?'上一页':''}" styleName="nopadding"/>

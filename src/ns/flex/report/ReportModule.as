@@ -54,13 +54,6 @@ package ns.flex.report
 		protected function cc(e:Event):void
 		{
 			query();
-			if (paging)
-			{
-				reportService.getOperation('count').addEventListener(ResultEvent.RESULT,
-					paging.updateDispaly);
-				reportService.getOperation('countDistinct').addEventListener(ResultEvent.RESULT,
-					paging.updateDispaly);
-			}
 			reportService.getOperation('export').addEventListener(ResultEvent.RESULT,
 				exportFile);
 			if (drillable)
