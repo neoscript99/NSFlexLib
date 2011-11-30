@@ -91,7 +91,7 @@ package ns.flex.util
 			var fieldArray:Array=[];
 			for (var i:int=0; i < length; i++)
 			{
-				fieldArray.push(this.getItemAt(i)[field]);
+				fieldArray.push(ObjectUtils.getValue(getItemAt(i), field));
 			}
 			return fieldArray;
 		}

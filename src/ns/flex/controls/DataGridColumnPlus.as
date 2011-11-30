@@ -17,6 +17,8 @@ package ns.flex.controls
 		[Inspectable(enumeration="Text,TextArea,CheckBox,DateString", defaultValue="Text",
 			category="General")]
 		public var asControl:String='Text';
+		[Inspectable(category="General")]
+		public var asNumber:Boolean=false;
 		public var comboBoxInfo:Object; //for asComboBox
 		// @see TextInputPlus,TextAreaPlus,DateFieldPlus
 		public var constraints:Object;
@@ -39,8 +41,7 @@ package ns.flex.controls
 		public static function getNumberLabel(item:Object,
 			column:DataGridColumnPlus):String
 		{
-			var value:Number=Number(column.getValue(item));
-			return StringUtil.formatNumber(value, column._percision,
+			return StringUtil.formatNumber(column.getValue(item), column._percision,
 				column.isSeparateThousands);
 		}
 
@@ -138,8 +139,8 @@ package ns.flex.controls
 			if (!obj2)
 				return -1;
 
-			var obj1Data:String=deriveComplexColumnData(obj1).toString();
-			var obj2Data:String=deriveComplexColumnData(obj2).toString();
+			var obj1Data:String=String(deriveComplexColumnData(obj1));
+			var obj2Data:String=String(deriveComplexColumnData(obj2));
 			return StringUtil.chineseCompare(obj1Data, obj2Data);
 
 		}

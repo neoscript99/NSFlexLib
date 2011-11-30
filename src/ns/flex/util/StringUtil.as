@@ -39,9 +39,12 @@ package ns.flex.util
 		 * @param isSeparateThousands 是否使用千分位
 		 * @return
 		 */
-		public static function formatNumber(v:Number, precision:int=2,
+		public static function formatNumber(numObject:Object, precision:int=2,
 			isSeparateThousands:Boolean=true):String
 		{
+			if (numObject == null)
+				return '';
+			var v:Number=Number(numObject);
 			if (isNaN(v))
 				return String(v);
 			var value:String=v.toFixed(precision);

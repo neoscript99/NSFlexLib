@@ -41,6 +41,12 @@ package ns.flex.util
 			return merger;
 		}
 
+		/**
+		 * 给对象属性赋值，field可以为类似same.name的复杂嵌套字段
+		 * @param obj
+		 * @param field
+		 * @param value
+		 */
 		public static function setValue(obj:Object, field:String, value:*):void
 		{
 			var nestItem:Object=obj;

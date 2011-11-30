@@ -51,7 +51,7 @@ package ns.flex.controls
 			if (editable)
 				BindingUtils.bindSetter(function(value:String):void
 				{
-					dgp.showItemProxy[col.dataField]=value;
+					ObjectUtils.setValue(dgp.showItemProxy, col.dataField, value);
 				}, cb, 'selected');
 			return cb;
 		}
@@ -99,7 +99,7 @@ package ns.flex.controls
 				}, dgp, 'showItemProxy');
 				BindingUtils.bindSetter(function(value:Object):void
 				{
-					dgp.showItemProxy[colp.dataField]=value;
+					ObjectUtils.setValue(dgp.showItemProxy, colp.dataField, value);
 				}, dfp, 'text');
 			}
 			else
@@ -113,7 +113,7 @@ package ns.flex.controls
 				}, dgp, 'showItemProxy');
 				BindingUtils.bindSetter(function(value:Object):void
 				{
-					dgp.showItemProxy[colp.dataField]=value;
+					ObjectUtils.setValue(dgp.showItemProxy, colp.dataField, value);
 				}, dfp, 'selectedDate');
 			}
 			return dfp;
@@ -138,7 +138,8 @@ package ns.flex.controls
 			if (editable)
 				BindingUtils.bindSetter(function(value:String):void
 				{
-					dgp.showItemProxy[col.dataField]=value
+					ObjectUtils.setValue(dgp.showItemProxy, col.dataField,
+						col['asNumber'] ? Number(value) : value);
 					label=
 						textInput['maxChars'] ? col.headerText.concat('(',
 						textInput['remainSize'], ')') : col.headerText;
