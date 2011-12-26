@@ -21,18 +21,39 @@
 			private var _historyManager:HistoryManager;
 			private var timer:Timer;
 
+			public function initTimer(mintues:int):void
+			{
+				removeTimer()
+				if (mintues > 0)
+				{
+					spareMintues=mintues;
+					timer=new Timer(60 * 1000, mintues);
+					timer.start();
+					timer.addEventListener(TimerEvent.TIMER_COMPLETE, timerComplete);
+				}
+			}
+
+			public function removeTimer():void
+			{
+				if (timer)
+				{
+					timer.removeEventListener(TimerEvent.TIMER_COMPLETE, timerComplete);
+					timer.stop();
+				}
+			}
+
+			public function resetTimer():void
+			{
+				if (timer)
+				{
+					timer.reset();
+					timer.start();
+				}
+			}
+
 			private function cc():void
 			{
-				if (spareMintues > 0)
-				{
-					timer=new Timer(60 * 1000, spareMintues);
-					timer.start();
-					timer.addEventListener(TimerEvent.TIMER_COMPLETE,
-						function timerComplete(e:Event):void
-						{
-							dispatchEvent(new Event('timerComplete'));
-						});
-				}
+				initTimer(spareMintues)
 				appWindow.addChild(views);
 			}
 
@@ -59,13 +80,7 @@
 			private function onStageClick(e:MouseEvent):void
 			{
 				trace('x: ', e.stageX, ' y: ', e.stageY);
-				if (timer)
-				{
-					trace('timer delay:', timer.delay, 'currentCount: ',
-						timer.currentCount);
-					timer.reset();
-					timer.start();
-				}
+				resetTimer();
 			}
 
 			private function switchMenu():void
@@ -74,6 +89,11 @@
 					hdb.removeChild(menuPanel);
 				else
 					hdb.addChildAt(menuPanel, 0);
+			}
+
+			private function timerComplete(e:Event):void
+			{
+				dispatchEvent(new Event('timerComplete'));
 			}
 		]]>
 	</mx:Script>
