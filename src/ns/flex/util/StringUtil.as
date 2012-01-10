@@ -42,7 +42,7 @@ package ns.flex.util
 		public static function formatNumber(numObject:Object, precision:int=2,
 			isSeparateThousands:Boolean=true):String
 		{
-			if (numObject == null)
+			if (numObject == null || (numObject is String && numObject == ''))//number 0 == string '',bug?
 				return '';
 			var v:Number=Number(numObject);
 			if (isNaN(v))
