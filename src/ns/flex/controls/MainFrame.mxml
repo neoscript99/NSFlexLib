@@ -15,6 +15,9 @@
 			import ns.flex.util.MessageUtil;
 
 			[Bindable]
+			public var menuTitle:String='菜单';
+
+			[Bindable]
 			public var menus:XML;
 			public var spareMintues:int;
 			public var views:ViewStack;
@@ -98,7 +101,7 @@
 		]]>
 	</mx:Script>
 	<mx:HDividedBox id="hdb" width="100%" height="100%">
-		<mx:Panel id="menuPanel" width="200" height="100%" title="菜单">
+		<mx:Panel id="menuPanel" width="200" height="100%" title="{menuTitle}">
 			<mx:Tree id="menuTree" width="100%" height="100%" wordWrap="false"
 					 showRoot="false" dataProvider="{menus.node}" labelField="@label"
 					 click="menuClick()"/>
