@@ -60,12 +60,15 @@ package ns.flex.controls
 		[Inspectable(enumeration="none,new,view,edit,new-edit,view-edit,new-view-edit",
 			defaultValue="none", category="General")]
 		public var showDetail:String='none';
+		[Inspectable(category="General")]
+		public var showIndex:Boolean=true;
 		[Bindable]
 		public var showItemProxy:ObjectProxy=new ObjectProxy();
 		[Inspectable(category="General")]
 		public var showSum:Boolean=false;
 		public var sumColumnLabel:String='汇总';
 		private var _itemDoubleClickHandler:Function;
+		private var indexColumn:DataGridColumn;
 		[Bindable]
 		private var lastRollOverIndex:Number;
 		private var orderList:ArrayCollectionPlus=new ArrayCollectionPlus();
@@ -75,11 +78,6 @@ package ns.flex.controls
 		{
 			super();
 			allowMultipleSelection=true;
-			showScrollTips=true;
-			scrollTipFunction=function(direction:String, position:Number):String
-			{
-				return String(position + rowCount);
-			}
 			toolTip='右键菜单更多功能';
 			//variableRowHeight为true后，再设置rowCount，得到的最终rowCount可能不准确
 			//height=第一行rowHeignt*rowCount
@@ -455,6 +453,20 @@ package ns.flex.controls
 		private function init(event:FlexEvent):void
 		{
 			resetMenu();
+			if (showIndex)
+			{
+				indexColumn=new DataGridColumn;
+				indexColumn.width=30
+				indexColumn.sortable=false
+				indexColumn.labelFunction=
+					function(item:Object, column:DataGridColumn):String
+					{
+						return String(new ArrayCollectionPlus(dataProvider).getItemIndex(item) + 1);
+					};
+				var cols:Array=columns;
+				cols.unshift(indexColumn);
+				columns=cols;
+			}
 		}
 
 		private function initPop(editable:Boolean=false):PopWindow
@@ -463,7 +475,7 @@ package ns.flex.controls
 			var pop:PopWindow=ContainerUtil.initPopUP('查看', form, -1, -1, 'center');
 			for each (var col:DataGridColumn in visibleColumns)
 			{
-				if (col.editable || !editable)
+				if (col != indexColumn && (col.editable || !editable))
 					form.addChild(new DataColumnFormItem(this, col, editable));
 			}
 
