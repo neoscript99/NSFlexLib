@@ -76,6 +76,10 @@ package ns.flex.controls
 			super();
 			allowMultipleSelection=true;
 			showScrollTips=true;
+			scrollTipFunction=function(direction:String, position:Number):String
+			{
+				return String(position + rowCount);
+			}
 			toolTip='右键菜单更多功能';
 			//variableRowHeight为true后，再设置rowCount，得到的最终rowCount可能不准确
 			//height=第一行rowHeignt*rowCount

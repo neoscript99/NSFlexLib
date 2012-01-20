@@ -43,6 +43,7 @@ package ns.flex.controls
 
 		private function cc(e:FlexEvent):void
 		{
+			this.titleBar.toolTip='双击放大'
 			this.titleBar.doubleClickEnabled=true;
 			this.titleBar.addEventListener(MouseEvent.DOUBLE_CLICK, onTitleDoubleClick);
 			menuSupport.createMenuItem('复制标题', copyTitle, false, true);

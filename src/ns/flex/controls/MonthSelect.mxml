@@ -39,15 +39,23 @@
 				yearSelect.defaultLabel=String(lastSelectedYear);
 				monthSelect.defaultLabel=String(lastSelectedMonth);
 			}
+
+			private function onChange(event:Event):void
+			{
+				lastSelectedYear=int(yearSelect.selectedItem);
+				lastSelectedMonth=int(monthSelect.selectedItem);
+				dispatchEvent(event)
+			}
 		]]>
 	</mx:Script>
 	<mx:FormItem label="年：">
-		<controls:ComboBoxPlus id="yearSelect" rowCount="15"
-							   change="lastSelectedYear=int(yearSelect.selectedItem);dispatchEvent(event)"/>
+		<controls:ComboBoxPlus id="yearSelect" rowCount="15" repeatable="false"
+							   change="onChange(event)"/>
 	</mx:FormItem>
 	<mx:FormItem label="月：" id="monthFormItem">
-		<controls:ComboBoxPlus id="monthSelect"
-							   change="lastSelectedMonth=int(monthSelect.selectedItem);dispatchEvent(event)">
+		<controls:ComboBoxPlus id="monthSelect" levelDown="yearSelect.selectedIndex++"
+							   levelUp="yearSelect.selectedIndex--"
+							   change="onChange(event)">
 			<mx:ArrayCollection>
 				<mx:String>01</mx:String>
 				<mx:String>02</mx:String>

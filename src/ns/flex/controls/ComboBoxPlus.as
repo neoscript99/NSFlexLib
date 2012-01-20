@@ -1,21 +1,29 @@
 package ns.flex.controls
 {
+	import flash.events.Event;
+	import flash.events.MouseEvent;
 	import mx.collections.IList;
 	import mx.controls.ComboBox;
 	import mx.events.ListEvent;
 	import ns.flex.util.ArrayCollectionPlus;
 
+	[Event(name="levelDown")]
+	[Event(name="levelUp")]
 	public class ComboBoxPlus extends ComboBox
 	{
-
+		[Inspectable(category="General")]
+		public var repeatable:Boolean=true;
 		public var valueField:String;
 		private var _defaultLabel:String;
+		private var changeByWheel:Boolean=false;
 
 		public function ComboBoxPlus()
 		{
 			super();
 			tabEnabled=false;
 			rowCount=15;
+			addEventListener(MouseEvent.MOUSE_WHEEL, onMouseWheel);
+			addEventListener(MouseEvent.MOUSE_OUT, onMouseOut);
 		}
 
 		public function get defaultLabel():String
@@ -51,6 +59,29 @@ package ns.flex.controls
 			}
 		}
 
+		override public function set selectedIndex(value:int):void
+		{
+			if (dataProvider && dataProvider.length > 0)
+				if (value < 0)
+				{
+					if (repeatable)
+					{
+						super.selectedIndex=dataProvider.length - 1
+						dispatchEvent(new Event('levelDown'));
+					}
+				}
+				else if (value > dataProvider.length - 1)
+				{
+					if (repeatable)
+					{
+						super.selectedIndex=0
+						dispatchEvent(new Event('levelUp'));
+					}
+				}
+				else
+					super.selectedIndex=value
+		}
+
 		[Bindable("valueCommit")]
 		public function get validated():Boolean
 		{
@@ -77,6 +108,21 @@ package ns.flex.controls
 		{
 			return (dataProvider is IList) ? String(IList(dataProvider).getItemIndex(item) + 1).concat('、',
 				item[labelField]) : item[labelField];
+		}
+
+		private function onMouseOut(event:MouseEvent):void
+		{
+			if (changeByWheel)
+			{
+				changeByWheel=false;
+				dispatchEvent(new ListEvent('change'));
+			}
+		}
+
+		private function onMouseWheel(event:MouseEvent):void
+		{
+			changeByWheel=true;
+			selectedIndex-=Math.abs(event.delta) / event.delta;
 		}
 
 		private function selectDefaultLabel():void
