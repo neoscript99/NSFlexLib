@@ -1,49 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PopAmChart xmlns:mx="http://www.adobe.com/2006/mxml" xmlns="ns.flex.nscharts.*"
-			width="680" height="400" xmlns:controls="ns.flex.controls.*"
-			xmlns:amcharts="http://www.amcharts.com/com_internal">
+<PopChart xmlns:mx="http://www.adobe.com/2006/mxml" xmlns="ns.flex.popup.*" width="680"
+		  height="400" xmlns:controls="ns.flex.controls.*"
+		  xmlns:amcharts="http://www.amcharts.com/com_internal"
+		  xmlns:nscharts="ns.flex.nscharts.*">
 	<mx:Script>
 		<![CDATA[
-			import ns.flex.util.UIUtil;
 			import com.amcharts.axes.ValueAxis;
-			import ns.flex.util.ObjectUtils;
 			import com.amcharts.chartClasses.AmGraph;
 			import ns.flex.controls.DataGridColumnPlus;
+			import ns.flex.util.ObjectUtils;
+			import ns.flex.util.UIUtil;
+
 			[Bindable]
 			public var categoryField:String;
 			[Bindable]
 			public var categoryName:String;
 			[Bindable]
-			protected var amGraphs:Array;
-			[Bindable]
-			protected var valueAxes:Array;
-			[Bindable]
 			public var showData:Boolean=true;
 			[Bindable]
-			protected var dgpColumns:Array;
-			[Bindable]
-			protected var caParseDates:Boolean=false;
-			[Bindable]
-			protected var caMinPeriod:String='DD';
+			protected var amGraphs:Array;
 			[Bindable]
 			protected var caDateFormats:Array=
 				[{period: 'DD', format: 'MM-DD'}, {period: 'MM', format: 'YYYY-MM'},
 				{period: 'YYYY', format: 'YYYY'}];
-
-			/*
-			 *graph如果使用不同的ValueAxis，set valueAxisInfos必须在set graphsInfos之前调用
-			 */
-			public function set valueAxisInfos(infos:Array):void
-			{
-				valueAxes=[]
-				for each (var info:Object in infos)
-				{
-					var valueAxis:ValueAxis=new ValueAxis
-					ObjectUtils.copyProperties(valueAxis, info);
-					UIUtil.setStyles(valueAxis, info.styles)
-					valueAxes.push(valueAxis)
-				}
-			}
+			[Bindable]
+			protected var caMinPeriod:String='DD';
+			[Bindable]
+			protected var caParseDates:Boolean=false;
+			[Bindable]
+			protected var dgpColumns:Array;
+			[Bindable]
+			protected var valueAxes:Array;
 
 			public function set graphsInfos(infos:Array):void
 			{
@@ -78,6 +65,21 @@
 			}
 
 			/*
+			 *graph如果使用不同的ValueAxis，set valueAxisInfos必须在set graphsInfos之前调用
+			 */
+			public function set valueAxisInfos(infos:Array):void
+			{
+				valueAxes=[]
+				for each (var info:Object in infos)
+				{
+					var valueAxis:ValueAxis=new ValueAxis
+					ObjectUtils.copyProperties(valueAxis, info);
+					UIUtil.setStyles(valueAxis, info.styles)
+					valueAxes.push(valueAxis)
+				}
+			}
+
+			/*
 			 *graphs valueAxes不支持绑定,原因不明
 			 */
 			private function amChartInit():void
@@ -89,26 +91,27 @@
 	</mx:Script>
 	<mx:TabNavigator id="tn" width="100%" height="100%" paddingLeft="5" paddingBottom="5">
 		<mx:VBox horizontalAlign="center" width="100%" height="100%" label="图形">
-			<AmSerialChartPlus id="amChart" dataProvider="{chartData}"
-							   categoryField="{categoryField}" startDuration="1"
-							   height="100%" width="100%" initialize="amChartInit()">
-				<categoryAxis>
+			<nscharts:AmSerialChartPlus id="amChart" dataProvider="{chartData}"
+										categoryField="{categoryField}" startDuration="1"
+										height="100%" width="100%"
+										initialize="amChartInit()">
+				<nscharts:categoryAxis>
 					<amcharts:CategoryAxis parseDates="{caParseDates}"
 										   minPeriod="{caMinPeriod}"
 										   dateFormats="{caDateFormats}"/>
-				</categoryAxis>
-				<chartCursor>
+				</nscharts:categoryAxis>
+				<nscharts:chartCursor>
 					<amcharts:ChartCursor cursorPosition="mouse"/>
-				</chartCursor>
-				<chartScrollbar>
+				</nscharts:chartCursor>
+				<nscharts:chartScrollbar>
 					<amcharts:ChartScrollbar height="15"/>
-				</chartScrollbar>
-			</AmSerialChartPlus>
-			<AmLegendBox chart="{amChart}" fileName="{title}"/>
+				</nscharts:chartScrollbar>
+			</nscharts:AmSerialChartPlus>
+			<nscharts:AmLegendBox chart="{amChart}" fileName="{title}"/>
 		</mx:VBox>
 		<mx:VBox label="数据" enabled="{showData}" height="100%">
 			<controls:DataGridPlus dataProvider="{chartData}" height="100%"
 								   columns="{dgpColumns}"/>
 		</mx:VBox>
 	</mx:TabNavigator>
-</PopAmChart>
+</PopChart>
