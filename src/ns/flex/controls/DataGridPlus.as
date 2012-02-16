@@ -456,6 +456,7 @@ package ns.flex.controls
 			if (showIndex)
 			{
 				indexColumn=new DataGridColumn;
+				indexColumn.headerText=' '
 				indexColumn.width=30
 				indexColumn.sortable=false
 				indexColumn.labelFunction=
