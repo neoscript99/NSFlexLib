@@ -372,9 +372,17 @@ package ns.flex.controls
 		{
 			return columns.filter(function(item:DataGridColumn, index:int,
 					array:Array):Boolean
-					{
-						return item.visible;
-					})
+			{
+				return item.visible;
+			})
+		}
+
+		override protected function updateDisplayList(unscaledWidth:Number,
+			unscaledHeight:Number):void
+		{
+			super.updateDisplayList(unscaledWidth, unscaledHeight)
+			if (indexColumn.width > 30)
+				indexColumn.width=30
 		}
 
 		private function contextMenu_menuSelect(evt:ContextMenuEvent):void
@@ -406,24 +414,24 @@ package ns.flex.controls
 		{
 			Alert.show("确认全部删除？", null, Alert.YES | Alert.NO, this,
 				function(evt:CloseEvent):void
+			{
+				if (evt.detail == Alert.YES)
 				{
-					if (evt.detail == Alert.YES)
-					{
-						dispatchEvent(new Event('deleteAll'));
-					}
-				})
+					dispatchEvent(new Event('deleteAll'));
+				}
+			})
 		}
 
 		private function deleteItems(evt:Event):void
 		{
 			Alert.show("确认删除？", null, Alert.YES | Alert.NO, this,
 				function(evt:CloseEvent):void
+			{
+				if (evt.detail == Alert.YES)
 				{
-					if (evt.detail == Alert.YES)
-					{
-						dispatchEvent(new Event('deleteItems'));
-					}
-				})
+					dispatchEvent(new Event('deleteItems'));
+				}
+			})
 		}
 
 		private function dgItemRollOut(event:ListEvent):void
@@ -459,11 +467,12 @@ package ns.flex.controls
 				indexColumn.headerText=' '
 				indexColumn.width=30
 				indexColumn.sortable=false
+				indexColumn.resizable=false
 				indexColumn.labelFunction=
 					function(item:Object, column:DataGridColumn):String
-					{
-						return String(new ArrayCollectionPlus(dataProvider).getItemIndex(item) + 1);
-					};
+				{
+					return String(new ArrayCollectionPlus(dataProvider).getItemIndex(item) + 1);
+				};
 				var cols:Array=columns;
 				cols.unshift(indexColumn);
 				columns=cols;
