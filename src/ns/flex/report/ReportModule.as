@@ -22,7 +22,6 @@ package ns.flex.report
 		[Bindable]
 		public var drillable:Boolean=false;
 		protected var drillLast:Object;
-		protected var map:Object={};
 		[Bindable]
 		protected var reportService:RemoteObject;
 		private var drillHist:Array=[];
@@ -43,6 +42,7 @@ package ns.flex.report
 				queryPage(first)
 			else
 				SQLUtil.list(reportService, queryParam, -1, 0, dgp.orders, domain);
+			titleWindow.horizontalScrollPosition=0;
 		}
 
 		public function queryPage(first:int):void

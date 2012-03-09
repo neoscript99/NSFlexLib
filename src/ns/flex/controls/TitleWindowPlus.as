@@ -6,13 +6,12 @@ package ns.flex.controls
 	import flash.events.MouseEvent;
 	import flash.system.System;
 	import flash.ui.Keyboard;
-
-	import mx.containers.ApplicationControlBar;
+	import mx.binding.utils.BindingUtils;
 	import mx.containers.TitleWindow;
 	import mx.effects.Sequence;
 	import mx.events.FlexEvent;
 	import mx.events.ScrollEvent;
-
+	import mx.events.ScrollEventDirection;
 	import ns.flex.support.MenuSupport;
 	import ns.flex.util.EffectUtil;
 
@@ -31,36 +30,23 @@ package ns.flex.controls
 			menuSupport=new MenuSupport(this);
 			addEventListener(FlexEvent.CREATION_COMPLETE, cc);
 			addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
-			//ScrollEvent.SCROLL is not perfect
-			addEventListener(Event.RENDER, onRenderScroll);
 			shake=
 				EffectUtil.createSequence({duration: 100, repeatCount: 2}, this,
 				EffectUtil.createMove({xBy: 10}), EffectUtil.createMove({xBy: -10}));
 		}
 
+		// set horizontalScrollPosition=0 after update
 		public function addScrollFollowChild(child:DisplayObject):void
 		{
-			scrollFollowChildren.push(child);
+			BindingUtils.bindSetter(function(value:Number):void
+			{
+				child.x=value;
+			}, this, 'horizontalScrollPosition')
 		}
 
 		public function playShake():void
 		{
 			shake.play();
-		}
-
-		protected function onRenderScroll(e:Event):void
-		{
-			trace('onRenderScroll:', e);
-			var diso:DisplayObject;
-			for each (diso in this.getChildren())
-			{
-				if (diso is ApplicationControlBar)
-					diso.x=this.horizontalScrollPosition + this.getStyle('paddingLeft');
-			}
-			for each (diso in scrollFollowChildren)
-			{
-				diso.x=this.horizontalScrollPosition;
-			}
 		}
 
 		protected function onTitleDoubleClick(e:MouseEvent):void

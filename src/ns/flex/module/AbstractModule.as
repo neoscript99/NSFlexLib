@@ -7,6 +7,7 @@ package ns.flex.module
 
 	public class AbstractModule extends Module
 	{
+		protected var map:Object={};
 
 		public function beforeDisplay():void
 		{
@@ -14,16 +15,30 @@ package ns.flex.module
 
 		protected function addScrollFollowChild(child:DisplayObject):void
 		{
-			var p:DisplayObjectContainer=parent;
-			while (p)
+			if (titleWindow)
+				titleWindow.addScrollFollowChild(child);
+		}
+
+		/**
+		 *
+		 * @return first parent which is TitleWindow
+		 */
+		protected function get titleWindow():TitleWindowPlus
+		{
+			if (!map.titleWindow)
 			{
-				if (p is TitleWindowPlus)
+				var p:DisplayObjectContainer=parent;
+				while (p)
 				{
-					(p as TitleWindowPlus).addScrollFollowChild(child);
-					break;
+					if (p is TitleWindowPlus)
+					{
+						map.titleWindow=p;
+						break
+					}
+					p=p.parent;
 				}
-				p=p.parent;
 			}
+			return map.titleWindow;
 		}
 
 		protected function validate():Boolean
