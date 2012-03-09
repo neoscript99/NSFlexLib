@@ -67,11 +67,11 @@ package ns.flex.controls
 		[Inspectable(category="General")]
 		public var showSum:Boolean=false;
 		public var sumColumnLabel:String='汇总';
-		private var _itemDoubleClickHandler:Function;
 		private var indexColumn:DataGridColumn;
 		[Bindable]
 		private var lastRollOverIndex:Number;
 		private var orderList:ArrayCollectionPlus=new ArrayCollectionPlus();
+		private var replacableDoubleClickHandler:Function;
 		private var showItem:Object;
 
 		public function DataGridPlus()
@@ -86,6 +86,18 @@ package ns.flex.controls
 			addEventListener(ListEvent.ITEM_ROLL_OUT, dgItemRollOut);
 			addEventListener(FlexEvent.INITIALIZE, init);
 			addEventListener(DataGridEvent.HEADER_RELEASE, onHeaderRelease);
+		}
+
+		override public function addEventListener(type:String, listener:Function,
+			useCapture:Boolean=false, priority:int=0, useWeakReference:Boolean=false):void
+		{
+			if (type == ListEvent.ITEM_DOUBLE_CLICK &&
+				replacableDoubleClickHandler != null)
+			{
+				this.removeEventListener(ListEvent.ITEM_DOUBLE_CLICK,
+					replacableDoubleClickHandler);
+			}
+			super.addEventListener(type, listener, useCapture, priority, useWeakReference);
 		}
 
 		public function addOrder(sortField:String, order:String=null):void
@@ -185,16 +197,6 @@ package ns.flex.controls
 		public function isSumItem(item:Object):Boolean
 		{
 			return item.uniqueIdForSumItem == uid;
-		}
-
-		public function set itemDoubleClickHandler(fun:Function):void
-		{
-			this.doubleClickEnabled=true;
-			if (_itemDoubleClickHandler != null)
-				this.removeEventListener(ListEvent.ITEM_DOUBLE_CLICK,
-					_itemDoubleClickHandler);
-			this.addEventListener(ListEvent.ITEM_DOUBLE_CLICK, fun);
-			_itemDoubleClickHandler=fun;
 		}
 
 		public function get orders():Array
@@ -372,9 +374,9 @@ package ns.flex.controls
 		{
 			return columns.filter(function(item:DataGridColumn, index:int,
 					array:Array):Boolean
-			{
-				return item.visible;
-			})
+					{
+						return item.visible;
+					})
 		}
 
 		override protected function updateDisplayList(unscaledWidth:Number,
@@ -414,24 +416,24 @@ package ns.flex.controls
 		{
 			Alert.show("确认全部删除？", null, Alert.YES | Alert.NO, this,
 				function(evt:CloseEvent):void
-			{
-				if (evt.detail == Alert.YES)
 				{
-					dispatchEvent(new Event('deleteAll'));
-				}
-			})
+					if (evt.detail == Alert.YES)
+					{
+						dispatchEvent(new Event('deleteAll'));
+					}
+				})
 		}
 
 		private function deleteItems(evt:Event):void
 		{
 			Alert.show("确认删除？", null, Alert.YES | Alert.NO, this,
 				function(evt:CloseEvent):void
-			{
-				if (evt.detail == Alert.YES)
 				{
-					dispatchEvent(new Event('deleteItems'));
-				}
-			})
+					if (evt.detail == Alert.YES)
+					{
+						dispatchEvent(new Event('deleteItems'));
+					}
+				})
 		}
 
 		private function dgItemRollOut(event:ListEvent):void
@@ -454,8 +456,13 @@ package ns.flex.controls
 		{
 			menuSupport.createMenuItem(menuLabel, action, separatorBefore, alwaysEnabled);
 
-			if (withDoubleClick)
-				itemDoubleClickHandler=action;
+			if (withDoubleClick && !doubleClickEnabled)
+			{
+				doubleClickEnabled=true;
+				addEventListener(ListEvent.ITEM_DOUBLE_CLICK,
+					action);
+				replacableDoubleClickHandler=action;
+			}
 		}
 
 		private function init(event:FlexEvent):void
@@ -470,9 +477,9 @@ package ns.flex.controls
 				indexColumn.resizable=false
 				indexColumn.labelFunction=
 					function(item:Object, column:DataGridColumn):String
-				{
-					return String(new ArrayCollectionPlus(dataProvider).getItemIndex(item) + 1);
-				};
+					{
+						return String(new ArrayCollectionPlus(dataProvider).getItemIndex(item) + 1);
+					};
 				var cols:Array=columns;
 				cols.unshift(indexColumn);
 				columns=cols;

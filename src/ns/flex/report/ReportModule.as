@@ -91,7 +91,8 @@ package ns.flex.report
 			dgp.menuSupport.createMenuItem('向下钻取', drillDown, true);
 			dgp.menuSupport.createMenuItem('向上钻取', drillUp);
 			dgp.menuSupport.createMenuItem('返回顶层', drillTop, false, true);
-			dgp.itemDoubleClickHandler=drillDown;
+			dgp.doubleClickEnabled=true;
+			dgp.addEventListener(ListEvent.ITEM_DOUBLE_CLICK, drillDown);
 		}
 
 		protected function get drillMaxDepth():int
