@@ -1,11 +1,14 @@
 package ns.flex.report
 {
 	import flash.events.Event;
+	
 	import mx.containers.Panel;
 	import mx.events.FlexEvent;
 	import mx.events.ListEvent;
+	import mx.rpc.events.FaultEvent;
 	import mx.rpc.events.ResultEvent;
 	import mx.rpc.remoting.mxml.RemoteObject;
+	
 	import ns.flex.controls.DataGridPlus;
 	import ns.flex.controls.Paging;
 	import ns.flex.controls.ProgressBox;
@@ -22,11 +25,11 @@ package ns.flex.report
 		[Bindable]
 		public var drillable:Boolean=false;
 		protected var drillLast:Object;
+		protected var popProgress:ProgressBox=new ProgressBox;
 		[Bindable]
 		protected var reportService:RemoteObject;
 		private var drillHist:Array=[];
 		private var drillPageHist:Array=[];
-		private var popProgress:ProgressBox=new ProgressBox;
 
 		/**
 		 * 必须在继承的类中初始化reportService
@@ -54,6 +57,10 @@ package ns.flex.report
 		protected function cc(e:Event):void
 		{
 			query();
+			reportService.addEventListener(FaultEvent.FAULT, function(e:FaultEvent):void
+			{
+				popProgress.close();
+			});
 			reportService.getOperation('export').addEventListener(ResultEvent.RESULT,
 				exportFile);
 			if (drillable)

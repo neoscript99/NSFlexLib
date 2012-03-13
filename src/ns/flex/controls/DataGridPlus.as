@@ -56,6 +56,7 @@ package ns.flex.controls
 		[Inspectable(category="General")]
 		public var multiSort:Boolean=false;
 		public var popEditing:PopWindow;
+		public var popTitleFunciton:Function;
 		public var popView:PopWindow;
 		[Inspectable(enumeration="none,new,view,edit,new-edit,view-edit,new-view-edit",
 			defaultValue="none", category="General")]
@@ -355,7 +356,8 @@ package ns.flex.controls
 				if (!popEditing)
 					initPopEditing();
 				popEditing.show(root);
-				popEditing.title=showItem ? '修改' : '新增';
+				popEditing.title=
+					showItem ? '修改' + (popTitleFunciton ? ' ' + popTitleFunciton(showItem) : '') : '新增';
 			}
 			else
 			{
@@ -374,9 +376,9 @@ package ns.flex.controls
 		{
 			return columns.filter(function(item:DataGridColumn, index:int,
 					array:Array):Boolean
-					{
-						return item.visible;
-					})
+			{
+				return item.visible && item != indexColumn;
+			})
 		}
 
 		override protected function updateDisplayList(unscaledWidth:Number,
@@ -416,24 +418,24 @@ package ns.flex.controls
 		{
 			Alert.show("确认全部删除？", null, Alert.YES | Alert.NO, this,
 				function(evt:CloseEvent):void
+			{
+				if (evt.detail == Alert.YES)
 				{
-					if (evt.detail == Alert.YES)
-					{
-						dispatchEvent(new Event('deleteAll'));
-					}
-				})
+					dispatchEvent(new Event('deleteAll'));
+				}
+			})
 		}
 
 		private function deleteItems(evt:Event):void
 		{
 			Alert.show("确认删除？", null, Alert.YES | Alert.NO, this,
 				function(evt:CloseEvent):void
+			{
+				if (evt.detail == Alert.YES)
 				{
-					if (evt.detail == Alert.YES)
-					{
-						dispatchEvent(new Event('deleteItems'));
-					}
-				})
+					dispatchEvent(new Event('deleteItems'));
+				}
+			})
 		}
 
 		private function dgItemRollOut(event:ListEvent):void
@@ -459,8 +461,7 @@ package ns.flex.controls
 			if (withDoubleClick && !doubleClickEnabled)
 			{
 				doubleClickEnabled=true;
-				addEventListener(ListEvent.ITEM_DOUBLE_CLICK,
-					action);
+				addEventListener(ListEvent.ITEM_DOUBLE_CLICK, action);
 				replacableDoubleClickHandler=action;
 			}
 		}
@@ -477,9 +478,9 @@ package ns.flex.controls
 				indexColumn.resizable=false
 				indexColumn.labelFunction=
 					function(item:Object, column:DataGridColumn):String
-					{
-						return String(new ArrayCollectionPlus(dataProvider).getItemIndex(item) + 1);
-					};
+				{
+					return String(new ArrayCollectionPlus(dataProvider).getItemIndex(item) + 1);
+				};
 				var cols:Array=columns;
 				cols.unshift(indexColumn);
 				columns=cols;
@@ -492,7 +493,7 @@ package ns.flex.controls
 			var pop:PopWindow=ContainerUtil.initPopUP('查看', form, -1, -1, 'center');
 			for each (var col:DataGridColumn in visibleColumns)
 			{
-				if (col != indexColumn && (col.editable || !editable))
+				if (col.editable || !editable)
 					form.addChild(new DataColumnFormItem(this, col, editable));
 			}
 
