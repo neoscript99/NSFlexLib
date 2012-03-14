@@ -48,6 +48,7 @@ package ns.flex.module
 
 		[Bindable('click')]
 		[Bindable('keyUp')]
+		[Bindable('render')]
 		protected function get validated():Boolean
 		{
 			return validate();

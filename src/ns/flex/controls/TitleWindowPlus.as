@@ -41,6 +41,9 @@ package ns.flex.controls
 			BindingUtils.bindSetter(function(value:Number):void
 			{
 				child.x=value;
+				//'contian' search display object tree, getChildren() just the direct child
+				if (getChildren().indexOf(child) > -1)
+					child.x+=getStyle('paddingLeft');
 			}, this, 'horizontalScrollPosition')
 		}
 
