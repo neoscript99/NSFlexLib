@@ -6,40 +6,28 @@
  */
 package com.arcadiocarballares
 {
-	import ns.flex.util.ArrayCollectionPlus;
-	import ns.flex.util.MessageUtil;
 	import flash.events.Event;
+	import flash.events.MouseEvent;
 	import mx.collections.ArrayCollection;
 	import mx.controls.ComboBox;
 	import mx.core.ClassFactory;
 	import mx.events.DropdownEvent;
 	import mx.events.FlexEvent;
-	
+	import ns.flex.util.ArrayCollectionPlus;
+
 	[Event(name="changedAndClose", type="flash.events.Event")]
 	[Event(name="selectAll", type="flash.events.Event")]
 	[Event(name="deSelectAll", type="flash.events.Event")]
 	public class ComboCheck extends ComboBox
 	{
+		public static const SELECTED_FIELD:String='ComboCheckSelectedField';
+		public static const VALUE_FIELD:String='ComboCheckValueField';
+
+		public var defaultLabels:Object;
 		public var itemAllValue:int=-1;
 		private var _selectedItems:ArrayCollection;
 		private var selectChanged:Boolean=false;
-		public var defaultLabels:Object;
-		static public const VALUE_FIELD:String='ComboCheckValueField';
-		static public const SELECTED_FIELD:String='ComboCheckSelectedField';
-		
-		public function set selectedItems(value:ArrayCollection):void
-		{
-			_selectedItems=value;
-		}
-		
-		[Bindable("change")]
-		[Bindable("valueCommit")]
-		[Bindable("collectionChange")]
-		public function get selectedItems():ArrayCollection
-		{
-			return _selectedItems;
-		}
-		
+
 		public function ComboCheck()
 		{
 			super();
@@ -47,21 +35,10 @@ package com.arcadiocarballares
 			addEventListener("comboChecked", onComboChecked);
 			addEventListener(FlexEvent.CREATION_COMPLETE, refresh);
 			addEventListener(Event.ADDED_TO_STAGE, refresh);
-			addEventListener(Event.CLOSE, onClose);
+			addEventListener(DropdownEvent.CLOSE, onClose);
+			addEventListener(DropdownEvent.OPEN, onOpen);
 		}
-		
-		private function refresh(event:Event=null):void
-		{
-			invalidateProperties();
-		}
-		
-		private function onClose(event:DropdownEvent):void
-		{
-			if (selectChanged)
-				dispatchEvent(new Event('changedAndClose'));
-			selectChanged=false;
-		}
-		
+
 		override public function set dataProvider(value:Object):void
 		{
 			var itemAll:Object={};
@@ -70,7 +47,7 @@ package com.arcadiocarballares
 			var acp:ArrayCollectionPlus=new ArrayCollectionPlus(value);
 			acp.addItemAt(itemAll, 0);
 			super.dataProvider=acp;
-			
+
 			// Set selecAll position
 			if (defaultLabels)
 				selectLabels(defaultLabels);
@@ -78,29 +55,36 @@ package com.arcadiocarballares
 				for (var i:int; i < dataProvider.length; i++)
 					dataProvider[i][SELECTED_FIELD]=false;
 		}
-		
-		private function decorateItemAll(item:Object, count:int=0):void
+
+		public function getSelectFieldArray(field:String):Array
 		{
-			if (labelField)
-				item[labelField]='全选';
-			else if (count < 10)
-				callLater(decorateItemAll, [item, count + 1]);
-		}
-		
-		override protected function commitProperties():void
-		{
-			super.commitProperties();
-			checkSelectAll();
-			itemRenderer=new ClassFactory(ComboCheckItemRenderer);
-			dropdownFactory=new ClassFactory(ComboCheckDropDownFactory);
-			selectedItems=new ArrayCollection();
-			
+			var arr:Array=[];
+
 			for each (var item:Object in dataProvider)
-				if (item[SELECTED_FIELD] == true)
-					selectedItems.addItem(item);
-			setText();
+				if (item[field] && item[SELECTED_FIELD])
+					arr.push(item[field]);
+			return arr;
 		}
-		
+
+		public function isAllSelect():Boolean
+		{
+			return dataProvider[0][SELECTED_FIELD];
+		}
+
+		public function selectAll(sel:Boolean):void
+		{
+			for each (var item:Object in dataProvider)
+			{
+				item[SELECTED_FIELD]=sel;
+			}
+			changeCommit();
+
+			if (sel)
+				dispatchEvent(new Event("selectAll"));
+			else
+				dispatchEvent(new Event("deSelectAll"));
+		}
+
 		/**
 		 * 下拉框默认选择的项目
 		 * @param labels 选择标签中包含labels的项目，如果labels包含''，选择全部
@@ -108,21 +92,21 @@ package com.arcadiocarballares
 		public function selectLabels(labels:Object):void
 		{
 			defaultLabels=labels;
-			
+
 			if (labels == null)
 				return;
 			var labelArray:Array;
-			
+
 			if (labels is String)
 				labelArray=(labels as String).split(',');
 			else
 				labelArray=(labels as Array);
-			
+
 			for each (var item:Object in dataProvider)
 			{
 				var itemLabel:String=itemToLabel(item);
 				var selected:Boolean=false;
-				
+
 				for each (var label:String in labelArray)
 					if (itemLabel.indexOf(label) > -1)
 					{
@@ -133,11 +117,44 @@ package com.arcadiocarballares
 			}
 			changeCommit();
 		}
-		
+
+		[Bindable("change")]
+		[Bindable("valueCommit")]
+		[Bindable("collectionChange")]
+		public function get selectedItems():ArrayCollection
+		{
+			return _selectedItems;
+		}
+
+		public function set selectedItems(value:ArrayCollection):void
+		{
+			_selectedItems=value;
+		}
+
+		override protected function commitProperties():void
+		{
+			super.commitProperties();
+			checkSelectAll();
+			itemRenderer=new ClassFactory(ComboCheckItemRenderer);
+			dropdownFactory=new ClassFactory(ComboCheckDropDownFactory);
+			selectedItems=new ArrayCollection();
+
+			for each (var item:Object in dataProvider)
+				if (item[SELECTED_FIELD] == true)
+					selectedItems.addItem(item);
+			setText();
+		}
+
+		private function changeCommit():void
+		{
+			dispatchEvent(new Event("valueCommit"));
+			invalidateProperties();
+		}
+
 		private function checkSelectAll():void
 		{
 			var allSelected:Boolean=true;
-			
+
 			for (var i:int=1; i < dataProvider.length; i++)
 				if (dataProvider[i][SELECTED_FIELD] == false)
 				{
@@ -146,41 +163,27 @@ package com.arcadiocarballares
 				}
 			dataProvider[0][SELECTED_FIELD]=allSelected;
 		}
-		
-		public function selectAll(sel:Boolean):void
+
+		private function decorateItemAll(item:Object, count:int=0):void
 		{
-			for each (var item:Object in dataProvider)
-			{
-				item[SELECTED_FIELD]=sel;
-			}
-			changeCommit();
-			
-			if (sel)
-				dispatchEvent(new Event("selectAll"));
-			else
-				dispatchEvent(new Event("deSelectAll"));
+			if (labelField)
+				item[labelField]='全选';
+			else if (count < 10)
+				callLater(decorateItemAll, [item, count + 1]);
 		}
-		
-		public function isAllSelect():Boolean
+
+		private function onClose(event:DropdownEvent):void
 		{
-			return dataProvider[0][SELECTED_FIELD];
+			if (selectChanged)
+				dispatchEvent(new Event('changedAndClose'));
+			selectChanged=false;
 		}
-		
-		public function getSelectFieldArray(field:String):Array
-		{
-			var arr:Array=[];
-			
-			for each (var item:Object in dataProvider)
-				if (item[field] && item[SELECTED_FIELD])
-					arr.push(item[field]);
-			return arr;
-		}
-		
+
 		private function onComboChecked(event:ComboCheckEvent):void
 		{
 			var obj:Object=event.obj;
 			selectChanged=true;
-			
+
 			if (obj[VALUE_FIELD] == itemAllValue)
 			{
 				selectAll(obj[SELECTED_FIELD]);
@@ -188,13 +191,25 @@ package com.arcadiocarballares
 			}
 			changeCommit();
 		}
-		
-		private function changeCommit():void
+
+		private function onDropdownRollOut(e:MouseEvent):void
 		{
-			dispatchEvent(new Event("valueCommit"));
+			close();
+		}
+
+		/**
+		 * every dropdown open, there is a new instance.
+		 */
+		private function onOpen(event:Event):void
+		{
+			dropdown.addEventListener(MouseEvent.ROLL_OUT, onDropdownRollOut);
+		}
+
+		private function refresh(event:Event):void
+		{
 			invalidateProperties();
 		}
-		
+
 		private function setText():void
 		{
 			if (selectedItems.length == dataProvider.length)
@@ -216,3 +231,4 @@ package com.arcadiocarballares
 		}
 	}
 }
+

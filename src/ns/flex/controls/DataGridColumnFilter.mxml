@@ -1,17 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:ApplicationControlBar xmlns:mx="http://www.adobe.com/2006/mxml">
+<mx:ApplicationControlBar xmlns:mx="http://www.adobe.com/2006/mxml"
+						  xmlns:arcadiocarballares="com.arcadiocarballares.*">
 	<mx:Script>
 		<![CDATA[
+			import com.arcadiocarballares.ComboCheck;
 			import mx.binding.utils.BindingUtils;
 			import mx.controls.DataGrid;
 			import mx.controls.dataGridClasses.DataGridColumn;
 			import mx.utils.ObjectProxy;
 			import ns.flex.util.ArrayCollectionPlus;
+			import ns.flex.util.StringUtil;
 
 			private var dgp:DataGridPlus;
 
-			//DataGridColumnPlus,has type,and visible
-			private var targetColumns:Array=[];
 			[Bindable]
 			private var typeList:ArrayCollectionPlus=new ArrayCollectionPlus;
 
@@ -26,53 +27,58 @@
 						var colp:DataGridColumnPlus=col as DataGridColumnPlus;
 						if (colp.visible && colp.type)
 						{
-							targetColumns.push(colp);
 							var type:Object=typeList.findByField('label', colp.type);
-							if (type)
-								type.count++;
-							else
+							if (!type)
 							{
-								type=
-									new ObjectProxy({label: colp.type, selected: true,
-										count: 1});
+								type={label: colp.type, count: 0, columns: []};
 								typeList.addItem(type);
 							}
-							BindingUtils.bindProperty(colp, 'visible', type, 'selected')
+							type.count++;
+							var colCheck:Object=
+								{label: String(type.count).concat('.',
+										StringUtil.toLine(colp.headerText)),
+									column: colp};
+							(type.columns as Array).push(colCheck)
 						}
 					}
 				}
 				rp.dataProvider=typeList
 			}
 
-			private function select(item:Object):void
+			private function refresh():void
 			{
 				dgp.popView=null;
-				item.selected=!item.selected;
-				showAll.selected=item.selected;
-				if (item.selected)
-					for each (var type:Object in typeList)
-						if (!type.selected)
-						{
+				showAll.selected=true;
+				for each (var child:Object in getChildren())
+				{
+					if (child is ComboCheck)
+					{
+						var ck:ComboCheck=(child as ComboCheck);
+						if (!ck.isAllSelect())
 							showAll.selected=false;
-							break;
-						}
+						for each (var item:Object in ck.dataProvider)
+							if (item.column)
+								(item.column as DataGridColumn).visible=
+									item[ComboCheck.SELECTED_FIELD];
+					}
+				}
 			}
 
 			private function selectAll():void
 			{
 				dgp.popView=null;
-				for each (var type:Object in typeList)
-				{
-					type.selected=showAll.selected;
-				}
+				for each (var child:Object in getChildren())
+					if (child is ComboCheck)
+						(child as ComboCheck).selectAll(showAll.selected);
+				refresh();
 			}
 		]]>
 	</mx:Script>
 	<mx:Label text="显示列："/>
 	<mx:CheckBox id="showAll" label="全部" selected="true" color="green" click="selectAll()"/>
 	<mx:Repeater id="rp">
-		<mx:CheckBox label="{rp.currentItem.label}({rp.currentItem.count})"
-					 selected="{rp.currentItem.selected}"
-					 click="select(event.currentTarget.getRepeaterItem())"/>
+		<mx:Label text="{rp.currentItem.label}({rp.currentItem.count}):"/>
+		<arcadiocarballares:ComboCheck changedAndClose="refresh()" defaultLabels=","
+									   dataProvider="{rp.currentItem.columns}"/>
 	</mx:Repeater>
 </mx:ApplicationControlBar>

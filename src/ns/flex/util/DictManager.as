@@ -2,66 +2,74 @@ package ns.flex.util
 {
 	import flash.display.DisplayObject;
 	import flash.events.Event;
-
 	import mx.rpc.events.ResultEvent;
 	import mx.rpc.remoting.mxml.RemoteObject;
-
 	import ns.flex.controls.ProgressBox;
 
 	public class DictManager
 	{
-		static public var initCompleted:Boolean=false;
-		static private var dictionaryService:RemoteObject;
-		static private var listMap:Object={};
-		static private var readyCount:int=0;
-		static private var pb:ProgressBox=new ProgressBox()
+		private static var _dictionaryService:RemoteObject;
 
-		static public function init(ds:RemoteObject, readyGoal:int,
-			parent:DisplayObject):void
+		public static function get dictionaryService():RemoteObject
 		{
-			dictionaryService=ds;
-			pb.title='System Initlizing...';
-			pb.show(parent);
-			dictionaryService.addEventListener(ResultEvent.RESULT, function(e:Event):void
-			{
-				if ((++readyCount) >= readyGoal)
-				{
-					initCompleted=true;
-					pb.close();
-				}
-			});
+			return _dictionaryService
 		}
+		private static var _initCompleted:Boolean=false;
 
-		static public function getLabel(operationName:String, fieldName:String,
+		public static function get initCompleted():Boolean
+		{
+			return _initCompleted
+		}
+		private static var listMap:Object={};
+		private static var pb:ProgressBox=new ProgressBox()
+		private static var readyCount:int=0;
+
+		public static function getLabel(operationName:String, fieldName:String,
 			fieldValue:Object, labelField:String):String
 		{
 			var oo:Object=getList(operationName).findByField(fieldName, fieldValue);
 			return oo ? oo[labelField] : String(fieldValue);
 		}
 
-		static public function getResult(operationName:String):Object
-		{
-			return dictionaryService.getOperation(operationName).lastResult;
-		}
-
-		static public function getList(operationName:String):ArrayCollectionPlus
+		public static function getList(operationName:String):ArrayCollectionPlus
 		{
 			return getListFromMap(operationName);
 		}
 
-		static public function getListWithAll(operationName:String,
+		public static function getListWithAll(operationName:String,
 			labelField:String):ArrayCollectionPlus
 		{
 			return getListFromMap(operationName, labelField, true);
 		}
 
-		static public function getListWithAskToChoose(operationName:String,
+		public static function getListWithAskToChoose(operationName:String,
 			labelField:String):ArrayCollectionPlus
 		{
 			return getListFromMap(operationName, labelField, false, true);
 		}
 
-		static private function getListFromMap(operationName:String,
+		public static function getResult(operationName:String):Object
+		{
+			return _dictionaryService.getOperation(operationName).lastResult;
+		}
+
+		public static function init(ds:RemoteObject, readyGoal:int,
+			parent:DisplayObject):void
+		{
+			_dictionaryService=ds;
+			pb.title='System Initlizing...';
+			pb.show(parent);
+			_dictionaryService.addEventListener(ResultEvent.RESULT, function(e:Event):void
+			{
+				if ((++readyCount) >= readyGoal)
+				{
+					_initCompleted=true;
+					pb.close();
+				}
+			});
+		}
+
+		private static function getListFromMap(operationName:String,
 			labelField:String=null, withAll:Boolean=false,
 			withAskToChoose:Boolean=false):ArrayCollectionPlus
 		{
@@ -73,12 +81,12 @@ package ns.flex.util
 					var first:Object={};
 					first[labelField]=withAll ? '全部' : '请选择';
 					listMap[key]=
-						ArrayCollectionPlus.withFirst(dictionaryService.getOperation(operationName).lastResult,
+						ArrayCollectionPlus.withFirst(_dictionaryService.getOperation(operationName).lastResult,
 						first);
 				}
 				else
 					listMap[key]=
-						new ArrayCollectionPlus(dictionaryService.getOperation(operationName).lastResult);
+						new ArrayCollectionPlus(_dictionaryService.getOperation(operationName).lastResult);
 
 			}
 			return listMap[key];

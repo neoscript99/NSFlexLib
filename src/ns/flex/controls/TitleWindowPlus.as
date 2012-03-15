@@ -6,7 +6,6 @@ package ns.flex.controls
 	import flash.events.MouseEvent;
 	import flash.system.System;
 	import flash.ui.Keyboard;
-	import mx.binding.utils.BindingUtils;
 	import mx.containers.TitleWindow;
 	import mx.effects.Sequence;
 	import mx.events.FlexEvent;
@@ -30,26 +29,37 @@ package ns.flex.controls
 			menuSupport=new MenuSupport(this);
 			addEventListener(FlexEvent.CREATION_COMPLETE, cc);
 			addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
+			addEventListener(Event.RENDER, onRender);
 			shake=
 				EffectUtil.createSequence({duration: 100, repeatCount: 2}, this,
 				EffectUtil.createMove({xBy: 10}), EffectUtil.createMove({xBy: -10}));
 		}
 
-		// set horizontalScrollPosition=0 after update
 		public function addScrollFollowChild(child:DisplayObject):void
 		{
-			BindingUtils.bindSetter(function(value:Number):void
-			{
-				child.x=value;
-				//'contian' search display object tree, getChildren() just the direct child
-				if (getChildren().indexOf(child) > -1)
-					child.x+=getStyle('paddingLeft');
-			}, this, 'horizontalScrollPosition')
+			scrollFollowChildren.push(child);
 		}
 
 		public function playShake():void
 		{
 			shake.play();
+		}
+
+		/**
+		 * capture scroll event is not perfect
+		 */
+		protected function onRender(e:Event):void
+		{
+			//trace('TitleWindowPlus onRender:', e);
+			if (scrollFollowChildren.length > 0)
+			{
+				for each (var diso:DisplayObject in scrollFollowChildren)
+				{
+					diso.x=horizontalScrollPosition;
+					if (getChildren().indexOf(diso) > -1)
+						diso.x+=getStyle('paddingLeft');
+				}
+			}
 		}
 
 		protected function onTitleDoubleClick(e:MouseEvent):void
