@@ -1,14 +1,14 @@
 package ns.flex.report
 {
 	import flash.events.Event;
-	
+
 	import mx.containers.Panel;
 	import mx.events.FlexEvent;
 	import mx.events.ListEvent;
 	import mx.rpc.events.FaultEvent;
 	import mx.rpc.events.ResultEvent;
 	import mx.rpc.remoting.mxml.RemoteObject;
-	
+
 	import ns.flex.controls.DataGridPlus;
 	import ns.flex.controls.Paging;
 	import ns.flex.controls.ProgressBox;
@@ -45,7 +45,6 @@ package ns.flex.report
 				queryPage(first)
 			else
 				SQLUtil.list(reportService, queryParam, -1, 0, dgp.orders, domain);
-			titleWindow.horizontalScrollPosition=0;
 		}
 
 		public function queryPage(first:int):void

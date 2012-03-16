@@ -21,8 +21,21 @@
 			public var menus:XML;
 			public var spareMintues:int;
 			public var views:ViewStack;
+
+			private var _appTitle:String='';
 			private var _historyManager:HistoryManager;
 			private var timer:Timer;
+
+			public function get appTitle():String
+			{
+				return _appTitle;
+			}
+
+			public function set appTitle(v:String):void
+			{
+				_appTitle=v;
+				appWindow.title=_appTitle;
+			}
 
 			public function initTimer(mintues:int):void
 			{
@@ -72,7 +85,7 @@
 				if (nodeApp)
 				{
 					views.selectedIndex=views.getChildIndex(views.getChildByName(nodeApp));
-					appWindow.title=menuTree.selectedItem.@label;
+					appWindow.title=String(menuTree.selectedItem.@label).concat(_appTitle);
 				}
 				else
 					menuTree.expandItem(menuTree.selectedItem,

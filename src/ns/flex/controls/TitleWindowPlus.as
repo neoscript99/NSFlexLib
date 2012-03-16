@@ -55,9 +55,12 @@ package ns.flex.controls
 			{
 				for each (var diso:DisplayObject in scrollFollowChildren)
 				{
-					diso.x=horizontalScrollPosition;
-					if (getChildren().indexOf(diso) > -1)
-						diso.x+=getStyle('paddingLeft');
+					if (diso.width < width)
+					{
+						diso.x=horizontalScrollPosition;
+						if (getChildren().indexOf(diso) > -1)
+							diso.x+=getStyle('paddingLeft');
+					}
 				}
 			}
 		}

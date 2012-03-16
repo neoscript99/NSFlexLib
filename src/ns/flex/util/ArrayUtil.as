@@ -64,7 +64,7 @@ package ns.flex.util
 			if (!source)
 				return [];
 			else if (source is Array)
-				return source as Array;
+				return (source as Array).slice();
 			else if (source.hasOwnProperty('toArray'))
 				return source.toArray();
 			else if (source is XMLList)
