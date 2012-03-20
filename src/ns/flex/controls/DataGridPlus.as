@@ -256,7 +256,13 @@ package ns.flex.controls
 			if (dataList)
 				for (var i:int=0; i < dataList.length; i++)
 					for (var j:int=0; j < cols.length; j++)
-						sheet.setCell(i + 1, j, cols[j].itemToLabel(dataList[i]))
+					{
+						var vStr:String=cols[j].itemToLabel(dataList[i]);
+						//Excel 超过10位会自动科学计数、超过15位尾数丢失，以下防止类似情况发生
+						if (vStr.length > 10 && !isNaN(Number(vStr)))
+							vStr='[' + vStr + ']';
+						sheet.setCell(i + 1, j, vStr);
+					}
 
 			var xls:ExcelFile=new ExcelFile();
 			xls.sheets.addItem(sheet);
