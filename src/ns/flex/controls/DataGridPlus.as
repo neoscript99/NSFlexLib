@@ -22,6 +22,7 @@ package ns.flex.controls
 	import mx.events.ListEvent;
 	import mx.utils.ObjectProxy;
 	import mx.utils.ObjectUtil;
+	import mx.utils.UIDUtil;
 	import ns.flex.event.SaveItemEvent;
 	import ns.flex.support.MenuSupport;
 	import ns.flex.util.ArrayCollectionPlus;
@@ -240,8 +241,9 @@ package ns.flex.controls
 
 			if (copyToExcelEnabled)
 			{
-				enableMenu("复制选择行到Excel", copySelectedToExcel, true);
-				enableMenu("复制全部行到Excel", copyTotalToExcel);
+				enableMenu("复制选择行", copySelectedToExcel, true);
+				enableMenu("复制全部行", copyTotalToExcel);
+				enableMenu("另存为Excel", saveToExcel);
 			}
 		}
 
@@ -382,9 +384,9 @@ package ns.flex.controls
 		{
 			return columns.filter(function(item:DataGridColumn, index:int,
 					array:Array):Boolean
-			{
-				return item.visible && item != indexColumn;
-			})
+					{
+						return item.visible && item != indexColumn;
+					})
 		}
 
 		override protected function updateDisplayList(unscaledWidth:Number,
@@ -424,24 +426,24 @@ package ns.flex.controls
 		{
 			Alert.show("确认全部删除？", null, Alert.YES | Alert.NO, this,
 				function(evt:CloseEvent):void
-			{
-				if (evt.detail == Alert.YES)
 				{
-					dispatchEvent(new Event('deleteAll'));
-				}
-			})
+					if (evt.detail == Alert.YES)
+					{
+						dispatchEvent(new Event('deleteAll'));
+					}
+				})
 		}
 
 		private function deleteItems(evt:Event):void
 		{
 			Alert.show("确认删除？", null, Alert.YES | Alert.NO, this,
 				function(evt:CloseEvent):void
-			{
-				if (evt.detail == Alert.YES)
 				{
-					dispatchEvent(new Event('deleteItems'));
-				}
-			})
+					if (evt.detail == Alert.YES)
+					{
+						dispatchEvent(new Event('deleteItems'));
+					}
+				})
 		}
 
 		private function dgItemRollOut(event:ListEvent):void
@@ -484,9 +486,9 @@ package ns.flex.controls
 				indexColumn.resizable=false
 				indexColumn.labelFunction=
 					function(item:Object, column:DataGridColumn):String
-				{
-					return String(new ArrayCollectionPlus(dataProvider).getItemIndex(item) + 1);
-				};
+					{
+						return String(new ArrayCollectionPlus(dataProvider).getItemIndex(item) + 1);
+					};
 				var cols:Array=columns;
 				cols.unshift(indexColumn);
 				columns=cols;
@@ -569,6 +571,11 @@ package ns.flex.controls
 								multiSort ? i + 1 : '');
 						}
 			}
+		}
+
+		private function saveToExcel(evt:Event):void
+		{
+			saveAsExcel(dataProvider, UIDUtil.createUID());
 		}
 	}
 }
