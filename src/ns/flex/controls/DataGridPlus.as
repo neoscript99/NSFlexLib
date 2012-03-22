@@ -27,6 +27,7 @@ package ns.flex.controls
 	import ns.flex.support.MenuSupport;
 	import ns.flex.util.ArrayCollectionPlus;
 	import ns.flex.util.ContainerUtil;
+	import ns.flex.util.IOUtil;
 	import ns.flex.util.MathUtil;
 	import ns.flex.util.ObjectUtils;
 	import ns.flex.util.StringUtil;
@@ -301,20 +302,12 @@ package ns.flex.controls
 
 		public function saveAsExcel(dataList:Object, fileName:String):void
 		{
-			new FileReference().save(rowsToExcel(dataList), fileName.concat('.xls'));
+			IOUtil.saveFile(rowsToExcel(dataList), fileName.concat('.xls'));
 		}
 
-		/**
-		 * 保存文件必须通过点击按钮等事件触发，如果不符合可通过这个方法实现
-		 * @param dataList
-		 * @param fileName
-		 */
 		public function saveAsExcelWithAlert(dataList:Object, fileName:String):void
 		{
-			Alert.show("导出完成,请保存", null, Alert.OK, this, function(evt:Event):void
-			{
-				saveAsExcel(dataList, fileName)
-			})
+			IOUtil.saveFileWithAlert(rowsToExcel(dataList), fileName.concat('.xls'), this);
 		}
 
 		[Bindable("change")]

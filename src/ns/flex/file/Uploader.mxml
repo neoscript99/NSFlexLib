@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" label="文件上传" borderThickness="2">
+	<mx:Script>
+		<![CDATA[
+			import mx.utils.UIDUtil;
+			import ns.flex.util.IOUtil;
+
+			private function selectFiles():void
+			{
+				var frl:FileReferenceList=new FileReferenceList;
+				frl.browse();
+				frl.addEventListener(Event.SELECT, function(e:Event):void
+				{
+					for each (var file:FileReference in frl.fileList)
+					{
+						var fileItem:FileItem=new FileItem;
+						fileItem.fileUid=UIDUtil.createUID();
+						fileItem.file=file
+						addChild(fileItem);
+					}
+				});
+			}
+		]]>
+	</mx:Script>
+	<mx:Button label="添加文件" click="selectFiles()"/>
+</mx:VBox>
