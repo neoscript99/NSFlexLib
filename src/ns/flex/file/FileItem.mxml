@@ -8,6 +8,7 @@
 			import mx.rpc.events.ResultEvent;
 			import mx.rpc.remoting.mxml.RemoteObject;
 			import ns.flex.controls.ProgressBox;
+			import ns.flex.util.DateUtil;
 			import ns.flex.util.IOUtil;
 			import ns.flex.util.MessageUtil;
 
@@ -15,6 +16,8 @@
 
 			[Bindable]
 			public var _file:FileReference;
+			[Bindable]
+			public var dateCreated:Date;
 
 			[Bindable]
 			public var deletable:Boolean=true;
@@ -99,7 +102,7 @@
 	<mx:HBox id="labelBox">
 		<mx:CheckBox id="checkBox" visible="{deletable}" selected="true"/>
 		<mx:Label click="checkBox.selected=!checkBox.selected"
-				  text="{fileName}[{IOUtil.getFileSize(fileSize)}]"/>
+				  text="{fileName}[{IOUtil.getFileSize(fileSize)}]({DateUtil.getTimeLabel(dateCreated)})"/>
 	</mx:HBox>
 	<mx:LinkButton visible="{deletable}" label="删除" click="remove()"/>
 	<mx:LinkButton label="下载" click="download()" visible="{!_file}"/>

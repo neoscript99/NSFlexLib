@@ -22,6 +22,7 @@
 					fileItem.fileId=fileInfo.fileId;
 					fileItem.fileName=fileInfo.name;
 					fileItem.fileSize=fileInfo.fileSize;
+					fileItem.dateCreated=fileInfo.dateCreated;
 					fileItem.deletable=deletable;
 					addChild(fileItem);
 				}
@@ -29,8 +30,8 @@
 
 			public function set destination(destination:String):void
 			{
-				service=
-					RemoteUtil.createRemoteObject(destination, null, null, true);
+				service=RemoteUtil.createRemoteObject(destination, null, null, true);
 			}
-		]]></mx:Script>
+		]]>
+	</mx:Script>
 </mx:VBox>

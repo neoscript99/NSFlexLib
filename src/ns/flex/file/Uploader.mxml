@@ -74,6 +74,7 @@
 						fileItem.fileId=UIDUtil.createUID();
 						fileItem.fileName=file.name;
 						fileItem.fileSize=file.size;
+						fileItem.dateCreated=new Date();
 						fileItem.file=file;
 						addChild(fileItem);
 						file.load();
