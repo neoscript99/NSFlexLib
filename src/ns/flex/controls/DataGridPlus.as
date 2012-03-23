@@ -386,7 +386,7 @@ package ns.flex.controls
 			unscaledHeight:Number):void
 		{
 			super.updateDisplayList(unscaledWidth, unscaledHeight)
-			if (indexColumn.width > 30)
+			if (indexColumn && indexColumn.width > 30)
 				indexColumn.width=30
 		}
 

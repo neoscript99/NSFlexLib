@@ -1,9 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" label="文件上传" borderThickness="2">
+<mx:Panel xmlns:mx="http://www.adobe.com/2006/mxml"
+		  title="文件上传/下载[{IOUtil.getFileSize(maxFileSize)}以内]" paddingLeft="5"
+		  xmlns:file="ns.flex.file.*">
 	<mx:Script>
 		<![CDATA[
+			import mx.collections.ArrayCollection;
+			import mx.rpc.remoting.mxml.RemoteObject;
 			import mx.utils.UIDUtil;
+			import ns.flex.util.ContainerUtil;
 			import ns.flex.util.IOUtil;
+			import ns.flex.util.MessageUtil;
+			import ns.flex.util.RemoteUtil;
+
+			[Bindable]
+			public var maxFileSize:uint=1024 * 1024 * 10;
+			[Bindable]
+			public var maxNameLength:uint=128;
+			[Bindable]
+			private var selectValue:Boolean;
+
+			[Bindable]
+			private var service:RemoteObject;
+
+			public function set dataProdiver(list:*):void
+			{
+				downloader.dataProdiver=list;
+			}
+
+			public function set destination(destination:String):void
+			{
+				service=
+					RemoteUtil.createRemoteObject(destination, null, null, false);
+			}
+
+			private function eachFileItem(fun:Function):void
+			{
+				ContainerUtil.eachChild(this, fun)
+				ContainerUtil.eachChild(downloader, fun)
+			}
+
+			private function removeItem(item:DisplayObject):void
+			{
+				if (item is FileItem && FileItem(item).checkBox.selected)
+				{
+					trace('removeItem - ', FileItem(item).fileName)
+					FileItem(item).remove();
+				}
+			}
 
 			private function selectFiles():void
 			{
@@ -11,16 +54,49 @@
 				frl.browse();
 				frl.addEventListener(Event.SELECT, function(e:Event):void
 				{
+					var str:String='';
 					for each (var file:FileReference in frl.fileList)
 					{
+						if (file.size > maxFileSize)
+						{
+							str=
+								str.concat(file.name, ' 大于',
+								IOUtil.getFileSize(maxFileSize), '\n');
+							continue;
+						}
+						if (file.name.length > maxNameLength)
+						{
+							str=str.concat(file.name, ' 名字长度大于', maxNameLength, '\n');
+							continue;
+						}
 						var fileItem:FileItem=new FileItem;
-						fileItem.fileUid=UIDUtil.createUID();
-						fileItem.file=file
+						fileItem.service=service;
+						fileItem.fileId=UIDUtil.createUID();
+						fileItem.fileName=file.name;
+						fileItem.fileSize=file.size;
+						fileItem.file=file;
 						addChild(fileItem);
+						file.load();
 					}
+					if (str.length > 0)
+						MessageUtil.showMessage(str, '无法上传的文件');
 				});
+			}
+
+			private function setSelectValue(item:DisplayObject):void
+			{
+				if (item is FileItem)
+					FileItem(item).checkBox.selected=selectValue;
 			}
 		]]>
 	</mx:Script>
-	<mx:Button label="添加文件" click="selectFiles()"/>
-</mx:VBox>
+	<file:Downloader id="downloader" service="{service}" deletable="true"/>
+	<mx:ControlBar>
+		<mx:Button label="全选" click="selectValue=true;eachFileItem(setSelectValue)"/>
+		<mx:Button label="全不选" click="selectValue=false;eachFileItem(setSelectValue)"/>
+		<mx:Button label="删除选择项" click="eachFileItem(removeItem)"/>
+		<mx:HBox width="100%" horizontalAlign="right">
+			<mx:Button label="添加文件" click="selectFiles()"/>
+		</mx:HBox>
+	</mx:ControlBar>
+</mx:Panel>

@@ -21,7 +21,7 @@ package ns.flex.controls
 		}
 
 		/**
-		 * 生成趋势图的列索引，从1开始
+		 * 生成趋势图的列索引，从1开始, 如果有编号列，需排除
 		 * @param colIds
 		 */
 		public function set lineColumnIndexes(indexes:Array):void
@@ -30,8 +30,8 @@ package ns.flex.controls
 			{
 				var seriesInfos:Array=[];
 				for each (var i:int in indexes)
-					seriesInfos.push({yField: columns[i - 1].dataField,
-							displayName: columns[i - 1].headerText});
+					seriesInfos.push({yField: columns[showIndex ? i : i - 1].dataField,
+							displayName: columns[showIndex ? i : i - 1].headerText});
 				lineChart.seriesInfos=seriesInfos;
 			}
 		}

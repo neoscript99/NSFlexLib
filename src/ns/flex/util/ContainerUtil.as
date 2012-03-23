@@ -49,6 +49,24 @@ package ns.flex.util
 			}
 		}
 
+		/**
+		 * 遍历容器
+		 * @param container 容器
+		 * @param fun 遍历方法
+		 * @param recursive 是否递归遍历
+		 */
+		public static function eachChild(container:DisplayObjectContainer, fun:Function,
+			recursive:Boolean=false):void
+		{
+			for (var i:int=container.numChildren - 1; i >= 0; i--)
+			{
+				var diso:DisplayObject=container.getChildAt(i);
+				fun(diso);
+				if (recursive && diso is DisplayObjectContainer)
+					eachChild(DisplayObjectContainer(diso), fun, recursive)
+			}
+		}
+
 		public static function findContainerChild(container:DisplayObjectContainer,
 			type:Class, property:String=null, value:Object=null):DisplayObject
 		{

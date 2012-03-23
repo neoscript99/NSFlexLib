@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml">
+	<mx:Script>
+		<![CDATA[
+			import mx.collections.ArrayCollection;
+			import mx.rpc.remoting.mxml.RemoteObject;
+			import ns.flex.util.ArrayUtil;
+			import ns.flex.util.RemoteUtil;
+
+			[Bindable]
+			public var deletable:Boolean=false;
+
+			[Bindable]
+			public var service:RemoteObject;
+
+			public function set dataProdiver(list:*):void
+			{
+				for each (var fileInfo:Object in ArrayUtil.toArray(list))
+				{
+					var fileItem:FileItem=new FileItem;
+					fileItem.service=service;
+					fileItem.fileId=fileInfo.fileId;
+					fileItem.fileName=fileInfo.name;
+					fileItem.fileSize=fileInfo.fileSize;
+					fileItem.deletable=deletable;
+					addChild(fileItem);
+				}
+			}
+
+			public function set destination(destination:String):void
+			{
+				service=
+					RemoteUtil.createRemoteObject(destination, null, null, true);
+			}
+		]]></mx:Script>
+</mx:VBox>
