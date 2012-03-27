@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:Panel xmlns:mx="http://www.adobe.com/2006/mxml"
-		  title="文件上传/下载[{IOUtil.getFileSize(maxFileSize)}以内]" paddingLeft="5"
-		  xmlns:file="ns.flex.file.*">
+		  title="文件上传/下载[{maxFileNumber}×{IOUtil.getFileSize(maxFileSize)}]"
+		  paddingLeft="5" xmlns:file="ns.flex.file.*">
 	<mx:Script>
 		<![CDATA[
 			import mx.collections.ArrayCollection;
@@ -12,6 +12,11 @@
 			import ns.flex.util.MessageUtil;
 			import ns.flex.util.RemoteUtil;
 
+			[Bindable]
+			public var fileNumber:uint=0;
+			public var fileTypeFilter:Array;
+			[Bindable]
+			public var maxFileNumber:uint=5;
 			[Bindable]
 			public var maxFileSize:uint=1024 * 1024 * 10;
 			[Bindable]
@@ -29,8 +34,18 @@
 
 			public function set destination(destination:String):void
 			{
-				service=
-					RemoteUtil.createRemoteObject(destination, null, null, false);
+				service=RemoteUtil.createRemoteObject(destination, null, null, false);
+			}
+
+			private function countFile(item:DisplayObject):void
+			{
+				if (item is FileItem)
+					fileNumber++;
+			}
+
+			private function deleteSelected():void
+			{
+				eachFileItem(removeItem)
 			}
 
 			private function eachFileItem(fun:Function):void
@@ -51,36 +66,51 @@
 			private function selectFiles():void
 			{
 				var frl:FileReferenceList=new FileReferenceList;
-				frl.browse();
+				frl.browse(fileTypeFilter);
 				frl.addEventListener(Event.SELECT, function(e:Event):void
 				{
 					var str:String='';
+					fileNumber=0;
+					eachFileItem(countFile);
 					for each (var file:FileReference in frl.fileList)
 					{
-						if (file.size > maxFileSize)
+						if (fileNumber >= maxFileNumber)
 						{
-							str=
-								str.concat(file.name, ' 大于',
-								IOUtil.getFileSize(maxFileSize), '\n');
-							continue;
+							str=str.concat('文件数不能多余', maxFileNumber, '个\n');
+							break;
 						}
-						if (file.name.length > maxNameLength)
+						try
 						{
-							str=str.concat(file.name, ' 名字长度大于', maxNameLength, '\n');
-							continue;
+							if (file.size > maxFileSize)
+							{
+								str=
+									str.concat(file.name, ' 大于',
+									IOUtil.getFileSize(maxFileSize), '\n');
+								continue;
+							}
+							if (file.name.length > maxNameLength)
+							{
+								str=str.concat(file.name, ' 名字长度大于', maxNameLength, '\n');
+								continue;
+							}
+							var fileItem:FileItem=new FileItem;
+							fileItem.service=service;
+							fileItem.fileId=UIDUtil.createUID();
+							fileItem.fileName=file.name;
+							fileItem.fileSize=file.size;
+							fileItem.dateCreated=new Date();
+							fileItem.file=file;
+							addChild(fileItem);
+							file.load();
 						}
-						var fileItem:FileItem=new FileItem;
-						fileItem.service=service;
-						fileItem.fileId=UIDUtil.createUID();
-						fileItem.fileName=file.name;
-						fileItem.fileSize=file.size;
-						fileItem.dateCreated=new Date();
-						fileItem.file=file;
-						addChild(fileItem);
-						file.load();
+						catch (e:Error)
+						{
+							str=str.concat(file.name, ' ', e.toString());
+						}
+						fileNumber++;
 					}
 					if (str.length > 0)
-						MessageUtil.showMessage(str, '无法上传的文件');
+						MessageUtil.showMessage(str, '上传错误信息');
 				});
 			}
 
@@ -95,7 +125,7 @@
 	<mx:ControlBar>
 		<mx:Button label="全选" click="selectValue=true;eachFileItem(setSelectValue)"/>
 		<mx:Button label="全不选" click="selectValue=false;eachFileItem(setSelectValue)"/>
-		<mx:Button label="删除选择项" click="eachFileItem(removeItem)"/>
+		<mx:Button label="删除选择项" click="MessageUtil.confirmAction('确认删除？',deleteSelected)"/>
 		<mx:HBox width="100%" horizontalAlign="right">
 			<mx:Button label="添加文件" click="selectFiles()"/>
 		</mx:HBox>

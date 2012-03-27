@@ -4,7 +4,6 @@ package ns.flex.controls
 	import com.as3xls.xls.Sheet;
 	import flash.events.ContextMenuEvent;
 	import flash.events.Event;
-	import flash.net.FileReference;
 	import flash.system.System;
 	import flash.ui.ContextMenuItem;
 	import flash.utils.ByteArray;
@@ -29,6 +28,7 @@ package ns.flex.controls
 	import ns.flex.util.ContainerUtil;
 	import ns.flex.util.IOUtil;
 	import ns.flex.util.MathUtil;
+	import ns.flex.util.MessageUtil;
 	import ns.flex.util.ObjectUtils;
 	import ns.flex.util.StringUtil;
 
@@ -417,26 +417,18 @@ package ns.flex.controls
 
 		private function deleteAll(evt:Event):void
 		{
-			Alert.show("确认全部删除？", null, Alert.YES | Alert.NO, this,
-				function(evt:CloseEvent):void
-				{
-					if (evt.detail == Alert.YES)
-					{
-						dispatchEvent(new Event('deleteAll'));
-					}
-				})
+			MessageUtil.confirmAction("确认全部删除？", function():void
+			{
+				dispatchEvent(new Event('deleteAll'));
+			})
 		}
 
 		private function deleteItems(evt:Event):void
 		{
-			Alert.show("确认删除？", null, Alert.YES | Alert.NO, this,
-				function(evt:CloseEvent):void
-				{
-					if (evt.detail == Alert.YES)
-					{
-						dispatchEvent(new Event('deleteItems'));
-					}
-				})
+			MessageUtil.confirmAction("确认删除？", function():void
+			{
+				dispatchEvent(new Event('deleteItems'));
+			})
 		}
 
 		private function dgItemRollOut(event:ListEvent):void
@@ -474,6 +466,8 @@ package ns.flex.controls
 			{
 				indexColumn=new DataGridColumn;
 				indexColumn.headerText=' '
+				indexColumn.setStyle("backgroundColor", 0xeeeeee);
+				indexColumn.setStyle("backgroundAlpha", 1);
 				indexColumn.width=30
 				indexColumn.sortable=false
 				indexColumn.resizable=false
