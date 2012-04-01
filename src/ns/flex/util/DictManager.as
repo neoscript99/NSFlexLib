@@ -57,7 +57,7 @@ package ns.flex.util
 			parent:DisplayObject):void
 		{
 			_dictionaryService=ds;
-			pb.title='System Initlizing...';
+			pb.title='System Initializing...';
 			pb.show(parent);
 			_dictionaryService.addEventListener(ResultEvent.RESULT, function(e:Event):void
 			{

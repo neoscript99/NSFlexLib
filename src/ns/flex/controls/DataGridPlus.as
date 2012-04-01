@@ -468,6 +468,7 @@ package ns.flex.controls
 				indexColumn.headerText=' '
 				indexColumn.setStyle("backgroundColor", 0xeeeeee);
 				indexColumn.setStyle("backgroundAlpha", 1);
+				indexColumn.setStyle("textAlign", 'center');
 				indexColumn.width=30
 				indexColumn.sortable=false
 				indexColumn.resizable=false
