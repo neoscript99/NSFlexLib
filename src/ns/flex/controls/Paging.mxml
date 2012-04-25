@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:ControlBar xmlns:mx="http://www.adobe.com/2006/mxml" horizontalAlign="right"
-			   width="100%" paddingTop="5" paddingBottom="5">
-	<mx:Metadata>
-		[Event(name="changePage",type="ns.flex.event.PageChangeEvent")]
-	</mx:Metadata>
+<PagerBase xmlns:mx="http://www.adobe.com/2006/mxml" horizontalAlign="right" width="100%"
+		   paddingTop="5" paddingBottom="5" xmlns="ns.flex.controls.*">
 	<mx:Style>		
 		Button.nopadding
 		{
@@ -23,11 +20,7 @@
 			public var pageArrayNumber:int=5;
 
 			[Bindable]
-			private var _offsetValue:int=15;
-			[Bindable]
 			private var _totalNumber:int;
-			[Bindable]
-			private var curPage:int=0;
 			[Bindable]
 			private var pageArray:Array;
 			[Bindable]
@@ -42,51 +35,14 @@
 				})
 			}
 
-			public function get first():int
-			{
-				return (curPage - 1) * offset.value
-			}
-
-			/*
-			 *检查当前查询的firstResult是否小于0，是的话标识重置当前页
-			 */
-			public function forFirst(first:int):int
-			{
-				var realFirst:int=first > 0 ? first : 0;
-				curPage=realFirst / offset.value + 1;
-				return realFirst;
-			}
-
-			/*
-			 *向前或向后多少页
-			 *num可以为负数
-			 */
-			public function go(num:int):void
-			{
-				gotoPage(curPage + num);
-			}
-
 			/*
 			 *跳转到某页，触发换页事件
 			 */
-			public function gotoPage(pageIndex:int):void
+			override public function gotoPage(pageIndex:int):void
 			{
 				curPage=
 					(pageIndex > totalPage) ? totalPage : ((pageIndex < 1) ? 1 : pageIndex)
 				dispatchEvent(new PageChangeEvent((curPage - 1) * offset.value));
-			}
-
-			public function set offsetValue(value:int):void
-			{
-				_offsetValue=value;
-			}
-
-			/*
-			 *刷新当前页
-			 */
-			public function refresh(e:Event=null):void
-			{
-				go(0)
 			}
 
 			/*
@@ -172,11 +128,12 @@
 	<mx:Binding destination="totalPage" source="{(_totalNumber-1)/offset.value+1}"/>
 	<mx:Label text="每页："/>
 	<mx:NumericStepper id="offset" minimum="5" maximum="95" stepSize="5"
-					   value="{_offsetValue}" width="50" change="go(0)"/>
+					   value="{_offsetValue}" width="50"
+					   change="changeStepper(event.value)"/>
 	<mx:Label text="{curPage+'/'+totalPage+' ('+_totalNumber+')'}"/>
 	<mx:LinkBar id="pageLink" dataProvider="{pageArray}" itemClick="selectPage(event)"/>
 	<mx:Button click="go(-1)" enabled="{curPage>1}" label="&lt;"
 			   toolTip="{curPage>1?'上一页':''}" styleName="nopadding"/>
 	<mx:Button click="go(1)" enabled="{totalPage>curPage}" label="&gt;"
 			   styleName="nopadding" toolTip="{totalPage>curPage?'下一页':''}"/>
-</mx:ControlBar>
+</PagerBase>

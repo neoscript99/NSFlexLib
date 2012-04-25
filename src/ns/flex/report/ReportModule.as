@@ -1,15 +1,16 @@
 package ns.flex.report
 {
 	import flash.events.Event;
-
+	import mx.collections.IList;
 	import mx.containers.Panel;
 	import mx.events.FlexEvent;
 	import mx.events.ListEvent;
 	import mx.rpc.events.FaultEvent;
 	import mx.rpc.events.ResultEvent;
 	import mx.rpc.remoting.mxml.RemoteObject;
-
 	import ns.flex.controls.DataGridPlus;
+	import ns.flex.controls.PagerBase;
+	import ns.flex.controls.PagerSmart;
 	import ns.flex.controls.Paging;
 	import ns.flex.controls.ProgressBox;
 	import ns.flex.module.AbstractModule;
@@ -49,8 +50,12 @@ package ns.flex.report
 
 		public function queryPage(first:int):void
 		{
-			SQLUtil.countAndList(reportService, queryParam, paging.offset.value,
-				paging.forFirst(first), dgp.orders, domain);
+			if (paging is Paging)
+				SQLUtil.countAndList(reportService, queryParam, paging.offsetValue,
+					paging.forFirst(first), dgp.orders, domain);
+			else if (paging is PagerSmart) //on count
+				SQLUtil.list(reportService, queryParam, paging.offsetValue,
+					paging.forFirst(first), dgp.orders, domain);
 		}
 
 		protected function cc(e:Event):void
@@ -159,10 +164,10 @@ package ns.flex.report
 			return dgp.selectedOriItem;
 		}
 
-		protected function get paging():Paging
+		protected function get paging():PagerBase
 		{
 			if (!map.paging)
-				map.paging=ContainerUtil.findContainerChild(this, Paging);
+				map.paging=ContainerUtil.findContainerChild(this, PagerBase);
 			return map.paging;
 		}
 
