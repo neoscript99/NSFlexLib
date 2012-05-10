@@ -87,6 +87,7 @@ package ns.flex.controls
 
 		private function onKeyDown(evt:KeyboardEvent):void
 		{
+			trace(this.className, evt.target, evt)
 			if (evt.keyCode == Keyboard.ENTER)
 				this.dispatchEvent(new Event('enterKeyDown'));
 		}

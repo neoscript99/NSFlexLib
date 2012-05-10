@@ -64,6 +64,7 @@ package ns.flex.report
 			reportService.addEventListener(FaultEvent.FAULT, function(e:FaultEvent):void
 			{
 				popProgress.close();
+				dgp.closeProgress();
 			});
 			reportService.getOperation('export').addEventListener(ResultEvent.RESULT,
 				exportFile);

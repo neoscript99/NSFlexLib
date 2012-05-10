@@ -11,7 +11,6 @@ package ns.flex.controls
 	import ns.flex.util.Validatable;
 	import ns.flex.util.ValidatorUtil;
 
-	[Event(name="enterKeyDown")]
 	public class TextAreaPlus extends TextArea implements Validatable
 	{
 		[Inspectable(category="General")]
@@ -67,8 +66,9 @@ package ns.flex.controls
 
 		private function onKeyDown(evt:KeyboardEvent):void
 		{
+			trace(this.className, evt.target, evt)
 			if (evt.keyCode == Keyboard.ENTER)
-				this.dispatchEvent(new Event('enterKeyDown'));
+				evt.stopImmediatePropagation();
 		}
 
 		private function onValueCommit(e:Event):void

@@ -78,7 +78,7 @@ package ns.flex.util
 			firstResult:int, orders:Array, domain:String):void
 		{
 			//线程安全创建一个新对象，如果直接对param赋值有时会影响count的参数
-			var listParam:Object=ObjectUtils.clone(param)
+			var listParam:Object=param?ObjectUtils.clone(param):{};
 			if (maxResults > -1)
 			{
 				listParam.maxResults=[maxResults]

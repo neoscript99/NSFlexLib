@@ -11,11 +11,9 @@ package ns.flex.controls
 	import mx.containers.Form;
 	import mx.containers.FormItem;
 	import mx.containers.HBox;
-	import mx.controls.Alert;
 	import mx.controls.Button;
 	import mx.controls.DataGrid;
 	import mx.controls.dataGridClasses.DataGridColumn;
-	import mx.events.CloseEvent;
 	import mx.events.DataGridEvent;
 	import mx.events.FlexEvent;
 	import mx.events.ListEvent;
@@ -67,6 +65,8 @@ package ns.flex.controls
 		public var showIndex:Boolean=true;
 		[Bindable]
 		public var showItemProxy:ObjectProxy=new ObjectProxy();
+		[Inspectable(category="General")]
+		public var showJustVisible:Boolean=true;
 		[Inspectable(category="General")]
 		public var showSum:Boolean=false;
 		public var sumColumnLabel:String='汇总';
@@ -487,9 +487,11 @@ package ns.flex.controls
 		{
 			var form:Form=new Form();
 			var pop:PopWindow=ContainerUtil.initPopUP('查看', form, -1, -1, 'center');
-			for each (var col:DataGridColumn in visibleColumns)
+			for each (var col:DataGridColumn in(showJustVisible ? visibleColumns : columns))
 			{
-				if (col.editable || !editable)
+				if (col == indexColumn)
+					continue;
+				if ((col.editable && editable) || (!editable && col['viewable']))
 					form.addChild(new DataColumnFormItem(this, col, editable));
 			}
 
