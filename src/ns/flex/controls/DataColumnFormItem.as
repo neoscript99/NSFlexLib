@@ -5,6 +5,7 @@ package ns.flex.controls
 	import mx.controls.CheckBox;
 	import mx.controls.dataGridClasses.DataGridColumn;
 	import mx.core.UIComponent;
+
 	import ns.flex.util.ObjectUtils;
 	import ns.flex.util.StringUtil;
 
@@ -64,8 +65,9 @@ package ns.flex.controls
 			ObjectUtils.copyProperties(cbp, colp.comboBoxInfo);
 			BindingUtils.bindSetter(function(value:Object):void
 			{
-				if (value)
-					cbp.defaultLabel=colp.itemToLabel(value);
+				var defaultStr:String=StringUtil.trim(colp.itemToLabel(value))
+				if (defaultStr)
+					cbp.defaultLabel=defaultStr;
 				else
 					cbp.selectedIndex=0;
 			}, dgp, 'showItemProxy');
