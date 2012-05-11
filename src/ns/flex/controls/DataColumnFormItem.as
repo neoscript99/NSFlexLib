@@ -5,7 +5,6 @@ package ns.flex.controls
 	import mx.controls.CheckBox;
 	import mx.controls.dataGridClasses.DataGridColumn;
 	import mx.core.UIComponent;
-
 	import ns.flex.util.ObjectUtils;
 	import ns.flex.util.StringUtil;
 
@@ -38,6 +37,8 @@ package ns.flex.controls
 			}
 			else
 				uic=asText(dgp, col, editable);
+
+			uic.name=col.headerText;
 			addChild(uic);
 		}
 

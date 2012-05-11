@@ -3,6 +3,7 @@ package ns.flex.controls
 	import flash.display.DisplayObject;
 	import flash.events.Event;
 	import flash.events.KeyboardEvent;
+	import flash.events.MouseEvent;
 	import flash.ui.Keyboard;
 	import mx.events.CloseEvent;
 	import mx.events.FlexEvent;
@@ -29,10 +30,8 @@ package ns.flex.controls
 			addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
 			addEventListener(FlexEvent.CREATION_COMPLETE, cc);
 			addEventListener(CloseEvent.CLOSE, onClose);
-			addEventListener(Event.ADDED, function(e:Event):void
-			{
-				setFocus();
-			});
+			addEventListener(Event.ADDED, onFocus);
+			addEventListener(MouseEvent.CLICK, onFocus);
 			addEventListener('titleDoubleClick', switchSize);
 
 			maxWidth=SystemManager.getSWFRoot(this).stage.stageWidth * .9;
@@ -117,6 +116,15 @@ package ns.flex.controls
 
 			if (this.isPopUp)
 				PopUpManager.removePopUp(this);
+		}
+
+		private function onFocus(e:Event):void
+		{
+			if (e.target == this)
+			{
+				trace('PopWindow onFocus:', this, e);
+				setFocus();
+			}
 		}
 
 		private function onKeyDown(evt:KeyboardEvent):void

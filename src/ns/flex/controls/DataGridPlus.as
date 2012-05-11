@@ -66,7 +66,7 @@ package ns.flex.controls
 		[Bindable]
 		public var showItemProxy:ObjectProxy=new ObjectProxy();
 		[Inspectable(category="General")]
-		public var showJustVisible:Boolean=true;
+		public var showOnlyVisible:Boolean=true;
 		[Inspectable(category="General")]
 		public var showSum:Boolean=false;
 		public var sumColumnLabel:String='汇总';
@@ -487,7 +487,7 @@ package ns.flex.controls
 		{
 			var form:Form=new Form();
 			var pop:PopWindow=ContainerUtil.initPopUP('查看', form, -1, -1, 'center');
-			for each (var col:DataGridColumn in(showJustVisible ? visibleColumns : columns))
+			for each (var col:DataGridColumn in(showOnlyVisible ? visibleColumns : columns))
 			{
 				if (col == indexColumn)
 					continue;
