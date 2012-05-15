@@ -34,6 +34,11 @@ package ns.flex.util
 
 		public static function mergeObject(... objs):Object
 		{
+			return mergeObjectArray(objs);
+		}
+
+		public static function mergeObjectArray(objs:Array):Object
+		{
 			var merger:Object={};
 
 			for each (var obj:* in objs)

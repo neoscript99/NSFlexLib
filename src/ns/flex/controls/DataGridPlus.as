@@ -53,6 +53,7 @@ package ns.flex.controls
 		public var menuSupport:MenuSupport;
 		[Inspectable(category="General")]
 		public var modifyEnabled:Boolean=false;
+		//如果有嵌套字段，排序顺序无法保证，不要使用
 		[Inspectable(category="General")]
 		public var multiSort:Boolean=false;
 		public var popEditing:PopWindow;
@@ -185,6 +186,11 @@ package ns.flex.controls
 			super.dataProvider=value;
 		}
 
+		public function getSelectedFieldArray(field:String):Array
+		{
+			return new ArrayCollectionPlus(selectedItems).getFieldArray(field)
+		}
+
 		public function initPopEditing():PopWindow
 		{
 			if (popEditing)
@@ -195,6 +201,13 @@ package ns.flex.controls
 				showItemProxy=new ObjectProxy(ObjectUtil.copy(showItem));
 			});
 			return popEditing;
+		}
+
+		public function initPopView():PopWindow
+		{
+			if (!popView)
+				popView=initPop(false);
+			return popView;
 		}
 
 		public function isSumItem(item:Object):Boolean
@@ -363,7 +376,7 @@ package ns.flex.controls
 			else
 			{
 				if (!popView)
-					popView=initPop(false);
+					initPopView()
 				popView.show(root);
 			}
 		}

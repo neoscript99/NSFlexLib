@@ -177,6 +177,11 @@ package ns.flex.report
 			return reportBar.queryParam;
 		}
 
+		protected function refresh(e:Event=null):void
+		{
+			paging.refresh();
+		}
+
 		protected function get reportBar():ReportControlBar
 		{
 			if (!map.reportBar)

@@ -3,6 +3,7 @@ package ns.flex.controls
 	import mx.controls.Text;
 	import mx.controls.dataGridClasses.DataGridColumn;
 	import mx.core.ClassFactory;
+
 	import ns.flex.util.DateUtil;
 	import ns.flex.util.ObjectUtils;
 	import ns.flex.util.StringUtil;
@@ -20,8 +21,6 @@ package ns.flex.controls
 		[Inspectable(category="General")]
 		public var asNumber:Boolean=false;
 		public var comboBoxInfo:Object; //for asComboBox
-		// @see TextInputPlus,TextAreaPlus,DateFieldPlus
-		public var constraints:Object;
 		[Inspectable(enumeration="sum,avg,max,min,none", defaultValue="",
 			category="General")]
 		public var groupMethod:String;
@@ -32,6 +31,8 @@ package ns.flex.controls
 		//能否显示在datagrid的view pop中
 		[Inspectable(category="General")]
 		public var viewable:Boolean=true;
+		// @see TextInputPlus,TextAreaPlus,DateFieldPlus
+		private var _constraints:Object;
 		private var _percision:int;
 
 		public function DataGridColumnPlus(columnName:String=null)
@@ -88,6 +89,16 @@ package ns.flex.controls
 		{
 			if (value)
 				this.sortCompareFunction=complexColumnSortCompare;
+		}
+
+		public function get constraints():Object
+		{
+			return _constraints;
+		}
+
+		public function set constraints(value:Object):void
+		{
+			_constraints=(value is Array) ? ObjectUtils.mergeObjectArray(value as Array) : value;
 		}
 
 		public function getValue(item:Object):Object
