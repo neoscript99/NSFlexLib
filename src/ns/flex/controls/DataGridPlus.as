@@ -112,7 +112,8 @@ package ns.flex.controls
 				if (orderList[i].sortField == sortField)
 				{
 					item=orderList[i];
-					item.order=(item.order == 'asc' ? 'desc' : 'asc');
+					item.order=
+						order == null ? (item.order == 'asc' ? 'desc' : 'asc') : order;
 					orderList.removeItemAt(i);
 					break;
 				}

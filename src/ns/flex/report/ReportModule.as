@@ -188,6 +188,11 @@ package ns.flex.report
 				map.reportBar=ContainerUtil.findContainerChild(this, ReportControlBar);
 			return map.reportBar;
 		}
+
+		protected function get selectedIds():Array
+		{
+			return dgp.getSelectedFieldArray('id')
+		}
 	}
 }
 
