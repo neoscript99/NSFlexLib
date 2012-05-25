@@ -3,7 +3,6 @@ package ns.flex.controls
 	import mx.controls.Text;
 	import mx.controls.dataGridClasses.DataGridColumn;
 	import mx.core.ClassFactory;
-
 	import ns.flex.util.DateUtil;
 	import ns.flex.util.ObjectUtils;
 	import ns.flex.util.StringUtil;
@@ -15,12 +14,12 @@ package ns.flex.controls
 	 */
 	public class DataGridColumnPlus extends DataGridColumn
 	{
-		[Inspectable(enumeration="Text,TextArea,CheckBox,DateString", defaultValue="Text",
-			category="General")]
+		[Inspectable(enumeration="Text,TextArea,CheckBox,DateString,AutoComplete",
+			defaultValue="Text", category="General")]
 		public var asControl:String='Text';
 		[Inspectable(category="General")]
 		public var asNumber:Boolean=false;
-		public var comboBoxInfo:Object; //for asComboBox
+		public var controlProps:Object; //for asComboBox
 		[Inspectable(enumeration="sum,avg,max,min,none", defaultValue="",
 			category="General")]
 		public var groupMethod:String;
@@ -49,15 +48,22 @@ package ns.flex.controls
 				column.isSeparateThousands);
 		}
 
+		[Inspectable(category="General")]
+		public function set asAutoComplete(props:Object):void
+		{
+			asControl='AutoComplete';
+			controlProps=props;
+		}
+
 		/**
 		 *
 		 * @param info like {labelField:'',dataField:'',dataProvider:[]}
 		 */
 		[Inspectable(category="General")]
-		public function set asComboBox(info:Object):void
+		public function set asComboBox(props:Object):void
 		{
 			asControl='ComboBox';
-			comboBoxInfo=info;
+			controlProps=props;
 		}
 
 		[Inspectable(category="General")]
@@ -98,7 +104,8 @@ package ns.flex.controls
 
 		public function set constraints(value:Object):void
 		{
-			_constraints=(value is Array) ? ObjectUtils.mergeObjectArray(value as Array) : value;
+			_constraints=
+				(value is Array) ? ObjectUtils.mergeObjectArray(value as Array) : value;
 		}
 
 		public function getValue(item:Object):Object

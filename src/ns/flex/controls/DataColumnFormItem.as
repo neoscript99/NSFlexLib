@@ -1,10 +1,12 @@
 package ns.flex.controls
 {
 	import mx.binding.utils.BindingUtils;
+	import mx.collections.ArrayCollection;
 	import mx.containers.FormItem;
 	import mx.controls.CheckBox;
 	import mx.controls.dataGridClasses.DataGridColumn;
 	import mx.core.UIComponent;
+	import mx.rpc.remoting.mxml.Operation;
 	import ns.flex.util.ObjectUtils;
 	import ns.flex.util.StringUtil;
 
@@ -29,6 +31,8 @@ package ns.flex.controls
 					uic=asCheckBox(dgp, col, editable);
 				else if ('ComboBox' == colp.asControl && editable)
 					uic=asComboBox(dgp, colp);
+				else if ('AutoComplete' == colp.asControl)
+					uic=asAutoComplete(dgp, colp, editable);
 				else if (('DateField' == colp.asControl || 'DateString' == colp.asControl) &&
 					editable)
 					uic=asDateField(dgp, colp);
@@ -40,6 +44,32 @@ package ns.flex.controls
 
 			uic.name=col.headerText;
 			addChild(uic);
+		}
+
+		private function asAutoComplete(dgp:DataGridPlus, colp:DataGridColumnPlus,
+			editable:Boolean):UIComponent
+		{
+			var ac:AutoCompletePlus=new AutoCompletePlus;
+			//包含AutoComplete时，回车不提交
+			dgp.popEnterSubmit=false;
+			ObjectUtils.copyProperties(ac, colp.controlProps);
+			ac.enabled=editable;
+			var getSelected:Operation=colp.controlProps.getSelected;
+			BindingUtils.bindSetter(function(value:ArrayCollection):void
+			{
+				ac.selectedItems=value;
+			}, getSelected, 'lastResult');
+			BindingUtils.bindSetter(function(value:Object):void
+			{
+				getSelected.send(value)
+			}, dgp, 'showItemProxy');
+
+			if (editable)
+				BindingUtils.bindSetter(function(value:Object):void
+				{
+					ObjectUtils.setValue(dgp.showItemProxy, colp.dataField, value);
+				}, ac, 'selectedItems');
+			return ac;
 		}
 
 		private function asCheckBox(dgp:DataGridPlus, col:DataGridColumn,
@@ -63,7 +93,7 @@ package ns.flex.controls
 		private function asComboBox(dgp:DataGridPlus, colp:DataGridColumnPlus):UIComponent
 		{
 			var cbp:ComboBoxPlus=new ComboBoxPlus();
-			ObjectUtils.copyProperties(cbp, colp.comboBoxInfo);
+			ObjectUtils.copyProperties(cbp, colp.controlProps);
 			BindingUtils.bindSetter(function(value:Object):void
 			{
 				var defaultStr:String=StringUtil.trim(colp.itemToLabel(value))
@@ -77,9 +107,9 @@ package ns.flex.controls
 				if (value)
 				{
 					//write col.dataField if dataField is set
-					if (colp.comboBoxInfo.dataField)
+					if (colp.controlProps.dataField)
 						dgp.showItemProxy[colp.dataField]=
-							value[colp.comboBoxInfo.dataField];
+							value[colp.controlProps.dataField];
 					else //set nest first field
 						dgp.showItemProxy[colp.dataField.split('.')[0]]=value;
 				}

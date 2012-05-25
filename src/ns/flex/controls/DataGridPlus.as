@@ -57,6 +57,8 @@ package ns.flex.controls
 		[Inspectable(category="General")]
 		public var multiSort:Boolean=false;
 		public var popEditing:PopWindow;
+		[Inspectable(category="General")]
+		public var popEnterSubmit:Boolean=true;
 		public var popTitleFunciton:Function;
 		public var popView:PopWindow;
 		[Inspectable(enumeration="none,new,view,edit,new-edit,view-edit,new-view-edit",
@@ -526,7 +528,8 @@ package ns.flex.controls
 					dispatchEvent(new SaveItemEvent(showItemProxy));
 				}
 				saveButton.addEventListener('click', submit);
-				pop.addEventListener('enterKeyDown', submit);
+				if (popEnterSubmit)
+					pop.addEventListener('enterKeyDown', submit);
 				var resetButton:Button=new Button();
 				resetButton.label='重置';
 				resetButton.addEventListener('click', function(e:Event):void
