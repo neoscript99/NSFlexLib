@@ -68,7 +68,8 @@ package ns.flex.controls
 				BindingUtils.bindSetter(function(value:Object):void
 				{
 					ObjectUtils.setValue(dgp.showItemProxy, colp.dataField, value);
-				}, ac, 'selectedItems');
+				}, ac, ac.allowNewValues ? 'selectedLabels' : 'selectedItems');
+			//allowNewValues取label就够了，因为新输入的只能是label
 			return ac;
 		}
 
