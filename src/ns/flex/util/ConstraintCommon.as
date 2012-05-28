@@ -16,6 +16,9 @@ package ns.flex.util
 		public static const phone:Object=
 			{noSpace: true, expression: '^[\-\+\.\(\)\\d]{5,32}$', required: true,
 				imeDisabled: true, restrict: '\\-+\\.()0-9'};
+		public static const url:Object=
+			{noSpace: true, expression: '^[a-zA-z]+://.*$', maxChars: 256, autoTrim: true,
+				errorTip: '请输入正确的网址'};
 
 		public static function forLength(len:int, required:Boolean=true,
 			noSpace:Boolean=true, imeDisabled:Boolean=true):Object
