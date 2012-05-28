@@ -14,7 +14,7 @@ package ns.flex.controls
 	 */
 	public class DataGridColumnPlus extends DataGridColumn
 	{
-		[Inspectable(enumeration="Text,TextArea,CheckBox,DateString,AutoComplete",
+		[Inspectable(enumeration="Text,TextArea,CheckBox,DateString,AutoComplete,LinkButton",
 			defaultValue="Text", category="General")]
 		public var asControl:String='Text';
 		[Inspectable(category="General")]

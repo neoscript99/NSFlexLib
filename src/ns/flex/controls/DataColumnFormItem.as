@@ -4,6 +4,7 @@ package ns.flex.controls
 	import mx.collections.ArrayCollection;
 	import mx.containers.FormItem;
 	import mx.controls.CheckBox;
+	import mx.controls.LinkButton;
 	import mx.controls.dataGridClasses.DataGridColumn;
 	import mx.core.UIComponent;
 	import mx.rpc.remoting.mxml.Operation;
@@ -33,6 +34,8 @@ package ns.flex.controls
 					uic=asComboBox(dgp, colp);
 				else if ('AutoComplete' == colp.asControl)
 					uic=asAutoComplete(dgp, colp, editable);
+				else if ('LinkButton' == colp.asControl && !editable)
+					uic=asLinkButton(dgp, colp);
 				else if (('DateField' == colp.asControl || 'DateString' == colp.asControl) &&
 					editable)
 					uic=asDateField(dgp, colp);
@@ -153,6 +156,17 @@ package ns.flex.controls
 				}, dfp, 'selectedDate');
 			}
 			return dfp;
+		}
+
+		private function asLinkButton(dgp:DataGridPlus, col:DataGridColumn):UIComponent
+		{
+			var lb:LinkButton=new LinkButton();
+			BindingUtils.bindSetter(function(value:Object):void
+			{
+				lb.label=value[col.dataField];
+			}, dgp, 'showItemProxy');
+
+			return lb;
 		}
 
 		private function asText(dgp:DataGridPlus, col:DataGridColumn, editable:Boolean,
