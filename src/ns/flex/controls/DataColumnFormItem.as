@@ -53,8 +53,6 @@ package ns.flex.controls
 			editable:Boolean):UIComponent
 		{
 			var ac:AutoCompletePlus=new AutoCompletePlus;
-			//包含AutoComplete时，回车不提交
-			dgp.popEnterSubmit=false;
 			ObjectUtils.copyProperties(ac, colp.controlProps);
 			ac.enabled=editable;
 			var getSelected:Operation=colp.controlProps.getSelected;
