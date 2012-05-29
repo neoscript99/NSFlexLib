@@ -64,11 +64,14 @@ package ns.flex.controls
 			{
 				ac.selectedItems=e.result as ArrayCollection;
 			})
-			BindingUtils.bindSetter(function(value:Object):void
+			if (!colp.controlProps.getSelectedSend)
 			{
-				getSelected.send(value)
-			}, dgp, 'showItemProxy');
-
+				colp.controlProps.getSelectedSend=true;
+				BindingUtils.bindSetter(function(value:Object):void
+				{
+					getSelected.send(value)
+				}, dgp, 'showItemProxy');
+			}
 			if (editable)
 				BindingUtils.bindSetter(function(value:Object):void
 				{
