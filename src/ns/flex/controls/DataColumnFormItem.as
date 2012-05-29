@@ -1,5 +1,8 @@
 package ns.flex.controls
 {
+	import flash.events.MouseEvent;
+	import flash.net.URLRequest;
+	import flash.net.navigateToURL;
 	import mx.binding.utils.BindingUtils;
 	import mx.collections.ArrayCollection;
 	import mx.containers.FormItem;
@@ -159,11 +162,15 @@ package ns.flex.controls
 		private function asLinkButton(dgp:DataGridPlus, col:DataGridColumn):UIComponent
 		{
 			var lb:LinkButton=new LinkButton();
+			lb.maxWidth=480;
 			BindingUtils.bindSetter(function(value:Object):void
 			{
 				lb.label=value[col.dataField];
 			}, dgp, 'showItemProxy');
-
+			lb.addEventListener(MouseEvent.CLICK, function(e:MouseEvent):void
+			{
+				navigateToURL(new URLRequest(lb.label), '_blank')
+			});
 			return lb;
 		}
 
