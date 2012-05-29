@@ -10,6 +10,7 @@ package ns.flex.controls
 	import mx.controls.LinkButton;
 	import mx.controls.dataGridClasses.DataGridColumn;
 	import mx.core.UIComponent;
+	import mx.rpc.events.ResultEvent;
 	import mx.rpc.remoting.mxml.Operation;
 	import ns.flex.util.ObjectUtils;
 	import ns.flex.util.StringUtil;
@@ -59,10 +60,10 @@ package ns.flex.controls
 			ObjectUtils.copyProperties(ac, colp.controlProps);
 			ac.enabled=editable;
 			var getSelected:Operation=colp.controlProps.getSelected;
-			BindingUtils.bindSetter(function(value:ArrayCollection):void
+			getSelected.addEventListener(ResultEvent.RESULT, function(e:ResultEvent):void
 			{
-				ac.selectedItems=value;
-			}, getSelected, 'lastResult');
+				ac.selectedItems=e.result as ArrayCollection;
+			})
 			BindingUtils.bindSetter(function(value:Object):void
 			{
 				getSelected.send(value)
