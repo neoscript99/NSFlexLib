@@ -73,7 +73,7 @@ package ns.flex.controls
 		[Inspectable(category="General")]
 		public var showSum:Boolean=false;
 		public var sumColumnLabel:String='汇总';
-		private var indexColumn:DataGridColumn;
+		private var indexColumn:DataGridColumnPlus;
 		[Bindable]
 		private var lastRollOverIndex:Number;
 		private var orderList:ArrayCollectionPlus=new ArrayCollectionPlus();
@@ -189,6 +189,15 @@ package ns.flex.controls
 			super.dataProvider=value;
 		}
 
+		public function get editableColumns():Array
+		{
+			return (showOnlyVisible ? visibleColumns : columns).filter(function(item:DataGridColumn,
+					index:int, array:Array):Boolean
+					{
+						return item.editable;
+					})
+		}
+
 		public function getSelectedFieldArray(field:String):Array
 		{
 			return new ArrayCollectionPlus(selectedItems).getFieldArray(field)
@@ -266,7 +275,7 @@ package ns.flex.controls
 
 		public function rowsToExcel(dataList:Object):ByteArray
 		{
-			var cols:Array=visibleColumns;
+			var cols:Array=viewableColumns;
 			var sheet:Sheet=new Sheet();
 			sheet.resize(dataList ? dataList.length + 1 : 1, cols.length);
 			for (var k:int=0; k < cols.length; k++)
@@ -389,6 +398,16 @@ package ns.flex.controls
 			deleteEnabled=deleteAllEnabled=createEnabled=modifyEnabled=enabled;
 		}
 
+		public function get viewableColumns():Array
+		{
+			return (showOnlyVisible ? visibleColumns : columns).filter(function(item:DataGridColumn,
+					index:int, array:Array):Boolean
+					{
+						return (item is DataGridColumnPlus && DataGridColumnPlus(item).viewable) ||
+							!(item is DataGridColumnPlus);
+					})
+		}
+
 		public function get visibleColumns():Array
 		{
 			return columns.filter(function(item:DataGridColumn, index:int,
@@ -480,12 +499,14 @@ package ns.flex.controls
 			resetMenu();
 			if (showIndex)
 			{
-				indexColumn=new DataGridColumn;
+				indexColumn=new DataGridColumnPlus;
 				indexColumn.headerText=' '
 				indexColumn.setStyle("backgroundColor", 0xeeeeee);
 				indexColumn.setStyle("backgroundAlpha", 1);
 				indexColumn.setStyle("textAlign", 'center');
 				indexColumn.width=30
+				indexColumn.viewable=false;
+				indexColumn.editable=false;
 				indexColumn.sortable=false
 				indexColumn.resizable=false
 				indexColumn.labelFunction=
@@ -503,12 +524,9 @@ package ns.flex.controls
 		{
 			var form:Form=new Form();
 			var pop:PopWindow=ContainerUtil.initPopUP('查看', form, -1, -1, 'center');
-			for each (var col:DataGridColumn in(showOnlyVisible ? visibleColumns : columns))
+			for each (var col:DataGridColumn in(editable ? editableColumns : viewableColumns))
 			{
-				if (col == indexColumn)
-					continue;
-				if ((col.editable && editable) || (!editable && col['viewable']))
-					form.addChild(new DataColumnFormItem(this, col, editable));
+				form.addChild(new DataColumnFormItem(this, col, editable));
 			}
 
 			if (editable)
