@@ -113,19 +113,6 @@ package ns.flex.controls
 			return (!hasComplexFieldName) ? item[dataField] : deriveComplexColumnData(item);
 		}
 
-		/**
-		 * Flex 3.6已增加功能支持嵌套字段
-		 * 这里只是保持老代码正确
-		 * @param nestField
-		 */
-		public function set nestDataField(nestField:String):void
-		{
-			dataField=nestField;
-			//Flex 3.6已增加功能支持嵌套字段
-			//sortable = false;
-			//labelFunction=DataGridColumnPlus.getLabel;
-		}
-
 		public function set percision(p:int):void
 		{
 			_percision=p;
