@@ -66,6 +66,7 @@ package ns.flex.controls
 			})
 			if (!colp.controlProps.getSelectedSend)
 			{
+				//如果不处理，因为有查看编辑两个对话框，这个方法会调用两次
 				colp.controlProps.getSelectedSend=true;
 				BindingUtils.bindSetter(function(value:Object):void
 				{
@@ -77,7 +78,7 @@ package ns.flex.controls
 				{
 					ObjectUtils.setValue(dgp.showItemProxy, colp.dataField, value);
 				}, ac, ac.allowNewValues ? 'selectedLabels' : 'selectedItems');
-			//allowNewValues取label就够了，因为新输入的只能是label
+			//allowNewValues为true时取label就够了，因为新输入的只能是label
 			return ac;
 		}
 
