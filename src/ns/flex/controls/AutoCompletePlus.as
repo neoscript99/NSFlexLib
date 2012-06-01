@@ -4,14 +4,18 @@ package ns.flex.controls
 	import flash.events.KeyboardEvent;
 	import flash.ui.Keyboard;
 	import mx.collections.ArrayCollection;
+	import ns.flex.util.ContainerUtil;
+	import ns.flex.util.ObjectUtils;
 	import ns.flex.util.StringUtil;
 
 	public class AutoCompletePlus extends AutoComplete
 	{
+		protected var _editable:Boolean=true;
+		protected var _editableChanged:Boolean=false;
+
 		public function AutoCompletePlus()
 		{
 			super();
-			width=300;
 			backspaceAction=BACKSPACE_REMOVE;
 			showRemoveIcon=true;
 			prompt='使用逗号(,)或回车分隔多个项目';
@@ -20,6 +24,25 @@ package ns.flex.controls
 		public function get allowNewValues():Boolean
 		{
 			return _allowNewValues;
+		}
+
+		[Bindable(event="change")]
+		[Bindable(event="valueCommit")]
+		[Inspectable(category="General")]
+		public function get editable():Boolean
+		{
+			return _editable;
+		}
+
+		public function set editable(value:Boolean):void
+		{
+			if (_editable != value)
+			{
+				_editable=value;
+				showRemoveIcon=_editable;
+				_editableChanged=true;
+				invalidateProperties();
+			}
 		}
 
 		//不要赋值空列表，否则prompt不显示
@@ -51,6 +74,28 @@ package ns.flex.controls
 					}
 				}
 			return labels;
+		}
+
+		override protected function commitProperties():void
+		{
+			super.commitProperties();
+			if (_editableChanged)
+			{
+				if (_editable)
+					addEventListener(KeyboardEvent.KEY_DOWN, handleKeyDown);
+				else
+					removeEventListener(KeyboardEvent.KEY_DOWN, handleKeyDown);
+				ContainerUtil.eachChild(this, function(child:Object):void
+				{
+					if (child.hasOwnProperty('editable'))
+						child.editable=_editable;
+				}, true);
+			}
+		}
+
+		override protected function defaultLabelFunction(item:Object):String
+		{
+			return String(_labelField ? ObjectUtils.getValue(item, _labelField) : item);
 		}
 
 		//回车不要向上抛出，防止提交

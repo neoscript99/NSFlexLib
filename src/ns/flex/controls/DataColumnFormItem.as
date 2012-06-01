@@ -23,6 +23,7 @@ package ns.flex.controls
 		{
 			super();
 			var uic:UIComponent;
+			percentWidth=100;
 			label=
 				col.headerText ? StringUtil.toLine(col.headerText.replace(/[↑↓]\d*/,
 				'')) : '';
@@ -58,11 +59,14 @@ package ns.flex.controls
 		{
 			var ac:AutoCompletePlus=new AutoCompletePlus;
 			ObjectUtils.copyProperties(ac, colp.controlProps);
-			ac.enabled=editable;
+			ac.editable=editable;
 			var getSelected:Operation=colp.controlProps.getSelected;
 			getSelected.addEventListener(ResultEvent.RESULT, function(e:ResultEvent):void
 			{
 				ac.selectedItems=e.result as ArrayCollection;
+				//只读时dataProvider不用在mxml中设置，直接等于selectedItems
+				if (!ac.editable)
+					ac.dataProvider=ac.selectedItems;
 			})
 			if (!colp.controlProps.getSelectedSend)
 			{
