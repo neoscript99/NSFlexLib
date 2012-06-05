@@ -48,6 +48,7 @@ package ns.flex.controls
 		public var deleteAllEnabled:Boolean=false;
 		[Inspectable(category="General")]
 		public var deleteEnabled:Boolean=false;
+		public var exportName:String;
 		[Inspectable(category="General")]
 		public var globalSort:Boolean=false;
 		public var menuSupport:MenuSupport;
@@ -600,7 +601,7 @@ package ns.flex.controls
 
 		private function saveToExcel(evt:Event):void
 		{
-			saveAsExcel(dataProvider, UIDUtil.createUID());
+			saveAsExcel(dataProvider, exportName ? exportName : UIDUtil.createUID());
 		}
 	}
 }
