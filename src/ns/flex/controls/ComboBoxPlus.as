@@ -138,7 +138,7 @@ package ns.flex.controls
 					tempIndex=i;
 					break;
 				}
-				//如果没有完全相等的，查找包含的
+				//如果没有完全相等的，查找包含的，最终会选择最后一个包含的
 				else if (label.indexOf(_defaultLabel) > -1)
 				{
 					tempIndex=i;

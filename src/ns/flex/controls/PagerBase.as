@@ -2,22 +2,22 @@ package ns.flex.controls
 {
 	import mx.containers.ControlBar;
 	import mx.controls.NumericStepper;
-	import mx.skins.halo.NumericStepperUpSkin;
 	import ns.flex.event.PageChangeEvent;
 	import ns.flex.util.ContainerUtil;
 
 	[Event(name="changePage", type="ns.flex.event.PageChangeEvent")]
 	public class PagerBase extends ControlBar
 	{
-
 		[Bindable]
 		protected var _offsetValue:int=15;
+
 		[Bindable]
 		protected var curPage:int=0;
+		protected var map:Object={};
 
 		public function get first():int
 		{
-			return (curPage - 1) * _offsetValue
+			return (curPage - 1) * offsetStepper.value
 		}
 
 		/*
@@ -26,7 +26,7 @@ package ns.flex.controls
 		public function forFirst(first:int):int
 		{
 			var realFirst:int=first > 0 ? first : 0;
-			curPage=realFirst / _offsetValue + 1;
+			curPage=realFirst / offsetStepper.value + 1;
 			return realFirst;
 		}
 
@@ -45,17 +45,21 @@ package ns.flex.controls
 		public function gotoPage(pageIndex:int):void
 		{
 			curPage=pageIndex;
-			dispatchEvent(new PageChangeEvent((curPage - 1) * _offsetValue));
+			dispatchEvent(new PageChangeEvent((curPage - 1) * offsetValue));
+		}
+
+		/**
+		 * 不能取_offsetValue,因为stepSize的原因，实际offsetStepper.value可能不等于_offsetValue
+		 * @return
+		 */
+		public function get offsetValue():int
+		{
+			return offsetStepper.value;
 		}
 
 		public function set offsetValue(value:int):void
 		{
 			_offsetValue=value;
-		}
-
-		public function get offsetValue():int
-		{
-			return _offsetValue;
 		}
 
 		/*
@@ -68,8 +72,14 @@ package ns.flex.controls
 
 		protected function changeStepper(value:int):void
 		{
-			_offsetValue=value;
 			go(0);
+		}
+
+		protected function get offsetStepper():NumericStepper
+		{
+			if (!map.offsetStepper)
+				map.offsetStepper=ContainerUtil.findContainerChild(this, NumericStepper);
+			return map.offsetStepper;
 		}
 	}
 }

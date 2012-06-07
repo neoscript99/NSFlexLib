@@ -3,6 +3,7 @@ package ns.flex.controls
 	import mx.controls.Text;
 	import mx.controls.dataGridClasses.DataGridColumn;
 	import mx.core.ClassFactory;
+	import mx.utils.ObjectUtil;
 	import ns.flex.util.DateUtil;
 	import ns.flex.util.ObjectUtils;
 	import ns.flex.util.StringUtil;
@@ -147,10 +148,12 @@ package ns.flex.controls
 			if (!obj2)
 				return -1;
 
-			var obj1Data:String=String(deriveComplexColumnData(obj1));
-			var obj2Data:String=String(deriveComplexColumnData(obj2));
-			return StringUtil.chineseCompare(obj1Data, obj2Data);
-
+			var obj1Data:String=itemToLabel(obj1);
+			var obj2Data:String=itemToLabel(obj2);
+			if (!asNumber)
+				return StringUtil.chineseCompare(obj1Data, obj2Data);
+			else
+				return ObjectUtil.numericCompare(Number(obj1Data), Number(obj2Data));
 		}
 
 		override protected function deriveComplexColumnData(data:Object):Object

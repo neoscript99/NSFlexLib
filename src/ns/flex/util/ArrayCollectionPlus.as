@@ -119,15 +119,16 @@ package ns.flex.util
 		 * 删除符合条件的所有集合项
 		 * @param f 函数f(item)为true时代表符合条件
 		 */
-		public function remove(f:Function):void
+		public function remove(f:Function):ArrayCollectionPlus
 		{
-			for (var i:int=0; i < this.length; i++)
+			for (var i:int=this.length - 1; i >= 0; i--)
 			{
 				var item:Object=this.getItemAt(i);
 
 				if (f(item))
 					this.removeItemAt(i);
 			}
+			return this;
 		}
 
 		/**
