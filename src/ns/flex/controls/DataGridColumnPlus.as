@@ -148,12 +148,11 @@ package ns.flex.controls
 			if (!obj2)
 				return -1;
 
-			var obj1Data:String=itemToLabel(obj1);
-			var obj2Data:String=itemToLabel(obj2);
 			if (!asNumber)
-				return StringUtil.chineseCompare(obj1Data, obj2Data);
+				return StringUtil.chineseCompare(itemToLabel(obj1), itemToLabel(obj2));
 			else
-				return ObjectUtil.numericCompare(Number(obj1Data), Number(obj2Data));
+				return ObjectUtil.numericCompare(Number(deriveComplexColumnData(obj1)),
+					Number(deriveComplexColumnData(obj2)));
 		}
 
 		override protected function deriveComplexColumnData(data:Object):Object

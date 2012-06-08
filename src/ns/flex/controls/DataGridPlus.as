@@ -73,7 +73,7 @@ package ns.flex.controls
 		public var showOnlyVisible:Boolean=true;
 		[Inspectable(category="General")]
 		public var showSum:Boolean=false;
-		public var sumColumnLabel:String='汇总';
+		public var sumColumnLabel:String='◆汇总◆';
 		private var indexColumn:DataGridColumnPlus;
 		[Bindable]
 		private var lastRollOverIndex:Number;
@@ -152,6 +152,7 @@ package ns.flex.controls
 			trace('set dataProvider');
 			if (showSum && value)
 			{
+				//clone source
 				var acp:ArrayCollectionPlus=new ArrayCollectionPlus(value);
 				var sumItem:Object={uniqueIdForSumItem: uid};
 				var hasGroupColumn:Boolean=false;
@@ -501,7 +502,7 @@ package ns.flex.controls
 			if (showIndex)
 			{
 				indexColumn=new DataGridColumnPlus;
-				indexColumn.headerText=' '
+				indexColumn.headerText='#'
 				indexColumn.setStyle("backgroundColor", 0xeeeeee);
 				indexColumn.setStyle("backgroundAlpha", 1);
 				indexColumn.setStyle("textAlign", 'center');
