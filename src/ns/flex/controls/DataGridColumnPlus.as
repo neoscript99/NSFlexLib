@@ -117,6 +117,7 @@ package ns.flex.controls
 		public function set percision(p:int):void
 		{
 			_percision=p;
+			asNumber=true;
 			if (!groupMethod)
 				groupMethod='sum';
 			if (labelFunction == null)
