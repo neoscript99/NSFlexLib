@@ -48,7 +48,11 @@ package ns.flex.controls
 		public var deleteAllEnabled:Boolean=false;
 		[Inspectable(category="General")]
 		public var deleteEnabled:Boolean=false;
+		[Inspectable(category="General")]
+		public var exportDataField:Boolean=false;
 		public var exportName:String;
+		[Inspectable(category="General")]
+		public var exportNumber:Boolean=false;
 		[Inspectable(category="General")]
 		public var globalSort:Boolean=false;
 		public var menuSupport:MenuSupport;
@@ -281,15 +285,24 @@ package ns.flex.controls
 			var sheet:Sheet=new Sheet();
 			sheet.resize(dataList ? dataList.length + 1 : 1, cols.length);
 			for (var k:int=0; k < cols.length; k++)
-				sheet.setCell(0, k, cols[k].headerText)
+			{
+				var head:String=cols[k].headerText;
+				if (exportDataField)
+					head=
+						head.concat('(',
+						cols[k].dataField ? cols[k].dataField : '计算', ')');
+				sheet.setCell(0, k, head)
+			}
 
 			if (dataList)
 				for (var i:int=0; i < dataList.length; i++)
 					for (var j:int=0; j < cols.length; j++)
 					{
 						var vStr:String=StringUtil.trim(cols[j].itemToLabel(dataList[i]));
+						if (cols[j].asNumber && exportNumber)
+							vStr=vStr.replace(/,/g, '');
 						//Excel 超过10位会自动科学计数、超过15位尾数丢失，以下防止类似情况发生
-						if (vStr.length > 10 && !isNaN(Number(vStr)))
+						else if (vStr.length > 10 && !isNaN(Number(vStr)))
 							vStr='\'' + vStr + '\'';
 						sheet.setCell(i + 1, j, vStr);
 					}
