@@ -11,6 +11,31 @@ package ns.flex.util
 	public class MessageUtil
 	{
 
+		public static function confirmAction(prompt:String, action:Function):void
+		{
+
+			Alert.show(prompt, null, Alert.YES | Alert.NO, null,
+				function(evt:CloseEvent):void
+				{
+					if (evt.detail == Alert.YES)
+					{
+						action();
+					}
+				})
+		}
+
+		public static function getMessage(message:String, params:Array):String
+		{
+			if (message)
+				for (var i:int=1; i <= params.length; i++)
+				{
+					message=message.replace(String('{').concat(i, '}'), params[i - 1]);
+					message=message.replace('?', params[i - 1]);
+					message=message.replace('\\' + i, params[i - 1]);
+				}
+			return message;
+		}
+
 		public static function print(... objs):void
 		{
 			var str:String='';
@@ -23,19 +48,6 @@ package ns.flex.util
 		public static function printStackTrace():void
 		{
 			trace(new Error().getStackTrace());
-		}
-
-		public static function confirmAction(prompt:String, action:Function):void
-		{
-
-			Alert.show(prompt, null, Alert.YES | Alert.NO, null,
-				function(evt:CloseEvent):void
-				{
-					if (evt.detail == Alert.YES)
-					{
-						action();
-					}
-				})
 		}
 
 		public static function seesee(obj:*):String

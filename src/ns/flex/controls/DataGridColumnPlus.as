@@ -33,6 +33,7 @@ package ns.flex.controls
 		public var viewable:Boolean=true;
 		// @see TextInputPlus,TextAreaPlus,DateFieldPlus
 		private var _constraints:Object;
+		private var _multiplier:Number=1;
 		private var _percision:int;
 
 		public function DataGridColumnPlus(columnName:String=null)
@@ -46,7 +47,7 @@ package ns.flex.controls
 			column:DataGridColumnPlus):String
 		{
 			return StringUtil.formatNumber(column.getValue(item), column._percision,
-				column.isSeparateThousands);
+				column.isSeparateThousands, column._multiplier);
 		}
 
 		[Inspectable(category="General")]
@@ -112,6 +113,19 @@ package ns.flex.controls
 		public function getValue(item:Object):Object
 		{
 			return (!hasComplexFieldName) ? item[dataField] : deriveComplexColumnData(item);
+		}
+
+		//乘数，显示万元、千元时有用
+		public function get multiplier():Number
+		{
+			return _multiplier;
+		}
+
+		public function set multiplier(v:Number):void
+		{
+			if (isNaN(v) || v == 0)
+				throw new Error('multiplier must be a number, and not 0');
+			_multiplier=v;
 		}
 
 		public function set percision(p:int):void

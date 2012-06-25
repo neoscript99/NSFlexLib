@@ -37,17 +37,18 @@ package ns.flex.util
 		 * @param v 格式化的数字
 		 * @param precision 精度
 		 * @param isSeparateThousands 是否使用千分位
+		 * @param multiplier 显示单位，如千元、万元
 		 * @return
 		 */
 		public static function formatNumber(numObject:Object, precision:int=2,
-			isSeparateThousands:Boolean=true):String
+			isSeparateThousands:Boolean=true, multiplier:Number=1):String
 		{
-			if (numObject == null || (numObject is String && numObject == ''))//number 0 == string '',bug?
+			if (numObject == null || (numObject is String && numObject == '')) //number 0 == string '',bug?
 				return '';
 			var v:Number=Number(numObject);
 			if (isNaN(v))
 				return String(v);
-			var value:String=v.toFixed(precision);
+			var value:String=(multiplier == 1 ? v : v / multiplier).toFixed(precision);
 			//当precision=0，value为0-1小数时，toFixed结果为'1.'，多了一个'.'
 			if (precision == 0)
 				value=value.replace('\.', '');
