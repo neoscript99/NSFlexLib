@@ -233,6 +233,21 @@ package ns.flex.controls
 			return item.uniqueIdForSumItem == uid;
 		}
 
+		//乘数，显示万元、千元时有用
+		public function set multiplier(v:Number):void
+		{
+			for each(var col:Object in columns)
+			{
+				if (col is DataGridColumnPlus)
+				{
+					var colp:DataGridColumnPlus=(col as DataGridColumnPlus);
+					if (colp.asNumber)
+						colp.multiplier=v;
+				}
+			}
+			invalidateSize();
+		}
+
 		public function get orders():Array
 		{
 			return orderList.toBiArray('sortField', 'order');
@@ -289,8 +304,8 @@ package ns.flex.controls
 				var head:String=cols[k].headerText;
 				if (exportDataField)
 					head=
-						head.concat('(',
-						cols[k].dataField ? cols[k].dataField : '计算', ')');
+						head.concat('(', cols[k].dataField ? cols[k].dataField : '计算',
+						')');
 				sheet.setCell(0, k, head)
 			}
 

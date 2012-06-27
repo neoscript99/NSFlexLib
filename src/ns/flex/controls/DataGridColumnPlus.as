@@ -47,7 +47,7 @@ package ns.flex.controls
 			column:DataGridColumnPlus):String
 		{
 			return StringUtil.formatNumber(column.getValue(item), column._percision,
-				column.isSeparateThousands, column._multiplier);
+				column.isSeparateThousands, column._multiplier ? column._multiplier : 1);
 		}
 
 		[Inspectable(category="General")]
@@ -90,10 +90,10 @@ package ns.flex.controls
 
 		[Inspectable(category="General")]
 		/**
-		 * 嵌套字段已根据中文排序，不能再在这里设置
+		 * 中文、数字排序，嵌套字段已根据中文排序，不用再在这里设置
 		 * @param value
 		 */
-		public function set chineseSort(value:Boolean):void
+		public function set complexSort(value:Boolean):void
 		{
 			if (value)
 				this.sortCompareFunction=complexColumnSortCompare;
@@ -126,6 +126,7 @@ package ns.flex.controls
 			if (isNaN(v) || v == 0)
 				throw new Error('multiplier must be a number, and not 0');
 			_multiplier=v;
+			wordWrap=wordWrap; //refresh by owner.invalidateList();
 		}
 
 		public function set percision(p:int):void
@@ -152,6 +153,12 @@ package ns.flex.controls
 				itemRenderer=new ClassFactory(Text);
 		}
 
+		/**
+		 * 对嵌套字段、中文、数字进行排序
+		 * @param obj1
+		 * @param obj2
+		 * @return
+		 */
 		override protected function complexColumnSortCompare(obj1:Object, obj2:Object):int
 		{
 			if (!obj1 && !obj2)
@@ -166,8 +173,8 @@ package ns.flex.controls
 			if (!asNumber)
 				return StringUtil.chineseCompare(itemToLabel(obj1), itemToLabel(obj2));
 			else
-				return ObjectUtil.numericCompare(Number(deriveComplexColumnData(obj1)),
-					Number(deriveComplexColumnData(obj2)));
+				return ObjectUtil.numericCompare(Number(itemToLabel(obj1).replace(/,/g, '')),
+					Number(itemToLabel(obj2).replace(/,/g, '')));
 		}
 
 		override protected function deriveComplexColumnData(data:Object):Object
