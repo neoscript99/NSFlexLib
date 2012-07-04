@@ -3,6 +3,7 @@ package ns.flex.controls
 	import flash.events.MouseEvent;
 	import flash.net.URLRequest;
 	import flash.net.navigateToURL;
+
 	import mx.binding.utils.BindingUtils;
 	import mx.collections.ArrayCollection;
 	import mx.containers.FormItem;
@@ -12,6 +13,8 @@ package ns.flex.controls
 	import mx.core.UIComponent;
 	import mx.rpc.events.ResultEvent;
 	import mx.rpc.remoting.mxml.Operation;
+
+	import ns.flex.util.DateUtil;
 	import ns.flex.util.ObjectUtils;
 	import ns.flex.util.StringUtil;
 
@@ -141,10 +144,16 @@ package ns.flex.controls
 			{
 				BindingUtils.bindSetter(function(value:Object):void
 				{
-					if (value[colp.dataField])
-						dfp.text=value[colp.dataField];
-					else //不能设text为null，否则flex出错
+					trace('asDateField-', 'set dfp.selectedDate');
+					if (ObjectUtils.getValue(value, colp.dataField))
+						dfp.selectedDate=
+							DateUtil.stringToDate(String(ObjectUtils.getValue(value,
+							colp.dataField)), dfp.formatString);
+					else
+					{ //不能设text为null，否则flex出错
 						dfp.resetDefault();
+						ObjectUtils.setValue(dgp.showItemProxy, colp.dataField, dfp.text);
+					}
 				}, dgp, 'showItemProxy');
 				BindingUtils.bindSetter(function(value:Object):void
 				{
@@ -155,10 +164,14 @@ package ns.flex.controls
 			{
 				BindingUtils.bindSetter(function(value:Object):void
 				{
-					if (value[colp.dataField])
-						dfp.selectedDate=value[colp.dataField];
+					if (ObjectUtils.getValue(value, colp.dataField))
+						dfp.selectedDate=ObjectUtils.getValue(value, colp.dataField) as Date;
 					else
+					{
 						dfp.resetDefault();
+						ObjectUtils.setValue(dgp.showItemProxy, colp.dataField,
+							dfp.selectedDate);
+					}
 				}, dgp, 'showItemProxy');
 				BindingUtils.bindSetter(function(value:Object):void
 				{

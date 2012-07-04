@@ -11,6 +11,12 @@
 			import ns.flex.util.ObjectUtils;
 			import ns.flex.util.UIUtil;
 
+			public static const DEFAULT_STYLES:Object=
+				{smoothedLine: {bullet: 'round', hideBulletsCount: 30, lineThickness: 2,
+						gridAlpha: 0},
+					column: {fillAlphas: [0.8], cornerRadiusTop: 8,
+						cornerRadiusBottom: 8}};
+
 			[Bindable]
 			public var categoryField:String;
 			[Bindable]
@@ -46,6 +52,7 @@
 				{
 					var graph:AmGraph=new AmGraph
 					ObjectUtils.copyProperties(graph, info);
+					UIUtil.setStyles(graph, DEFAULT_STYLES[graph.type])
 					UIUtil.setStyles(graph, info.styles)
 					UIUtil.setEvents(graph, info.events)
 					//多轴图表,ChangeWatcher.watch可以监控私有属性
@@ -111,7 +118,7 @@
 		</mx:VBox>
 		<mx:VBox label="数据" enabled="{showData}" height="100%">
 			<controls:DataGridPlus dataProvider="{chartData}" height="100%"
-								   columns="{dgpColumns}"/>
+								   columns="{dgpColumns}" sortableColumns="false"/>
 		</mx:VBox>
 	</mx:TabNavigator>
 </PopChart>

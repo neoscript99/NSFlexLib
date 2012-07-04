@@ -81,9 +81,10 @@ package ns.flex.util
 			return new Date(date.getTime() + value * millisecondsPerDay);
 		}
 
-		public static function stringToDate(dayString:String):Date
+		public static function stringToDate(dayString:String, format:String=null):Date
 		{
-			return DateField.stringToDate(dayString, dateFormatter.formatString);
+			return DateField.stringToDate(dayString,
+				format ? format : dateFormatter.formatString);
 		}
 
 		public static function stringToTime(timeString:String):Date
