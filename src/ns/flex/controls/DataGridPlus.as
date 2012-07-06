@@ -31,6 +31,7 @@ package ns.flex.controls
 	import ns.flex.util.StringUtil;
 
 	[Event(name="createItem")]
+	[Event(name="showItemDetail")]
 	[Event(name="saveItem", type="ns.flex.event.SaveItemEvent")]
 	[Event(name="modifyItem")]
 	[Event(name="deleteItems")]
@@ -199,9 +200,9 @@ package ns.flex.controls
 		{
 			return (showOnlyVisible ? visibleColumns : columns).filter(function(item:DataGridColumn,
 					index:int, array:Array):Boolean
-					{
-						return item.editable;
-					})
+			{
+				return item.editable;
+			})
 		}
 
 		public function getSelectedFieldArray(field:String):Array
@@ -236,7 +237,7 @@ package ns.flex.controls
 		//乘数，显示万元、千元时有用
 		public function set multiplier(v:Number):void
 		{
-			for each(var col:Object in columns)
+			for each (var col:Object in columns)
 			{
 				if (col is DataGridColumnPlus)
 				{
@@ -421,6 +422,7 @@ package ns.flex.controls
 					initPopView()
 				popView.show(root);
 			}
+			dispatchEvent(new Event('showItemDetail'));
 		}
 
 		public function updateCMDMenu(enabled:Boolean):void
@@ -432,19 +434,19 @@ package ns.flex.controls
 		{
 			return (showOnlyVisible ? visibleColumns : columns).filter(function(item:DataGridColumn,
 					index:int, array:Array):Boolean
-					{
-						return (item is DataGridColumnPlus && DataGridColumnPlus(item).viewable) ||
-							!(item is DataGridColumnPlus);
-					})
+			{
+				return (item is DataGridColumnPlus && DataGridColumnPlus(item).viewable) ||
+					!(item is DataGridColumnPlus);
+			})
 		}
 
 		public function get visibleColumns():Array
 		{
 			return columns.filter(function(item:DataGridColumn, index:int,
 					array:Array):Boolean
-					{
-						return item.visible && item != indexColumn;
-					})
+			{
+				return item.visible && item != indexColumn;
+			})
 		}
 
 		override protected function updateDisplayList(unscaledWidth:Number,
@@ -541,9 +543,9 @@ package ns.flex.controls
 				indexColumn.resizable=false
 				indexColumn.labelFunction=
 					function(item:Object, column:DataGridColumn):String
-					{
-						return String(new ArrayCollectionPlus(dataProvider).getItemIndex(item) + 1);
-					};
+				{
+					return String(new ArrayCollectionPlus(dataProvider).getItemIndex(item) + 1);
+				};
 				var cols:Array=columns;
 				cols.unshift(indexColumn);
 				columns=cols;

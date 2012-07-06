@@ -3,6 +3,9 @@ package ns.flex.util
 
 	public class ConstraintCommon
 	{
+		public static const account:Object=
+			{expression: "\\w{2}", required: true, noSpace: true, imeDisabled: true,
+				restrict: '0-9A-Za-z_'}
 		public static const english:Object=
 			{imeDisabled: true, required: true, expression: '^[\\x00-\\xff]*$',
 				errorTip: '请输入英文'};
@@ -13,6 +16,9 @@ package ns.flex.util
 		public static const number:Object=
 			{noSpace: true, expression: '^-{0,1}\\d+\.{0,1}\\d*$', required: true,
 				imeDisabled: true, restrict: '\\-\\.0-9', maxChars: 18};
+		public static const password:Object=
+			{expression: "\\w{2}", required: true, noSpace: true, imeDisabled: true,
+				displayAsPassword: true, restrict: '\u0021-\u007E'};
 		public static const phone:Object=
 			{noSpace: true, expression: '^[\-\+\.\(\)\\d]{5,32}$', required: true,
 				imeDisabled: true, restrict: '\\-+\\.()0-9'};

@@ -59,12 +59,16 @@ package ns.flex.controls
 
 		/**
 		 *
-		 * @param info like {labelField:'',dataField:'',dataProvider:[]}
+		 * @param info like {labelField:'',dataField:'',valueField:'id',dataProvider:[]}
 		 */
 		[Inspectable(category="General")]
 		public function set asComboBox(props:Object):void
 		{
 			asControl='ComboBox';
+			/*{labelField:'显示字段',
+			   dataField:'返回字段，设置后返回selectedItem[dataField]，如果为空返回selectedItem',
+			   valueField:'数据校验字段，设置后selectedItem[valueField]不为空时，ComboBoxPlus.validated返回true',
+			   dataProvider:[]}*/
 			controlProps=props;
 		}
 
