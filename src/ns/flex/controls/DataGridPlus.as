@@ -21,6 +21,7 @@ package ns.flex.controls
 	import mx.utils.ObjectUtil;
 	import mx.utils.UIDUtil;
 	import ns.flex.event.SaveItemEvent;
+	import ns.flex.event.ShowItemEvent;
 	import ns.flex.support.MenuSupport;
 	import ns.flex.util.ArrayCollectionPlus;
 	import ns.flex.util.ContainerUtil;
@@ -31,7 +32,7 @@ package ns.flex.controls
 	import ns.flex.util.StringUtil;
 
 	[Event(name="createItem")]
-	[Event(name="showItemDetail")]
+	[Event(name="showItem", type="ns.flex.event.ShowItemEvent")]
 	[Event(name="saveItem", type="ns.flex.event.SaveItemEvent")]
 	[Event(name="modifyItem")]
 	[Event(name="deleteItems")]
@@ -200,9 +201,9 @@ package ns.flex.controls
 		{
 			return (showOnlyVisible ? visibleColumns : columns).filter(function(item:DataGridColumn,
 					index:int, array:Array):Boolean
-			{
-				return item.editable;
-			})
+					{
+						return item.editable;
+					})
 		}
 
 		public function getSelectedFieldArray(field:String):Array
@@ -422,7 +423,8 @@ package ns.flex.controls
 					initPopView()
 				popView.show(root);
 			}
-			dispatchEvent(new Event('showItemDetail'));
+			dispatchEvent(new ShowItemEvent(item, editable,
+				editable ? popEditing : popView));
 		}
 
 		public function updateCMDMenu(enabled:Boolean):void
@@ -434,19 +436,19 @@ package ns.flex.controls
 		{
 			return (showOnlyVisible ? visibleColumns : columns).filter(function(item:DataGridColumn,
 					index:int, array:Array):Boolean
-			{
-				return (item is DataGridColumnPlus && DataGridColumnPlus(item).viewable) ||
-					!(item is DataGridColumnPlus);
-			})
+					{
+						return (item is DataGridColumnPlus && DataGridColumnPlus(item).viewable) ||
+							!(item is DataGridColumnPlus);
+					})
 		}
 
 		public function get visibleColumns():Array
 		{
 			return columns.filter(function(item:DataGridColumn, index:int,
 					array:Array):Boolean
-			{
-				return item.visible && item != indexColumn;
-			})
+					{
+						return item.visible && item != indexColumn;
+					})
 		}
 
 		override protected function updateDisplayList(unscaledWidth:Number,
@@ -543,9 +545,9 @@ package ns.flex.controls
 				indexColumn.resizable=false
 				indexColumn.labelFunction=
 					function(item:Object, column:DataGridColumn):String
-				{
-					return String(new ArrayCollectionPlus(dataProvider).getItemIndex(item) + 1);
-				};
+					{
+						return String(new ArrayCollectionPlus(dataProvider).getItemIndex(item) + 1);
+					};
 				var cols:Array=columns;
 				cols.unshift(indexColumn);
 				columns=cols;
