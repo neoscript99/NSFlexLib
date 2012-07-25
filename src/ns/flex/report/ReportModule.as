@@ -1,7 +1,6 @@
 package ns.flex.report
 {
 	import flash.events.Event;
-	import mx.collections.IList;
 	import mx.containers.Panel;
 	import mx.events.FlexEvent;
 	import mx.events.ListEvent;
@@ -15,10 +14,12 @@ package ns.flex.report
 	import ns.flex.controls.ProgressBox;
 	import ns.flex.module.AbstractModule;
 	import ns.flex.util.ContainerUtil;
+	import ns.flex.util.RemoteUtil;
 	import ns.flex.util.SQLUtil;
 
 	public class ReportModule extends AbstractModule
 	{
+		public var destination:String;
 		[Bindable]
 		public var drillDepth:int=0;
 
@@ -38,6 +39,8 @@ package ns.flex.report
 		public function ReportModule()
 		{
 			addEventListener(FlexEvent.CREATION_COMPLETE, cc);
+			if (destination)
+				reportService=RemoteUtil.createRemoteObject(destination);
 		}
 
 		public function query(first:int=-1):void
