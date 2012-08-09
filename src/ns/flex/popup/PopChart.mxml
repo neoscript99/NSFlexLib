@@ -1,21 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PopWindow xmlns="ns.flex.controls.*" xmlns:mx="http://www.adobe.com/2006/mxml"
-		   title="{bindTitle}">
+<PopWindow xmlns="ns.flex.controls.*" xmlns:mx="http://www.adobe.com/2006/mxml">
 	<mx:Script>
 		<![CDATA[
-			//如果window未初始化，直接赋值给title可能报错，尤其是使用PopUpMenuButton时
-			//有些问题是因为基于事件产生的
-			[Bindable]
-			public var bindTitle:String;
-
 			[Bindable]
 			public var chartData:*;
-
-			override public function set title(value:String):void
-			{
-				bindTitle=value;
-				super.title=value;
-			}
 		]]>
 	</mx:Script>
 </PopWindow>

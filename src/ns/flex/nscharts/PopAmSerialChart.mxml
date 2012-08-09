@@ -26,13 +26,13 @@
 			[Bindable]
 			protected var amGraphs:Array;
 			[Bindable]
-			protected var caDateFormats:Array=
+			public var caDateFormats:Array=
 				[{period: 'DD', format: 'MM-DD'}, {period: 'MM', format: 'YYYY-MM'},
 				{period: 'YYYY', format: 'YYYY'}];
 			[Bindable]
-			protected var caMinPeriod:String='DD';
+			public var caMinPeriod:String='DD';
 			[Bindable]
-			protected var caParseDates:Boolean=false;
+			public var caParseDates:Boolean=false;
 			[Bindable]
 			protected var dgpColumns:Array;
 			[Bindable]

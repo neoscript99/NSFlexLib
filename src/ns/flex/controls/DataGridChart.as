@@ -38,7 +38,7 @@ package ns.flex.controls
 
 		public function showLine(title:String='趋势图'):void
 		{
-			lineChart.bindTitle=title;
+			lineChart.title=title;
 			lineChart.show(root);
 		}
 	}
