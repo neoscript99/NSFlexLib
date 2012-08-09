@@ -8,6 +8,7 @@
 			import com.amcharts.axes.ValueAxis;
 			import com.amcharts.chartClasses.AmGraph;
 			import ns.flex.controls.DataGridColumnPlus;
+			import ns.flex.util.DateUtil;
 			import ns.flex.util.ObjectUtils;
 			import ns.flex.util.UIUtil;
 
@@ -18,14 +19,6 @@
 						cornerRadiusBottom: 8}};
 
 			[Bindable]
-			public var categoryField:String;
-			[Bindable]
-			public var categoryName:String;
-			[Bindable]
-			public var showData:Boolean=true;
-			[Bindable]
-			protected var amGraphs:Array;
-			[Bindable]
 			public var caDateFormats:Array=
 				[{period: 'DD', format: 'MM-DD'}, {period: 'MM', format: 'YYYY-MM'},
 				{period: 'YYYY', format: 'YYYY'}];
@@ -33,6 +26,15 @@
 			public var caMinPeriod:String='DD';
 			[Bindable]
 			public var caParseDates:Boolean=false;
+
+			[Bindable]
+			public var categoryField:String;
+			[Bindable]
+			public var categoryName:String;
+			[Bindable]
+			public var showData:Boolean=true;
+			[Bindable]
+			protected var amGraphs:Array;
 			[Bindable]
 			protected var dgpColumns:Array;
 			[Bindable]
@@ -46,6 +48,8 @@
 				var dgc:DataGridColumnPlus=new DataGridColumnPlus
 				dgc.dataField=categoryField
 				dgc.headerText=categoryName
+				if (caParseDates)
+					dgc.labelFunction=DateUtil.getDateLabel;
 				dgpColumns.push(dgc)
 
 				for each (var info:Object in infos)
@@ -108,7 +112,8 @@
 										   dateFormats="{caDateFormats}"/>
 				</nscharts:categoryAxis>
 				<nscharts:chartCursor>
-					<amcharts:ChartCursor cursorPosition="mouse"/>
+					<amcharts:ChartCursor cursorPosition="mouse"
+										  categoryBalloonDateFormat="YYYY-MM-DD"/>
 				</nscharts:chartCursor>
 				<nscharts:chartScrollbar>
 					<amcharts:ChartScrollbar height="15"/>
