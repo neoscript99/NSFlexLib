@@ -101,6 +101,11 @@ package ns.flex.controls
 			addEventListener(DataGridEvent.HEADER_RELEASE, onHeaderRelease);
 		}
 
+		private static function getCleanHeader(col:DataGridColumn):String
+		{
+			return col.headerText ? col.headerText.replace(/[↑↓]\d*/g, '') : '';
+		}
+
 		override public function addEventListener(type:String, listener:Function,
 			useCapture:Boolean=false, priority:int=0, useWeakReference:Boolean=false):void
 		{
@@ -303,10 +308,10 @@ package ns.flex.controls
 			sheet.resize(dataList ? dataList.length + 1 : 1, cols.length);
 			for (var k:int=0; k < cols.length; k++)
 			{
-				var head:String=cols[k].headerText;
+				var head:String=getCleanHeader(cols[k]);
 				if (exportDataField)
 					head=
-						head.concat('(', cols[k].dataField ? cols[k].dataField : '计算',
+						head.concat('(', cols[k].dataField ? cols[k].dataField : '@formula',
 						')');
 				sheet.setCell(0, k, head)
 			}
@@ -339,7 +344,7 @@ package ns.flex.controls
 			{
 				for (var k:int=0; k < cols.length; k++)
 					ss=
-						ss.concat(StringUtil.toLine(cols[k].headerText),
+						ss.concat(StringUtil.toLine(getCleanHeader(cols[k])),
 						k == cols.length - 1 ? '' : spiltor);
 				ss+='\n';
 			}
@@ -619,7 +624,7 @@ package ns.flex.controls
 		{
 			for each (var col:DataGridColumn in columns)
 			{
-				col.headerText=col.headerText.replace(/[↑↓]\d*/g, '');
+				col.headerText=getCleanHeader(col);
 
 				if (col.sortable && col.dataField)
 					for (var i:int=0; i < orderList.length; i++)

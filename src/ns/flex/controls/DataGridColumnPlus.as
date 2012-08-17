@@ -133,6 +133,11 @@ package ns.flex.controls
 			wordWrap=wordWrap; //refresh by owner.invalidateList();
 		}
 
+		public function get percision():int
+		{
+			return _percision;
+		}
+
 		public function set percision(p:int):void
 		{
 			_percision=p;
