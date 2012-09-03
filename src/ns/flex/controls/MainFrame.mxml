@@ -12,6 +12,7 @@
 			import mx.containers.ViewStack;
 			import mx.core.Container;
 			import mx.managers.HistoryManager;
+			import ns.flex.support.MenuSupport;
 			import ns.flex.util.MessageUtil;
 
 			[Bindable]
@@ -71,6 +72,16 @@
 			{
 				initTimer(spareMintues)
 				appWindow.addChild(views);
+
+				var ms:MenuSupport=new MenuSupport(menuPanel);
+				ms.createMenuItem('展开', function(e:Event):void
+				{
+					menuTree.expandChildrenOf(menus.node[0], true)
+				}, true, true);
+				ms.createMenuItem('收起', function(e:Event):void
+				{
+					menuTree.expandChildrenOf(menus.node[0], false)
+				}, false, true);
 			}
 
 			//用上下键切换菜单时，可能由于SWFLoader未及时完成的原因，报空指针错误

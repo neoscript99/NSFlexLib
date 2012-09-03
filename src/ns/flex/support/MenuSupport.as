@@ -8,9 +8,9 @@ package ns.flex.support
 
 	public class MenuSupport
 	{
-		private var contextMenu:ContextMenu;
 		//用于需要判断是否选择记录进行处理的控件,如datagrid等
 		private var alwaysEnabledMap:Object={};
+		private var contextMenu:ContextMenu;
 
 		public function MenuSupport(interactiveObject:InteractiveObject,
 			onMenuSelect:Function=null)
@@ -25,9 +25,17 @@ package ns.flex.support
 					onMenuSelect);
 		}
 
-		public function isAlwaysEnabled(item:ContextMenuItem):Boolean
+		public function addMenuItem(item:ContextMenuItem, position:int=-1):void
 		{
-			return alwaysEnabledMap[getMenuCode(item)];
+			if (position > -1)
+				ArrayUtil.insertItem(item, position, contextMenu.customItems);
+			else
+				contextMenu.customItems.push(item);
+		}
+
+		public function clearCustomMenu():void
+		{
+			contextMenu.customItems=[];
 		}
 
 		/**
@@ -51,32 +59,20 @@ package ns.flex.support
 			return menuItem;
 		}
 
+		public function isAlwaysEnabled(item:ContextMenuItem):Boolean
+		{
+			return alwaysEnabledMap[getMenuCode(item)];
+		}
+
 		public function removeMenuItem(property:String, value:*):void
 		{
 			ArrayUtil.removeItem(contextMenu.customItems,
 				ArrayUtil.findByProperty(contextMenu.customItems, property, value));
 		}
 
-		public function addMenuItem(item:ContextMenuItem, position:int=-1):void
-		{
-			if (position > -1)
-			{
-				for (var i:int=contextMenu.customItems.length - 1; i >= position; i--)
-					contextMenu.customItems[i + 1]=contextMenu.customItems[i];
-				contextMenu.customItems[position]=item;
-			}
-			else
-				contextMenu.customItems.push(item);
-		}
-
 		private function getMenuCode(item:ContextMenuItem):String
 		{
 			return item.caption;
-		}
-
-		public function clearCustomMenu():void
-		{
-			contextMenu.customItems=[];
 		}
 	}
 }

@@ -39,8 +39,6 @@ package ns.flex.report
 		public function ReportModule()
 		{
 			addEventListener(FlexEvent.CREATION_COMPLETE, cc);
-			if (destination)
-				reportService=RemoteUtil.createRemoteObject(destination);
 		}
 
 		public function query(first:int=-1):void
@@ -63,6 +61,8 @@ package ns.flex.report
 
 		protected function cc(e:Event):void
 		{
+			if (destination)
+				reportService=RemoteUtil.createRemoteObject(destination);
 			query();
 			reportService.addEventListener(FaultEvent.FAULT, function(e:FaultEvent):void
 			{
@@ -103,9 +103,9 @@ package ns.flex.report
 
 		protected function drillInit():void
 		{
-			dgp.menuSupport.createMenuItem('向下钻取', drillDown, true);
-			dgp.menuSupport.createMenuItem('向上钻取', drillUp);
-			dgp.menuSupport.createMenuItem('返回顶层', drillTop, false, true);
+			dgp.addMenuAfterCURD('返回顶层', drillTop, false, true);
+			dgp.addMenuAfterCURD('向上钻取', drillUp);
+			dgp.addMenuAfterCURD('向下钻取', drillDown, true);
 			dgp.doubleClickEnabled=true;
 			dgp.addEventListener(ListEvent.ITEM_DOUBLE_CLICK, drillDown);
 		}

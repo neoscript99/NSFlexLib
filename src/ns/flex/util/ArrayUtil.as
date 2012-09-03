@@ -1,29 +1,42 @@
 package ns.flex.util
 {
 	import flash.utils.getDefinitionByName;
-
 	import mx.collections.XMLListCollection;
 	import mx.utils.ObjectUtil;
 
 	public class ArrayUtil
 	{
 
-		/**
-		 *
-		 * @param source Array or ArrayCollection and object with length property
-		 * @return
-		 */
-		static public function isEmpty(source:Object):Boolean
-		{
-			return !(source && source.length > 0);
-		}
-
-		static public function findByProperty(array:Array, property:String, source:*):*
+		public static function findByProperty(array:Array, property:String, source:*):*
 		{
 			for each (var item:* in array)
 				if (ObjectUtil.compare(item[property], source) == 0)
 					return item;
 			return null;
+		}
+
+		public static function getItemIndex(item:Object, array:Array):int
+		{
+			return int(getDefinitionByName('mx.utils.ArrayUtil').getItemIndex(item,
+				array));
+		}
+
+		public static function insertItem(item:Object, position:int, array:Array):Array
+		{
+			for (var i:int=array.length - 1; i >= position; i--)
+				array[i + 1]=array[i];
+			array[position]=item;
+			return array;
+		}
+
+		/**
+		 *
+		 * @param source Array or ArrayCollection and object with length property
+		 * @return
+		 */
+		public static function isEmpty(source:Object):Boolean
+		{
+			return !(source && source.length > 0);
 		}
 
 		public static function removeItem(array:Array, item:*):void
@@ -33,30 +46,6 @@ package ns.flex.util
 			for (var i:int=index; i < array.length - 1; i++)
 				array[i]=array[i + 1];
 			array.pop();
-		}
-
-		public static function getItemIndex(item:Object, array:Array):int
-		{
-			return int(getDefinitionByName('mx.utils.ArrayUtil').getItemIndex(item,
-				array));
-		}
-
-		/**
-		 * convert Array to Object, example: toObject(['a','b','c'],{p:1}) --> {a:{b:{c:{p:1}}}}
-		 * @param array
-		 * @return
-		 */
-		public static function toObject(array:Array, innerOjbect:Object):Object
-		{
-			if (array.length > 0)
-			{
-				var field:String=String(array.shift());
-				var nestObject:Object=new Object
-				nestObject[field]=toObject(array, innerOjbect)
-				return nestObject
-			}
-			else
-				return innerOjbect
 		}
 
 		public static function toArray(source:Object):Array
@@ -77,6 +66,24 @@ package ns.flex.util
 			}
 			else
 				return [source];
+		}
+
+		/**
+		 * convert Array to Object, example: toObject(['a','b','c'],{p:1}) --> {a:{b:{c:{p:1}}}}
+		 * @param array
+		 * @return
+		 */
+		public static function toObject(array:Array, innerOjbect:Object):Object
+		{
+			if (array.length > 0)
+			{
+				var field:String=String(array.shift());
+				var nestObject:Object=new Object
+				nestObject[field]=toObject(array, innerOjbect)
+				return nestObject
+			}
+			else
+				return innerOjbect
 		}
 	}
 }

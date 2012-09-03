@@ -40,6 +40,11 @@ package ns.flex.controls
 	[Event(name="changeOrder")]
 	public class DataGridPlus extends DataGrid
 	{
+		public static const CLONE_KEY:String='ObjectCreateByClone';
+
+		[Inspectable(category="General")]
+		public var cloneEnabled:Boolean=false;
+
 		[Inspectable(category="General")]
 		public var copyToExcelEnabled:Boolean=true;
 		[Inspectable(category="General")]
@@ -80,6 +85,8 @@ package ns.flex.controls
 		[Inspectable(category="General")]
 		public var showSum:Boolean=false;
 		public var sumColumnLabel:String='◆汇总◆';
+		private var curdMenuPosition:int;
+		private var exportMenuPosition:int;
 		private var indexColumn:DataGridColumnPlus;
 		[Bindable]
 		private var lastRollOverIndex:Number;
@@ -116,6 +123,22 @@ package ns.flex.controls
 					replacableDoubleClickHandler);
 			}
 			super.addEventListener(type, listener, useCapture, priority, useWeakReference);
+		}
+
+		public function addMenuAfterCURD(caption:String, listener:Function,
+			separatorBefore:Boolean=false, alwaysEnabled:Boolean=false,
+			position:int=0):ContextMenuItem
+		{
+			return menuSupport.createMenuItem(caption, listener, separatorBefore,
+				alwaysEnabled, curdMenuPosition + position);
+		}
+
+		public function addMenuAfterExport(caption:String, listener:Function,
+			separatorBefore:Boolean=false, alwaysEnabled:Boolean=false,
+			position:int=0):ContextMenuItem
+		{
+			return menuSupport.createMenuItem(caption, listener, separatorBefore,
+				alwaysEnabled, exportMenuPosition + position);
 		}
 
 		public function addOrder(sortField:String, order:String=null):void
@@ -268,10 +291,17 @@ package ns.flex.controls
 			if (createEnabled)
 				enableMenu("新增", createItem, (separatorCount++ == 0), true);
 			else if (showDetail.indexOf('new') > -1)
+			{
 				enableMenu("新增", function(evt:Event):void
 				{
 					showItemDetail(null, true);
 				}, (separatorCount++ == 0), true);
+				if (cloneEnabled)
+					enableMenu("克隆", function(evt:Event):void
+					{
+						showItemDetail(selectedItem, true, true);
+					}, (separatorCount++ == 0));
+			}
 
 			if (showDetail.indexOf('view') > -1)
 				enableMenu('查看', function(evt:Event):void
@@ -292,12 +322,13 @@ package ns.flex.controls
 
 			if (deleteAllEnabled)
 				enableMenu("删除全部", deleteAll, (separatorCount++ == 0), true);
-
+			curdMenuPosition=exportMenuPosition=separatorCount;
 			if (copyToExcelEnabled)
 			{
 				enableMenu("复制选择行", copySelectedToExcel, true);
 				enableMenu("复制全部行", copyTotalToExcel);
 				enableMenu("另存为Excel", saveToExcel);
+				exportMenuPosition=curdMenuPosition + 3;
 			}
 		}
 
@@ -311,8 +342,8 @@ package ns.flex.controls
 				var head:String=getCleanHeader(cols[k]);
 				if (exportDataField)
 					head=
-						head.concat('(', cols[k].dataField ? cols[k].dataField : '@formula',
-						')');
+						head.concat('(',
+						cols[k].dataField ? cols[k].dataField : '@formula', ')');
 				sheet.setCell(0, k, head)
 			}
 
@@ -409,18 +440,23 @@ package ns.flex.controls
 		 * 生成默认的详细对话框
 		 * @param evt
 		 */
-		public function showItemDetail(item:Object, editable:Boolean=false):void
+		public function showItemDetail(item:Object, editable:Boolean=false,
+			isClone:Boolean=false):void
 		{
 			showItem=item;
 			showItemProxy=new ObjectProxy(ObjectUtil.copy(showItem));
-
+			if (isClone)
+			{
+				showItemProxy.id=null;
+				showItemProxy[CLONE_KEY]=true;
+			}
 			if (editable)
 			{
 				if (!popEditing)
 					initPopEditing();
 				popEditing.show(root);
 				popEditing.title=
-					showItem ? '修改' + (popTitleFunciton ? ' ' + popTitleFunciton(showItem) : '') : '新增';
+					showItem ? (isClone ? '克隆' : '修改') + (popTitleFunciton ? ' ' + popTitleFunciton(showItem) : '') : '新增';
 			}
 			else
 			{
