@@ -3,7 +3,6 @@ package ns.flex.controls
 	import flash.events.MouseEvent;
 	import flash.net.URLRequest;
 	import flash.net.navigateToURL;
-
 	import mx.binding.utils.BindingUtils;
 	import mx.collections.ArrayCollection;
 	import mx.containers.FormItem;
@@ -13,7 +12,6 @@ package ns.flex.controls
 	import mx.core.UIComponent;
 	import mx.rpc.events.ResultEvent;
 	import mx.rpc.remoting.mxml.Operation;
-
 	import ns.flex.util.DateUtil;
 	import ns.flex.util.ObjectUtils;
 	import ns.flex.util.StringUtil;
@@ -27,9 +25,6 @@ package ns.flex.controls
 			super();
 			var uic:UIComponent;
 			percentWidth=100;
-			label=
-				col.headerText ? StringUtil.toLine(col.headerText.replace(/[↑↓]\d*/,
-				'')) : '';
 			editable=(editable && col.dataField);
 
 			if (col is DataGridColumnPlus)
@@ -53,7 +48,8 @@ package ns.flex.controls
 			else
 				uic=asText(dgp, col, editable);
 
-			uic.name=col.headerText;
+			label=StringUtil.toLine(DataGridPlus.getCleanHeader(col));
+			uic.name=label;
 			addChild(uic);
 		}
 
@@ -165,7 +161,8 @@ package ns.flex.controls
 				BindingUtils.bindSetter(function(value:Object):void
 				{
 					if (ObjectUtils.getValue(value, colp.dataField))
-						dfp.selectedDate=ObjectUtils.getValue(value, colp.dataField) as Date;
+						dfp.selectedDate=
+							ObjectUtils.getValue(value, colp.dataField) as Date;
 					else
 					{
 						dfp.resetDefault();
@@ -217,9 +214,10 @@ package ns.flex.controls
 				{
 					ObjectUtils.setValue(dgp.showItemProxy, col.dataField,
 						col['asNumber'] ? Number(value) : value);
+					var head:String=StringUtil.toLine(DataGridPlus.getCleanHeader(col));
 					label=
-						textInput['maxChars'] ? col.headerText.concat('(',
-						textInput['remainSize'], ')') : col.headerText;
+						textInput['maxChars'] ? head.concat('(', textInput['remainSize'],
+						')') : head;
 				}, textInput, 'text');
 			return textInput;
 		}

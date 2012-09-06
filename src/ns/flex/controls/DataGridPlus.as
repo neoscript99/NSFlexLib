@@ -65,6 +65,8 @@ package ns.flex.controls
 		public var menuSupport:MenuSupport;
 		[Inspectable(category="General")]
 		public var modifyEnabled:Boolean=false;
+		[Inspectable(category="General")]
+		public var multiDelete:Boolean=true;
 		//如果有嵌套字段，排序顺序无法保证，不要使用
 		[Inspectable(category="General")]
 		public var multiSort:Boolean=false;
@@ -108,7 +110,7 @@ package ns.flex.controls
 			addEventListener(DataGridEvent.HEADER_RELEASE, onHeaderRelease);
 		}
 
-		private static function getCleanHeader(col:DataGridColumn):String
+		public static function getCleanHeader(col:DataGridColumn):String
 		{
 			return col.headerText ? col.headerText.replace(/[↑↓]\d*/g, '') : '';
 		}
@@ -535,10 +537,11 @@ package ns.flex.controls
 
 		private function deleteItems(evt:Event):void
 		{
-			MessageUtil.confirmAction("确认删除？", function():void
-			{
-				dispatchEvent(new Event('deleteItems'));
-			})
+			MessageUtil.confirmAction(rowsToString(multiDelete ? selectedItems : selectedItem,
+				','), function():void
+				{
+					dispatchEvent(new Event('deleteItems'));
+				}, '确定删除吗？')
 		}
 
 		private function dgItemRollOut(event:ListEvent):void

@@ -11,10 +11,11 @@ package ns.flex.util
 	public class MessageUtil
 	{
 
-		public static function confirmAction(prompt:String, action:Function):void
+		public static function confirmAction(prompt:String, action:Function,
+			title:String=null):void
 		{
 
-			Alert.show(prompt, null, Alert.YES | Alert.NO, null,
+			Alert.show(prompt, title, Alert.YES | Alert.NO, null,
 				function(evt:CloseEvent):void
 				{
 					if (evt.detail == Alert.YES)
