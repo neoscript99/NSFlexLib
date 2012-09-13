@@ -12,12 +12,6 @@
 			import ns.flex.util.ObjectUtils;
 			import ns.flex.util.UIUtil;
 
-			public static const DEFAULT_STYLES:Object=
-				{smoothedLine: {bullet: 'round', hideBulletsCount: 30, lineThickness: 2,
-						gridAlpha: 0},
-					column: {fillAlphas: [0.8], cornerRadiusTop: 8,
-						cornerRadiusBottom: 8}};
-
 			[Bindable]
 			public var caDateFormats:Array=
 				[{period: 'DD', format: 'MM-DD'}, {period: 'MM', format: 'YYYY-MM'},
@@ -31,8 +25,16 @@
 			public var categoryField:String;
 			[Bindable]
 			public var categoryName:String;
+
+			public var defaultStyles:Object=
+				{smoothedLine: {bullet: 'round', hideBulletsCount: 30, lineThickness: 2,
+						gridAlpha: 0},
+					column: {fillAlphas: [0.8], cornerRadiusTop: 8,
+						cornerRadiusBottom: 8}};
 			[Bindable]
 			public var showData:Boolean=true;
+			[Bindable]
+			public var startDuration:Number;
 			[Bindable]
 			protected var amGraphs:Array;
 			[Bindable]
@@ -56,7 +58,7 @@
 				{
 					var graph:AmGraph=new AmGraph
 					ObjectUtils.copyProperties(graph, info);
-					UIUtil.setStyles(graph, DEFAULT_STYLES[graph.type])
+					UIUtil.setStyles(graph, defaultStyles[graph.type])
 					UIUtil.setStyles(graph, info.styles)
 					UIUtil.setEvents(graph, info.events)
 					//多轴图表,ChangeWatcher.watch可以监控私有属性
@@ -103,9 +105,9 @@
 	<mx:TabNavigator id="tn" width="100%" height="100%" paddingLeft="5" paddingBottom="5">
 		<mx:VBox horizontalAlign="center" width="100%" height="100%" label="图形">
 			<nscharts:AmSerialChartPlus id="amChart" dataProvider="{chartData}"
-										categoryField="{categoryField}" startDuration="1"
-										height="100%" width="100%"
-										initialize="amChartInit()">
+										categoryField="{categoryField}"
+										startDuration="{startDuration}" height="100%"
+										width="100%" initialize="amChartInit()">
 				<nscharts:categoryAxis>
 					<amcharts:CategoryAxis parseDates="{caParseDates}"
 										   minPeriod="{caMinPeriod}"
@@ -123,7 +125,9 @@
 		</mx:VBox>
 		<mx:VBox label="数据" enabled="{showData}" height="100%">
 			<controls:DataGridPlus dataProvider="{chartData}" height="100%"
-								   columns="{dgpColumns}" sortableColumns="false"/>
+								   showDetail="view" columns="{dgpColumns}"
+								   sortableColumns="false"/>
+			<!--sortableColumns不能设为"true"，会影响图形结果-->
 		</mx:VBox>
 	</mx:TabNavigator>
 </PopChart>
