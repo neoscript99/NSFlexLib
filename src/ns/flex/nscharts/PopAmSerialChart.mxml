@@ -34,7 +34,7 @@
 			[Bindable]
 			public var showData:Boolean=true;
 			[Bindable]
-			public var startDuration:Number;
+			public var startDuration:Number=1;
 			[Bindable]
 			protected var amGraphs:Array;
 			[Bindable]
@@ -105,8 +105,8 @@
 	<mx:TabNavigator id="tn" width="100%" height="100%" paddingLeft="5" paddingBottom="5">
 		<mx:VBox horizontalAlign="center" width="100%" height="100%" label="图形">
 			<nscharts:AmSerialChartPlus id="amChart" dataProvider="{chartData}"
-										categoryField="{categoryField}"
-										startDuration="{startDuration}" height="100%"
+										startDuration="{startDuration}"
+										categoryField="{categoryField}" height="100%"
 										width="100%" initialize="amChartInit()">
 				<nscharts:categoryAxis>
 					<amcharts:CategoryAxis parseDates="{caParseDates}"

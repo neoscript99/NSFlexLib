@@ -87,6 +87,13 @@ package ns.flex.controls
 		[Inspectable(category="General")]
 		public var showSum:Boolean=false;
 		public var sumColumnLabel:String='◆汇总◆';
+
+		/**
+		 * 根据指向的item，判断当前菜单能否点击
+		 * function(menu:ContextMenuItem,item:Object):Boolean
+		 * @default
+		 */
+		private var _menuEnableChecker:Function;
 		private var curdMenuPosition:int;
 		private var exportMenuPosition:int;
 		private var indexColumn:DataGridColumnPlus;
@@ -123,6 +130,7 @@ package ns.flex.controls
 			{
 				this.removeEventListener(ListEvent.ITEM_DOUBLE_CLICK,
 					replacableDoubleClickHandler);
+				replacableDoubleClickHandler=null;
 			}
 			super.addEventListener(type, listener, useCapture, priority, useWeakReference);
 		}
@@ -231,9 +239,9 @@ package ns.flex.controls
 		{
 			return (showOnlyVisible ? visibleColumns : columns).filter(function(item:DataGridColumn,
 					index:int, array:Array):Boolean
-					{
-						return item.editable;
-					})
+			{
+				return item.editable;
+			})
 		}
 
 		public function getSelectedFieldArray(field:String):Array
@@ -263,6 +271,14 @@ package ns.flex.controls
 		public function isSumItem(item:Object):Boolean
 		{
 			return item.uniqueIdForSumItem == uid;
+		}
+
+		public function set menuEnableChecker(fun:Function):void
+		{
+			_menuEnableChecker=fun;
+			//防止编辑
+			if (replacableDoubleClickHandler)
+				doubleClickEnabled=false;
 		}
 
 		//乘数，显示万元、千元时有用
@@ -479,19 +495,19 @@ package ns.flex.controls
 		{
 			return (showOnlyVisible ? visibleColumns : columns).filter(function(item:DataGridColumn,
 					index:int, array:Array):Boolean
-					{
-						return (item is DataGridColumnPlus && DataGridColumnPlus(item).viewable) ||
-							!(item is DataGridColumnPlus);
-					})
+			{
+				return (item is DataGridColumnPlus && DataGridColumnPlus(item).viewable) ||
+					!(item is DataGridColumnPlus);
+			})
 		}
 
 		public function get visibleColumns():Array
 		{
 			return columns.filter(function(item:DataGridColumn, index:int,
 					array:Array):Boolean
-					{
-						return item.visible && item != indexColumn;
-					})
+			{
+				return item.visible && item != indexColumn;
+			})
 		}
 
 		override protected function updateDisplayList(unscaledWidth:Number,
@@ -539,9 +555,9 @@ package ns.flex.controls
 		{
 			MessageUtil.confirmAction(rowsToString(multiDelete ? selectedItems : selectedItem,
 				','), function():void
-				{
-					dispatchEvent(new Event('deleteItems'));
-				}, '确定删除吗？')
+			{
+				dispatchEvent(new Event('deleteItems'));
+			}, '确定删除吗？')
 		}
 
 		private function dgItemRollOut(event:ListEvent):void
@@ -555,7 +571,11 @@ package ns.flex.controls
 			lastRollOverIndex=event.rowIndex;
 
 			for each (var menu:ContextMenuItem in contextMenu.customItems)
-				menu.enabled=true;
+				if (!menuSupport.isAlwaysEnabled(menu) && _menuEnableChecker)
+					menu.enabled=
+						_menuEnableChecker(menu, this.dataProvider[event.rowIndex]);
+				else
+					menu.enabled=true;
 		}
 
 		private function enableMenu(menuLabel:String, action:Function,
@@ -564,7 +584,7 @@ package ns.flex.controls
 		{
 			menuSupport.createMenuItem(menuLabel, action, separatorBefore, alwaysEnabled);
 
-			if (withDoubleClick && !doubleClickEnabled)
+			if (withDoubleClick && !doubleClickEnabled && !_menuEnableChecker)
 			{
 				doubleClickEnabled=true;
 				addEventListener(ListEvent.ITEM_DOUBLE_CLICK, action);
@@ -589,9 +609,9 @@ package ns.flex.controls
 				indexColumn.resizable=false
 				indexColumn.labelFunction=
 					function(item:Object, column:DataGridColumn):String
-					{
-						return String(new ArrayCollectionPlus(dataProvider).getItemIndex(item) + 1);
-					};
+				{
+					return String(new ArrayCollectionPlus(dataProvider).getItemIndex(item) + 1);
+				};
 				var cols:Array=columns;
 				cols.unshift(indexColumn);
 				columns=cols;
