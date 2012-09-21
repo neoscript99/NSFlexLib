@@ -67,7 +67,7 @@ package ns.flex.controls
 
 		protected function onTitleDoubleClick(e:MouseEvent):void
 		{
-			dispatchEvent(new MouseEvent('titleDoubleClick', e.bubbles, e.cancelable,
+			dispatchEvent(new MouseEvent('titleDoubleClick', false, e.cancelable,
 				e.localX, e.localY, e.relatedObject, e.ctrlKey, e.altKey, e.shiftKey,
 				e.buttonDown, e.delta));
 		}

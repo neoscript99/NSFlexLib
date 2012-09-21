@@ -85,10 +85,14 @@ package ns.flex.controls
 		[Bindable("valueCommit")]
 		public function get validated():Boolean
 		{
+			var vld:Boolean=false;
 			if (selectedItem)
-				return valueField ? selectedItem[valueField] : true;
+				vld=valueField ? selectedItem[valueField] : true;
+			if (vld)
+				this.setStyle('borderColor', '0xB7BABC');
 			else
-				return false;
+				this.setStyle('borderColor', 'red');
+			return vld;
 		}
 
 		public function set withIndex(v:Boolean):void
