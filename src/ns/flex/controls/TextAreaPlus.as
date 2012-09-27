@@ -2,12 +2,16 @@ package ns.flex.controls
 {
 	import flash.events.Event;
 	import flash.events.KeyboardEvent;
+	import flash.events.MouseEvent;
 	import flash.ui.Keyboard;
+
 	import mx.controls.TextArea;
 	import mx.events.FlexEvent;
+
 	import ns.flex.util.ObjectUtils;
 	import ns.flex.util.RegExpValidatorPlus;
 	import ns.flex.util.StringUtil;
+	import ns.flex.util.UIUtil;
 	import ns.flex.util.Validatable;
 	import ns.flex.util.ValidatorUtil;
 
@@ -24,6 +28,8 @@ package ns.flex.controls
 			super();
 			addEventListener(FlexEvent.VALUE_COMMIT, onValueCommit);
 			addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
+			addEventListener(MouseEvent.ROLL_OVER, UIUtil.showSizeTip);
+			addEventListener(MouseEvent.ROLL_OUT, UIUtil.destroyTip);
 			maxChars=64;
 			height=60;
 		}
