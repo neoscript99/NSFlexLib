@@ -1,6 +1,7 @@
 package ns.flex.report
 {
 	import flash.events.Event;
+	import flash.ui.ContextMenuItem;
 	import mx.containers.Panel;
 	import mx.events.FlexEvent;
 	import mx.events.ListEvent;
@@ -103,8 +104,8 @@ package ns.flex.report
 
 		protected function drillInit():void
 		{
-			dgp.addMenuAfterCURD('返回顶层', drillTop, false, true);
-			dgp.addMenuAfterCURD('向上钻取', drillUp);
+			var dt:ContextMenuItem=dgp.addMenuAfterCURD('返回顶层', drillTop, false, true);
+			var du:ContextMenuItem=dgp.addMenuAfterCURD('向上钻取', drillUp, false, true);
 			dgp.addMenuAfterCURD('向下钻取', drillDown, true);
 			dgp.doubleClickEnabled=true;
 			dgp.addEventListener(ListEvent.ITEM_DOUBLE_CLICK, drillDown);
