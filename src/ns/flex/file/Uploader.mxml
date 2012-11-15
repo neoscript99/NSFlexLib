@@ -76,7 +76,7 @@
 					{
 						if (fileNumber >= maxFileNumber)
 						{
-							str=str.concat('文件数不能多余', maxFileNumber, '个\n');
+							str=str.concat('文件数不能多于', maxFileNumber, '个\n');
 							break;
 						}
 						try

@@ -1,9 +1,11 @@
 package ns.flex.controls
 {
+	import com.as3xls.xls.Cell;
 	import com.as3xls.xls.ExcelFile;
 	import com.as3xls.xls.Sheet;
 	import flash.events.ContextMenuEvent;
 	import flash.events.Event;
+	import flash.net.FileFilter;
 	import flash.system.System;
 	import flash.ui.ContextMenuItem;
 	import flash.utils.ByteArray;
@@ -70,6 +72,8 @@ package ns.flex.controls
 		//如果有嵌套字段，排序顺序无法保证，不要使用
 		[Inspectable(category="General")]
 		public var multiSort:Boolean=false;
+		[Inspectable(category="General")]
+		public var openExcelEnabled:Boolean=false;
 		public var popEditing:PopWindow;
 		[Inspectable(category="General")]
 		public var popEnterSubmit:Boolean=true;
@@ -194,7 +198,7 @@ package ns.flex.controls
 		override public function set dataProvider(value:Object):void
 		{
 			trace('set dataProvider');
-			if (showSum && value)
+			if (showSum && value && value.length > 1)
 			{
 				//clone source
 				var acp:ArrayCollectionPlus=new ArrayCollectionPlus(value);
@@ -239,9 +243,9 @@ package ns.flex.controls
 		{
 			return (showOnlyVisible ? visibleColumns : columns).filter(function(item:DataGridColumn,
 					index:int, array:Array):Boolean
-			{
-				return item.editable;
-			})
+					{
+						return item.editable;
+					})
 		}
 
 		public function getSelectedFieldArray(field:String):Array
@@ -348,6 +352,8 @@ package ns.flex.controls
 				enableMenu("另存为Excel", saveToExcel);
 				exportMenuPosition=curdMenuPosition + 3;
 			}
+			if (openExcelEnabled)
+				enableMenu("打开Excel", openExcel, true, true);
 		}
 
 		public function rowsToExcel(dataList:Object):ByteArray
@@ -370,7 +376,8 @@ package ns.flex.controls
 					for (var j:int=0; j < cols.length; j++)
 					{
 						var vStr:String=StringUtil.trim(cols[j].itemToLabel(dataList[i]));
-						if (cols[j].asNumber && exportNumber)
+						if (cols[j].hasOwnProperty('asNumber') && cols[j].asNumber &&
+							exportNumber)
 							vStr=vStr.replace(/,/g, '');
 						//Excel 超过10位会自动科学计数、超过15位尾数丢失，以下防止类似情况发生
 						else if (vStr.length > 10 && !isNaN(Number(vStr)))
@@ -495,19 +502,19 @@ package ns.flex.controls
 		{
 			return (showOnlyVisible ? visibleColumns : columns).filter(function(item:DataGridColumn,
 					index:int, array:Array):Boolean
-			{
-				return (item is DataGridColumnPlus && DataGridColumnPlus(item).viewable) ||
-					!(item is DataGridColumnPlus);
-			})
+					{
+						return (item is DataGridColumnPlus && DataGridColumnPlus(item).viewable) ||
+							!(item is DataGridColumnPlus);
+					})
 		}
 
 		public function get visibleColumns():Array
 		{
 			return columns.filter(function(item:DataGridColumn, index:int,
 					array:Array):Boolean
-			{
-				return item.visible && item != indexColumn;
-			})
+					{
+						return item.visible && item != indexColumn;
+					})
 		}
 
 		override protected function updateDisplayList(unscaledWidth:Number,
@@ -555,9 +562,9 @@ package ns.flex.controls
 		{
 			MessageUtil.confirmAction(rowsToString(multiDelete ? selectedItems : selectedItem,
 				','), function():void
-			{
-				dispatchEvent(new Event('deleteItems'));
-			}, '确定删除吗？')
+				{
+					dispatchEvent(new Event('deleteItems'));
+				}, '确定删除吗？')
 		}
 
 		private function dgItemRollOut(event:ListEvent):void
@@ -595,7 +602,7 @@ package ns.flex.controls
 		private function init(event:FlexEvent):void
 		{
 			resetMenu();
-			if (showIndex)
+			if (showIndex && columns && columns.length > 0) //自动生成列时，无法添加
 			{
 				indexColumn=new DataGridColumnPlus;
 				indexColumn.headerText='#'
@@ -609,9 +616,9 @@ package ns.flex.controls
 				indexColumn.resizable=false
 				indexColumn.labelFunction=
 					function(item:Object, column:DataGridColumn):String
-				{
-					return String(new ArrayCollectionPlus(dataProvider).getItemIndex(item) + 1);
-				};
+					{
+						return String(new ArrayCollectionPlus(dataProvider).getItemIndex(item) + 1);
+					};
 				var cols:Array=columns;
 				cols.unshift(indexColumn);
 				columns=cols;
@@ -677,6 +684,32 @@ package ns.flex.controls
 				addOrder(col.dataField);
 				dispatchEvent(new Event('changeOrder'));
 			}
+		}
+
+		private function openExcel(evt:Event):void
+		{
+			IOUtil.loadFile(function(e:Event):void
+			{
+				var dataArray:Array=[];
+				if (e.target.data != null && e.target.data.length > 0)
+				{
+					var excelFile:ExcelFile=new ExcelFile();
+					excelFile.loadFromByteArray(e.target.data);
+					var sheet:Sheet=excelFile.sheets[0];
+					for (var row:int=1; row < sheet.rows; row++)
+					{
+						var cellObject:Object={};
+						for (var col:int=0; col < sheet.cols; col++)
+						{
+							var cell:Cell=sheet.getCell(row, col);
+							cellObject[sheet.getCell(0, col).value]=
+								cell ? cell.value : null;
+						} // inner for loop ends
+						dataArray.push(cellObject);
+					} //for loop ends
+				}
+				dataProvider=dataArray;
+			}, [new FileFilter('Excel 97-2003(*.xls)', '*.xls')]);
 		}
 
 		private function refreshHeadText():void

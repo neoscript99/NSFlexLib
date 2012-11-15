@@ -25,6 +25,18 @@ package ns.flex.util
 				return String(byteSize).concat('B');
 		}
 
+		public static function loadFile(loadComplete:Function,
+			fileFilters:Array=null):void
+		{
+			var fileReference:FileReference=new FileReference();
+			fileReference.addEventListener(Event.SELECT, function(e:Event):void
+			{
+				fileReference.addEventListener(Event.COMPLETE, loadComplete);
+				fileReference.load();
+			});
+			fileReference.browse(fileFilters);
+		}
+
 		public static function saveFile(data:ByteArray, fileName:String):void
 		{
 			new FileReference().save(data, fileName);
