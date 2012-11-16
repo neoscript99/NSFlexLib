@@ -42,6 +42,7 @@
     <classEntry path="ns.flex.controls.TitleWindowPlus"/>
     <classEntry path="ns.flex.event.PageChangeEvent"/>
     <classEntry path="ns.flex.event.SaveItemEvent"/>
+    <classEntry path="ns.flex.event.ShowItemEvent"/>
     <classEntry path="ns.flex.file.Downloader"/>
     <classEntry path="ns.flex.file.FileItem"/>
     <classEntry path="ns.flex.file.Uploader"/>

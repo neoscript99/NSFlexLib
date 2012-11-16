@@ -22,13 +22,13 @@ package ns.flex.util
 			return _timeFormatter;
 		}
 
-		public static function getDateLabel(item:Object,
+		public static function getDateLabel(item:Object=null,
 			column:DataGridColumn=null):String
 		{
 			if (column)
 				return _dateFormatter.format(item[column.dataField]);
 			else
-				return _dateFormatter.format(item);
+				return _dateFormatter.format(item ? item : new Date());
 		}
 
 		/**
