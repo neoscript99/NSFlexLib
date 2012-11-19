@@ -44,13 +44,6 @@
 				rp.dataProvider=typeList
 			}
 
-			public function refresh():void
-			{
-				trace('DataGridColumnCheck refresh');
-				for each (var type:Object in typeList)
-					select(type);
-			}
-
 			private function select(item:Object):void
 			{
 				dgp.popView=null;
