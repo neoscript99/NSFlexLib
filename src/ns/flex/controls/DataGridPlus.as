@@ -79,6 +79,9 @@ package ns.flex.controls
 		public var popEnterSubmit:Boolean=true;
 		public var popTitleFunciton:Function;
 		public var popView:PopWindow;
+		//自动生成的popView和popEditing是否重用，如果字段稳定，应该重用
+		[Inspectable(category="General")]
+		public var reusePop:Boolean=true;
 		[Inspectable(enumeration="none,new,view,edit,new-edit,view-edit,new-view-edit",
 			defaultValue="none", category="General")]
 		public var showDetail:String='none';
@@ -243,9 +246,9 @@ package ns.flex.controls
 		{
 			return (showOnlyVisible ? visibleColumns : columns).filter(function(item:DataGridColumn,
 					index:int, array:Array):Boolean
-			{
-				return item.editable;
-			})
+					{
+						return item.editable;
+					})
 		}
 
 		public function getSelectedFieldArray(field:String):Array
@@ -255,7 +258,7 @@ package ns.flex.controls
 
 		public function initPopEditing():PopWindow
 		{
-			if (popEditing)
+			if (popEditing && reusePop)
 				return popEditing;
 			popEditing=initPop(true);
 			addEventListener('resetEditItem', function(e:Event):void
@@ -267,8 +270,9 @@ package ns.flex.controls
 
 		public function initPopView():PopWindow
 		{
-			if (!popView)
-				popView=initPop(false);
+			if (popView && reusePop)
+				return popView;
+			popView=initPop(false);
 			return popView;
 		}
 
@@ -503,16 +507,14 @@ package ns.flex.controls
 			}
 			if (editable)
 			{
-				if (!popEditing)
-					initPopEditing();
+				initPopEditing();
 				popEditing.show(root);
 				popEditing.title=
 					showItem ? (isClone ? '克隆' : '修改') + (popTitleFunciton ? ' ' + popTitleFunciton(showItem) : '') : '新增';
 			}
 			else
 			{
-				if (!popView)
-					initPopView()
+				initPopView()
 				popView.show(root);
 			}
 			dispatchEvent(new ShowItemEvent(item, editable,
@@ -528,19 +530,19 @@ package ns.flex.controls
 		{
 			return (showOnlyVisible ? visibleColumns : columns).filter(function(item:DataGridColumn,
 					index:int, array:Array):Boolean
-			{
-				return (item is DataGridColumnPlus && DataGridColumnPlus(item).viewable) ||
-					!(item is DataGridColumnPlus);
-			})
+					{
+						return (item is DataGridColumnPlus && DataGridColumnPlus(item).viewable) ||
+							!(item is DataGridColumnPlus);
+					})
 		}
 
 		public function get visibleColumns():Array
 		{
 			return columns.filter(function(item:DataGridColumn, index:int,
 					array:Array):Boolean
-			{
-				return item.visible && item != indexColumn;
-			})
+					{
+						return item.visible && item != indexColumn;
+					})
 		}
 
 		override protected function updateDisplayList(unscaledWidth:Number,
@@ -588,9 +590,9 @@ package ns.flex.controls
 		{
 			MessageUtil.confirmAction(rowsToString(multiDelete ? selectedItems : selectedItem,
 				','), function():void
-			{
-				dispatchEvent(new Event('deleteItems'));
-			}, '确定删除吗？')
+				{
+					dispatchEvent(new Event('deleteItems'));
+				}, '确定删除吗？')
 		}
 
 		private function dgItemRollOut(event:ListEvent):void
@@ -642,9 +644,9 @@ package ns.flex.controls
 				indexColumn.resizable=false
 				indexColumn.labelFunction=
 					function(item:Object, column:DataGridColumn):String
-				{
-					return String(new ArrayCollectionPlus(dataProvider).getItemIndex(item) + 1);
-				};
+					{
+						return String(new ArrayCollectionPlus(dataProvider).getItemIndex(item) + 1);
+					};
 				var cols:Array=columns;
 				cols.unshift(indexColumn);
 				columns=cols;
