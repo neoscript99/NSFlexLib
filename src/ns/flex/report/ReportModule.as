@@ -47,17 +47,17 @@ package ns.flex.report
 			if (paging)
 				queryPage(first)
 			else
-				SQLUtil.list(reportService, queryParam, -1, 0, dgp.orders, domain);
+				SQLUtil.list(reportService, queryParam, -1, 0, orders, domain);
 		}
 
 		public function queryPage(first:int):void
 		{
 			if (paging is Paging)
 				SQLUtil.countAndList(reportService, queryParam, paging.offsetValue,
-					paging.forFirst(first), dgp.orders, domain);
+					paging.forFirst(first), orders, domain);
 			else if (paging is PagerSmart) //on count
 				SQLUtil.list(reportService, queryParam, paging.offsetValue,
-					paging.forFirst(first), dgp.orders, domain);
+					paging.forFirst(first), orders, domain);
 		}
 
 		protected function cc(e:Event):void
@@ -167,6 +167,11 @@ package ns.flex.report
 		protected function get item():Object
 		{
 			return dgp.selectedOriItem;
+		}
+
+		protected function get orders():Array
+		{
+			return dgp.orders;
 		}
 
 		protected function get paging():PagerBase
