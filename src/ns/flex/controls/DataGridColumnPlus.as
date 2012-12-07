@@ -119,6 +119,13 @@ package ns.flex.controls
 			return (!hasComplexFieldName) ? item[dataField] : deriveComplexColumnData(item);
 		}
 
+		override public function set labelFunction(value:Function):void
+		{
+			if (value != DataGridColumnPlus.getNumberLabel && asNumber)
+				complexSort=true;
+			super.labelFunction=value;
+		}
+
 		//乘数，显示万元、千元时有用
 		public function get multiplier():Number
 		{
@@ -146,6 +153,8 @@ package ns.flex.controls
 				groupMethod='sum';
 			if (labelFunction == null)
 				labelFunction=DataGridColumnPlus.getNumberLabel;
+			else
+				complexSort=true;
 			this.setStyle('textAlign', 'right');
 		}
 
