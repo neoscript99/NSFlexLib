@@ -48,7 +48,8 @@ package ns.flex.util
 			var v:Number=Number(numObject);
 			if (isNaN(v))
 				return String(v);
-			var value:String=(multiplier == 1 ? v : v / multiplier).toFixed(precision);
+			var value:String=
+				MathUtil.toFixed(multiplier == 1 ? v : v / multiplier, precision);
 			//当precision=0，value为0-1小数时，toFixed结果为'1.'，多了一个'.'
 			if (precision == 0)
 				value=value.replace('\.', '');
