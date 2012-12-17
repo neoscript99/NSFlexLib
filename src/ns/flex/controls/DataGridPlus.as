@@ -246,9 +246,9 @@ package ns.flex.controls
 		{
 			return (showOnlyVisible ? visibleColumns : columns).filter(function(item:DataGridColumn,
 					index:int, array:Array):Boolean
-					{
-						return item.editable;
-					})
+			{
+				return item.editable;
+			})
 		}
 
 		public function getSelectedFieldArray(field:String):Array
@@ -509,8 +509,14 @@ package ns.flex.controls
 			{
 				initPopEditing();
 				popEditing.show(root);
-				popEditing.title=
-					showItem ? (isClone ? '克隆' : '修改') + (popTitleFunciton ? ' ' + popTitleFunciton(showItem) : '') : '新增';
+				if (showItem)
+					popEditing.title=
+						(isClone ? '克隆' : '修改') + (popTitleFunciton ? ' ' + popTitleFunciton(showItem) : '');
+				else
+				{
+					popEditing.title='新增';
+					showItemProxy.CREATE_ITEM_FLAG=true;
+				}
 			}
 			else
 			{
@@ -530,19 +536,19 @@ package ns.flex.controls
 		{
 			return (showOnlyVisible ? visibleColumns : columns).filter(function(item:DataGridColumn,
 					index:int, array:Array):Boolean
-					{
-						return (item is DataGridColumnPlus && DataGridColumnPlus(item).viewable) ||
-							!(item is DataGridColumnPlus);
-					})
+			{
+				return (item is DataGridColumnPlus && DataGridColumnPlus(item).viewable) ||
+					!(item is DataGridColumnPlus);
+			})
 		}
 
 		public function get visibleColumns():Array
 		{
 			return columns.filter(function(item:DataGridColumn, index:int,
 					array:Array):Boolean
-					{
-						return item.visible && item != indexColumn;
-					})
+			{
+				return item.visible && item != indexColumn;
+			})
 		}
 
 		override protected function updateDisplayList(unscaledWidth:Number,
@@ -590,9 +596,9 @@ package ns.flex.controls
 		{
 			MessageUtil.confirmAction(rowsToString(multiDelete ? selectedItems : selectedItem,
 				','), function():void
-				{
-					dispatchEvent(new Event('deleteItems'));
-				}, '确定删除吗？')
+			{
+				dispatchEvent(new Event('deleteItems'));
+			}, '确定删除吗？')
 		}
 
 		private function dgItemRollOut(event:ListEvent):void
@@ -644,9 +650,9 @@ package ns.flex.controls
 				indexColumn.resizable=false
 				indexColumn.labelFunction=
 					function(item:Object, column:DataGridColumn):String
-					{
-						return String(new ArrayCollectionPlus(dataProvider).getItemIndex(item) + 1);
-					};
+				{
+					return String(new ArrayCollectionPlus(dataProvider).getItemIndex(item) + 1);
+				};
 				var cols:Array=columns;
 				cols.unshift(indexColumn);
 				columns=cols;
