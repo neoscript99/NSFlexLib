@@ -1,6 +1,7 @@
 package ns.flex.controls
 {
 	import mx.binding.utils.BindingUtils;
+	import mx.controls.dataGridClasses.DataGridColumn;
 	import ns.flex.popup.PopLineChart;
 
 	public class DataGridChart extends DataGridPlus
@@ -28,10 +29,20 @@ package ns.flex.controls
 		{
 			if (indexes.length > 0)
 			{
-				var seriesInfos:Array=[];
+				var cols:Array=[];
 				for each (var i:int in indexes)
-					seriesInfos.push({yField: columns[showIndex ? i : i - 1].dataField,
-							displayName: columns[showIndex ? i : i - 1].headerText});
+					cols.push(columns[showIndex ? i : i - 1]);
+				lineColumns=cols;
+			}
+		}
+
+		public function set lineColumns(cols:Array):void
+		{
+			if (cols.length > 0)
+			{
+				var seriesInfos:Array=[];
+				for each (var col:DataGridColumn in cols)
+					seriesInfos.push({yField: col.dataField, displayName: col.headerText});
 				lineChart.seriesInfos=seriesInfos;
 			}
 		}
