@@ -62,16 +62,8 @@ package ns.flex.report
 
 		protected function cc(e:Event):void
 		{
-			if (destination)
-				reportService=RemoteUtil.createRemoteObject(destination);
+			initService();
 			query();
-			reportService.addEventListener(FaultEvent.FAULT, function(e:FaultEvent):void
-			{
-				popProgress.close();
-				dgp.closeProgress();
-			});
-			reportService.getOperation('export').addEventListener(ResultEvent.RESULT,
-				exportFile);
 			if (drillable)
 				drillInit();
 		}
@@ -164,6 +156,31 @@ package ns.flex.report
 			return queryParam;
 		}
 
+		protected function initService():void
+		{
+			if (destination)
+				reportService=RemoteUtil.createRemoteObject(destination);
+			reportService.addEventListener(FaultEvent.FAULT, function(e:FaultEvent):void
+			{
+				popProgress.close();
+				dgp.closeProgress();
+			});
+			reportService.getOperation('save').addEventListener(ResultEvent.RESULT,
+				function(e:ResultEvent):void
+				{
+					dgp.closePop();
+					refresh();
+				});
+			reportService.getOperation('deleteByIds').addEventListener(ResultEvent.RESULT,
+				refresh);
+			reportService.getOperation('deleteByStringList').addEventListener(ResultEvent.RESULT,
+				refresh);
+			reportService.getOperation('deleteByNumberList').addEventListener(ResultEvent.RESULT,
+				refresh);
+			reportService.getOperation('export').addEventListener(ResultEvent.RESULT,
+				exportFile);
+		}
+
 		protected function get item():Object
 		{
 			return dgp.selectedOriItem;
@@ -188,7 +205,10 @@ package ns.flex.report
 
 		protected function refresh(e:Event=null):void
 		{
-			paging.refresh();
+			if (paging)
+				paging.refresh();
+			else
+				query();
 		}
 
 		protected function get reportBar():ReportControlBar
