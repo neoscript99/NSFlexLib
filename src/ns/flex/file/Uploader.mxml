@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:Panel xmlns:mx="http://www.adobe.com/2006/mxml"
 		  title="文件上传/下载[{maxFileNumber}×{IOUtil.getFileSize(maxFileSize)}]"
-		  paddingLeft="5" xmlns:file="ns.flex.file.*">
+		  paddingLeft="5" xmlns:file="ns.flex.file.*" creationComplete="cc()">
 	<mx:Script>
 		<![CDATA[
 			import mx.collections.ArrayCollection;
@@ -14,6 +14,7 @@
 
 			[Bindable]
 			public var fileNumber:uint=0;
+			//ex:[new FileFilter("Images", "*.jpg;*.gif;*.png"),new FileFilter("Documents", "*.pdf;*.doc;*.txt")]
 			public var fileTypeFilter:Array;
 			[Bindable]
 			public var maxFileNumber:uint=5;
@@ -21,6 +22,8 @@
 			public var maxFileSize:uint=1024 * 1024 * 10;
 			[Bindable]
 			public var maxNameLength:uint=128;
+			[Bindable]
+			public var ownerId:String;
 			[Bindable]
 			private var selectValue:Boolean;
 
@@ -35,6 +38,11 @@
 			public function set destination(destination:String):void
 			{
 				service=RemoteUtil.createRemoteObject(destination, null, null, false);
+			}
+
+			private function cc():void
+			{
+				service.list({eq: [['ownerId', ownerId]]});
 			}
 
 			private function countFile(item:DisplayObject):void
@@ -96,6 +104,7 @@
 							var fileItem:FileItem=new FileItem;
 							fileItem.service=service;
 							fileItem.fileId=UIDUtil.createUID();
+							fileItem.ownerId=ownerId;
 							fileItem.fileName=file.name;
 							fileItem.fileSize=file.size;
 							fileItem.dateCreated=new Date();
@@ -105,6 +114,7 @@
 						}
 						catch (e:Error)
 						{
+							trace(e.getStackTrace());
 							str=str.concat(file.name, ' ', e.toString());
 						}
 						fileNumber++;
@@ -121,7 +131,8 @@
 			}
 		]]>
 	</mx:Script>
-	<file:Downloader id="downloader" service="{service}" deletable="true"/>
+	<file:Downloader id="downloader" service="{service}"
+					 dataProdiver="{service.list.lastResult}" deletable="true"/>
 	<mx:ControlBar>
 		<mx:Button label="全选" click="selectValue=true;eachFileItem(setSelectValue)"/>
 		<mx:Button label="全不选" click="selectValue=false;eachFileItem(setSelectValue)"/>

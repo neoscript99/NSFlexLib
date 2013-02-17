@@ -27,6 +27,8 @@
 			public var fileName:String;
 			[Bindable]
 			public var fileSize:Number;
+			[Bindable]
+			public var ownerId:String;
 			public var status:String='init';
 
 			/*
@@ -60,23 +62,23 @@
 				_service=s;
 				_service.getOperation('upload').addEventListener(ResultEvent.RESULT,
 					function(e:ResultEvent):void
+				{
+					if (e.result == fileId)
 					{
-						if (e.result == fileId)
-						{
-							status='uploadComplete';
-							labelBox.setStyle('backgroundColor', 0xB8F88D);
-						}
-					});
+						status='uploadComplete';
+						labelBox.setStyle('backgroundColor', 0xB8F88D);
+					}
+				});
 				_service.getOperation('download').addEventListener(ResultEvent.RESULT,
 					function(e:ResultEvent):void
+				{
+					if (e.result.fileId == fileId)
 					{
-						if (e.result.fileId == fileId)
-						{
-							progressBox.close();
-							IOUtil.saveFileWithAlert(e.result.data, e.result.name,
-								Sprite(parent));
-						}
-					});
+						progressBox.close();
+						IOUtil.saveFileWithAlert(e.result.data, e.result.name,
+							Sprite(parent));
+					}
+				});
 				_service.addEventListener(FaultEvent.FAULT, function(e:FaultEvent):void
 				{
 					progressBox.close();
@@ -94,7 +96,7 @@
 				if (status == 'init')
 				{
 					status='uploadStart';
-					_service.upload(fileName, _file.data, fileId);
+					_service.upload(fileName, _file.data, fileId, ownerId);
 				}
 			}
 		]]>
