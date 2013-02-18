@@ -42,7 +42,7 @@
 
 			private function cc():void
 			{
-				service.list({eq: [['ownerId', ownerId]]});
+				service.queryByOwner(ownerId);
 			}
 
 			private function countFile(item:DisplayObject):void
@@ -132,7 +132,7 @@
 		]]>
 	</mx:Script>
 	<file:Downloader id="downloader" service="{service}"
-					 dataProdiver="{service.list.lastResult}" deletable="true"/>
+					 dataProdiver="{service.queryByOwner.lastResult}" deletable="true"/>
 	<mx:ControlBar>
 		<mx:Button label="全选" click="selectValue=true;eachFileItem(setSelectValue)"/>
 		<mx:Button label="全不选" click="selectValue=false;eachFileItem(setSelectValue)"/>
