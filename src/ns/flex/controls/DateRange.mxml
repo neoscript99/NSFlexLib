@@ -42,8 +42,8 @@
 								defaultDate="{defaultStartDate}"
 								change="onChange('sd',false)"/>
 	</mx:FormItem>
-	<mx:Button label="←" click="onChange('ed')"/>
 	<mx:Button label="→" click="onChange('sd')"/>
+	<mx:Button label="←" click="onChange('ed')"/>
 	<mx:FormItem label="结束日期：">
 		<controls:DateFieldPlus id="ed" editable="true" toolTip="回车查询"
 								constraints="{{required:true}}"
