@@ -5,6 +5,9 @@ package ns.flex.controls
 	import com.as3xls.xls.Sheet;
 	import flash.events.ContextMenuEvent;
 	import flash.events.Event;
+	import flash.events.FocusEvent;
+	import flash.events.MouseEvent;
+	import flash.events.TextEvent;
 	import flash.net.FileFilter;
 	import flash.system.System;
 	import flash.ui.ContextMenuItem;
@@ -19,11 +22,13 @@ package ns.flex.controls
 	import mx.events.DataGridEvent;
 	import mx.events.FlexEvent;
 	import mx.events.ListEvent;
+	import mx.managers.PopUpManager;
 	import mx.utils.ObjectProxy;
 	import mx.utils.ObjectUtil;
 	import mx.utils.UIDUtil;
 	import ns.flex.event.SaveItemEvent;
 	import ns.flex.event.ShowItemEvent;
+	import ns.flex.popup.PopMultInput;
 	import ns.flex.support.MenuSupport;
 	import ns.flex.util.ArrayCollectionPlus;
 	import ns.flex.util.ContainerUtil;
@@ -40,6 +45,7 @@ package ns.flex.controls
 	[Event(name="deleteItems")]
 	[Event(name="deleteAll")]
 	[Event(name="changeOrder")]
+	[Event(name="multCreate")]
 	public class DataGridPlus extends DataGrid
 	{
 		public static const CLONE_KEY:String='ObjectCreateByClone';
@@ -67,6 +73,9 @@ package ns.flex.controls
 		public var menuSupport:MenuSupport;
 		[Inspectable(category="General")]
 		public var modifyEnabled:Boolean=false;
+		[Inspectable(category="General")]
+		public var multCreateEnabled:Boolean=false;
+		public var multCreateInput:PopMultInput;
 		[Inspectable(category="General")]
 		public var multiDelete:Boolean=true;
 		//如果有嵌套字段，排序顺序无法保证，不要使用
@@ -246,9 +255,9 @@ package ns.flex.controls
 		{
 			return (showOnlyVisible ? visibleColumns : columns).filter(function(item:DataGridColumn,
 					index:int, array:Array):Boolean
-			{
-				return item.editable;
-			})
+					{
+						return item.editable;
+					})
 		}
 
 		public function getSelectedFieldArray(field:String):Array
@@ -374,6 +383,18 @@ package ns.flex.controls
 
 			if (deleteAllEnabled)
 				enableMenu("删除全部", deleteAll, (separatorCount++ == 0), true);
+
+			if (multCreateEnabled)
+			{
+				multCreateInput=new PopMultInput;
+				multCreateInput.addEventListener('confirm', function(e:Event):void
+				{
+					dispatchEvent(new Event('multCreate'));
+					PopUpManager.removePopUp(multCreateInput);
+				});
+				enableMenu("批量新增", multCreate, (separatorCount++ > 0), true);
+			}
+
 			curdMenuPosition=exportMenuPosition=separatorCount;
 			if (copyToExcelEnabled)
 			{
@@ -536,19 +557,19 @@ package ns.flex.controls
 		{
 			return (showOnlyVisible ? visibleColumns : columns).filter(function(item:DataGridColumn,
 					index:int, array:Array):Boolean
-			{
-				return (item is DataGridColumnPlus && DataGridColumnPlus(item).viewable) ||
-					!(item is DataGridColumnPlus);
-			})
+					{
+						return (item is DataGridColumnPlus && DataGridColumnPlus(item).viewable) ||
+							!(item is DataGridColumnPlus);
+					})
 		}
 
 		public function get visibleColumns():Array
 		{
 			return columns.filter(function(item:DataGridColumn, index:int,
 					array:Array):Boolean
-			{
-				return item.visible && item != indexColumn;
-			})
+					{
+						return item.visible && item != indexColumn;
+					})
 		}
 
 		override protected function updateDisplayList(unscaledWidth:Number,
@@ -596,9 +617,9 @@ package ns.flex.controls
 		{
 			MessageUtil.confirmAction(rowsToString(multiDelete ? selectedItems : selectedItem,
 				','), function():void
-			{
-				dispatchEvent(new Event('deleteItems'));
-			}, '确定删除吗？')
+				{
+					dispatchEvent(new Event('deleteItems'));
+				}, '确定删除吗？')
 		}
 
 		private function dgItemRollOut(event:ListEvent):void
@@ -650,9 +671,9 @@ package ns.flex.controls
 				indexColumn.resizable=false
 				indexColumn.labelFunction=
 					function(item:Object, column:DataGridColumn):String
-				{
-					return String(new ArrayCollectionPlus(dataProvider).getItemIndex(item) + 1);
-				};
+					{
+						return String(new ArrayCollectionPlus(dataProvider).getItemIndex(item) + 1);
+					};
 				var cols:Array=columns;
 				cols.unshift(indexColumn);
 				columns=cols;
@@ -704,6 +725,11 @@ package ns.flex.controls
 		private function modifyItem(evt:Event):void
 		{
 			dispatchEvent(new Event('modifyItem'));
+		}
+
+		private function multCreate(evt:ContextMenuEvent):void
+		{
+			PopUpManager.addPopUp(multCreateInput, this, true)
 		}
 
 		private function onHeaderRelease(event:DataGridEvent):void

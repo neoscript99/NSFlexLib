@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PopWindow xmlns="ns.flex.controls.*" xmlns:mx="http://www.adobe.com/2006/mxml"
+		   title="批量新增">
+	<mx:Metadata>
+		[Event(name="confirm")]
+	</mx:Metadata>
+	<mx:Script>
+		<![CDATA[
+			private const info:String='请输入多行记录，用逗号或制表符分隔各列(可以从Excel复制粘贴)。';
+		]]>
+	</mx:Script>
+	<mx:TextArea id="tta" width="320" height="240" toolTip="{info}"/>
+	<mx:ControlBar horizontalAlign="right">
+		<mx:Button label="确认" click="dispatchEvent(new Event('confirm'))"/>
+		<mx:Button label="清空" click="tta.text=''"/>
+		<mx:Button label="取消" click="this.close()"/>
+	</mx:ControlBar>
+</PopWindow>
