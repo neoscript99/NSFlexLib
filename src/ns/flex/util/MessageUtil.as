@@ -11,18 +11,29 @@ package ns.flex.util
 	public class MessageUtil
 	{
 
-		public static function confirmAction(prompt:String, action:Function,
-			title:String=null):void
+		public static function actionFire(flags:uint, actionFlag:uint, prompt:String,
+			action:Function, title:String):void
 		{
 
-			Alert.show(prompt, title, Alert.YES | Alert.NO, null,
-				function(evt:CloseEvent):void
+			Alert.show(prompt, title, flags, null, function(evt:CloseEvent):void
+			{
+				if (evt.detail == actionFlag)
 				{
-					if (evt.detail == Alert.YES)
-					{
-						action();
-					}
-				})
+					action();
+				}
+			})
+		}
+
+		public static function actionNo(prompt:String, action:Function,
+			title:String=null):void
+		{
+			actionFire(Alert.YES | Alert.NO, Alert.NO, prompt, action, title);
+		}
+
+		public static function actionYes(prompt:String, action:Function,
+			title:String=null):void
+		{
+			actionFire(Alert.YES | Alert.NO, Alert.YES, prompt, action, title);
 		}
 
 		public static function getMessage(message:String, params:Array):String

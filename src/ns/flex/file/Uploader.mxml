@@ -136,7 +136,7 @@
 	<mx:ControlBar>
 		<mx:Button label="全选" click="selectValue=true;eachFileItem(setSelectValue)"/>
 		<mx:Button label="全不选" click="selectValue=false;eachFileItem(setSelectValue)"/>
-		<mx:Button label="删除选择项" click="MessageUtil.confirmAction('确认删除？',deleteSelected)"/>
+		<mx:Button label="删除选择项" click="MessageUtil.actionYes('确认删除？',deleteSelected)"/>
 		<mx:HBox width="100%" horizontalAlign="right">
 			<mx:Button label="添加文件" click="selectFiles()"/>
 		</mx:HBox>

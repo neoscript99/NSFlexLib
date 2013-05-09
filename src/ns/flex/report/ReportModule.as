@@ -220,7 +220,7 @@ package ns.flex.report
 
 		protected function get selectedIds():Array
 		{
-			return dgp.getSelectedFieldArray('id')
+			return dgp.getFieldArray('id')
 		}
 	}
 }
