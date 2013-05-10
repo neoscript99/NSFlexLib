@@ -6,7 +6,7 @@
 	</mx:Metadata>
 	<mx:Script>
 		<![CDATA[
-			private const info:String='请输入多行记录，用逗号或制表符分隔各列(可以从Excel复制粘贴)。';
+			private const info:String='输入多行记录(不带表头)，用逗号或制表符分隔各列(可以从Excel复制粘贴)。';
 		]]>
 	</mx:Script>
 	<mx:TextArea id="tta" width="320" height="240" toolTip="{info}"/>
