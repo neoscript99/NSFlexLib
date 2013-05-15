@@ -7,8 +7,8 @@
     <classEntry path="ns.flex.util.ValidatorUtil"/>
     <classEntry path="ns.flex.util.DateValidatorPlus"/>
     <classEntry path="ns.flex.util.LabelUtil"/>
-    <classEntry path="ns.flex.popup.PopMultInput"/>
     <classEntry path="ns.flex.file.Downloader"/>
+    <classEntry path="ns.flex.popup.PopMultInput"/>
     <classEntry path="ns.flex.popup.PopColumnChart"/>
     <classEntry path="ns.flex.util.UIUtil"/>
     <classEntry path="ns.flex.util.MathUtil"/>

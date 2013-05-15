@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:Panel xmlns:mx="http://www.adobe.com/2006/mxml"
-		  title="文件上传/下载[{maxFileNumber}×{IOUtil.getFileSize(maxFileSize)}]"
+		  title="文件上传/下载[{max_fileNumber}×{IOUtil.getFileSize(maxFileSize)}]"
 		  paddingLeft="5" xmlns:file="ns.flex.file.*" creationComplete="cc()">
+	<mx:Metadata>
+		[Event(name="change")]
+	</mx:Metadata>
 	<mx:Script>
 		<![CDATA[
 			import mx.collections.ArrayCollection;
@@ -12,18 +15,19 @@
 			import ns.flex.util.MessageUtil;
 			import ns.flex.util.RemoteUtil;
 
-			[Bindable]
-			public var fileNumber:uint=0;
 			//ex:[new FileFilter("Images", "*.jpg;*.gif;*.png"),new FileFilter("Documents", "*.pdf;*.doc;*.txt")]
 			public var fileTypeFilter:Array;
-			[Bindable]
-			public var maxFileNumber:uint=5;
 			[Bindable]
 			public var maxFileSize:uint=1024 * 1024 * 10;
 			[Bindable]
 			public var maxNameLength:uint=128;
 			[Bindable]
-			public var ownerId:String;
+			public var max_fileNumber:uint=5;
+
+			[Bindable]
+			private var _fileNumber:uint=0;
+			[Bindable]
+			private var _ownerId:String;
 			[Bindable]
 			private var selectValue:Boolean;
 
@@ -37,18 +41,39 @@
 
 			public function set destination(destination:String):void
 			{
-				service=RemoteUtil.createRemoteObject(destination, null, null, false);
+				service=RemoteUtil.createRemoteObject(destination, null, null, true);
+				if (_ownerId)
+					service.queryByOwner(_ownerId);
+			}
+
+			public function get fileNumber():uint
+			{
+				return _fileNumber;
+			}
+
+			public function get ownerId():String
+			{
+				return ownerId;
+			}
+
+			public function set ownerId(ownerId:String):void
+			{
+				//所属对象id未生成时，没有ownerId,先用临时id，生成后再替换
+				_ownerId=ownerId ? ownerId : UIDUtil.createUID();
+				if (service && _ownerId)
+					service.queryByOwner(_ownerId);
 			}
 
 			private function cc():void
 			{
-				service.queryByOwner(ownerId);
+				if (service && _ownerId)
+					service.queryByOwner(_ownerId);
 			}
 
 			private function countFile(item:DisplayObject):void
 			{
 				if (item is FileItem)
-					fileNumber++;
+					_fileNumber++;
 			}
 
 			private function deleteSelected():void
@@ -78,13 +103,13 @@
 				frl.addEventListener(Event.SELECT, function(e:Event):void
 				{
 					var str:String='';
-					fileNumber=0;
+					_fileNumber=0;
 					eachFileItem(countFile);
 					for each (var file:FileReference in frl.fileList)
 					{
-						if (fileNumber >= maxFileNumber)
+						if (_fileNumber >= max_fileNumber)
 						{
-							str=str.concat('文件数不能多于', maxFileNumber, '个\n');
+							str=str.concat('文件数不能多于', max_fileNumber, '个\n');
 							break;
 						}
 						try
@@ -104,20 +129,21 @@
 							var fileItem:FileItem=new FileItem;
 							fileItem.service=service;
 							fileItem.fileId=UIDUtil.createUID();
-							fileItem.ownerId=ownerId;
+							fileItem.ownerId=_ownerId;
 							fileItem.fileName=file.name;
 							fileItem.fileSize=file.size;
 							fileItem.dateCreated=new Date();
 							fileItem.file=file;
 							addChild(fileItem);
 							file.load();
+							_fileNumber++;
+							dispatchEvent(new Event('change'));
 						}
 						catch (e:Error)
 						{
 							trace(e.getStackTrace());
 							str=str.concat(file.name, ' ', e.toString());
 						}
-						fileNumber++;
 					}
 					if (str.length > 0)
 						MessageUtil.showMessage(str, '上传错误信息');

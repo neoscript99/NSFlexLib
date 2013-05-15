@@ -15,7 +15,7 @@ package ns.flex.controls
 	 */
 	public class DataGridColumnPlus extends DataGridColumn
 	{
-		[Inspectable(enumeration="Text,TextArea,CheckBox,DateString,AutoComplete,LinkButton",
+		[Inspectable(enumeration="Text,TextArea,CheckBox,DateString,AutoComplete,LinkButton,Uploader",
 			defaultValue="Text", category="General")]
 		public var asControl:String='Text';
 		[Inspectable(category="General")]
@@ -90,6 +90,18 @@ package ns.flex.controls
 				labelFunction=DateUtil.getTimeLabel;
 				asControl='DateField';
 			}
+		}
+
+		[Inspectable(category="General")]
+		public function set asUploader(props:Object):void
+		{
+			asControl='Uploader';
+			/*{ownerIdField:'附件所属对象ID',
+			   destination:'attachmentService',
+			   maxFileNumber:5,
+			   maxFileSize:1024 * 1024 * 10,
+			   fileTypeFilter:[new FileFilter("Images", "*.jpg;*.gif;*.png"),new FileFilter("Documents", "*.pdf;*.doc;*.txt")]}*/
+			controlProps=props;
 		}
 
 		[Inspectable(category="General")]

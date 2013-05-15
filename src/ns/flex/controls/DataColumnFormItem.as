@@ -1,8 +1,10 @@
 package ns.flex.controls
 {
+	import flash.events.Event;
 	import flash.events.MouseEvent;
 	import flash.net.URLRequest;
 	import flash.net.navigateToURL;
+	
 	import mx.binding.utils.BindingUtils;
 	import mx.collections.ArrayCollection;
 	import mx.containers.FormItem;
@@ -12,6 +14,9 @@ package ns.flex.controls
 	import mx.core.UIComponent;
 	import mx.rpc.events.ResultEvent;
 	import mx.rpc.remoting.mxml.Operation;
+	
+	import ns.flex.file.Downloader;
+	import ns.flex.file.Uploader;
 	import ns.flex.util.DateUtil;
 	import ns.flex.util.ObjectUtils;
 	import ns.flex.util.StringUtil;
@@ -39,6 +44,8 @@ package ns.flex.controls
 					uic=asAutoComplete(dgp, colp, editable);
 				else if ('LinkButton' == colp.asControl && !editable)
 					uic=asLinkButton(dgp, colp);
+				else if ('Uploader' == colp.asControl)
+					uic=asUploader(dgp, colp, editable);
 				else if (('DateField' == colp.asControl || 'DateString' == colp.asControl) &&
 					editable)
 					uic=asDateField(dgp, colp);
@@ -220,6 +227,32 @@ package ns.flex.controls
 						')') : head;
 				}, textInput, 'text');
 			return textInput;
+		}
+
+		private function asUploader(dgp:DataGridPlus, colp:DataGridColumnPlus,
+			editable:Boolean):UIComponent
+		{
+			var ud:UIComponent;
+			if (editable)
+			{
+				var up:Uploader=new Uploader;
+				ud=up;
+				up.addEventListener('change', function(e:Event):void
+				{
+					ObjectUtils.setValue(dgp.showItemProxy, colp.dataField,
+						{fileNumber: up.fileNumber, ownerId: up.ownerId});
+				});
+				ObjectUtils.copyProperties(ud, colp.controlProps);
+			}
+			else
+				ud=new Downloader(colp.controlProps.destination);
+
+			BindingUtils.bindSetter(function(value:Object):void
+			{
+				ud['ownerId']=
+					String(ObjectUtils.getValue(value, colp.controlProps.ownerIdField));
+			}, dgp, 'showItemProxy');
+			return ud;
 		}
 	}
 }
