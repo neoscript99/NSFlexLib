@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:net="flash.net.*"
-		 xmlns:utils="flash.utils.*">
+		 xmlns:utils="flash.utils.*" creationComplete="cc()">
 	<mx:Script>
 		<![CDATA[
 			import mx.controls.Alert;
@@ -48,12 +48,15 @@
 				});
 			}
 
-			public function remove():void
+			public function remove(deleteFile:Boolean=true):void
 			{
-				if (status == 'uploadStart')
-					_service.getOperation('upload').cancel();
-				status='deleted';
-				_service.remove(fileId);
+				if (deleteFile)
+				{
+					if (status == 'uploadStart')
+						_service.getOperation('upload').cancel();
+					status='deleted';
+					_service.remove(fileId);
+				}
 				parent.removeChild(this);
 			}
 
@@ -85,6 +88,15 @@
 				})
 			}
 
+			private function cc():void
+			{
+				if (!deletable)
+				{
+					labelBox.removeChild(checkBox);
+					removeChild(deleteLink);
+				}
+			}
+
 			private function download():void
 			{
 				progressBox.show(parent);
@@ -102,10 +114,11 @@
 		]]>
 	</mx:Script>
 	<mx:HBox id="labelBox">
-		<mx:CheckBox id="checkBox" visible="{deletable}" selected="true"/>
+		<mx:CheckBox id="checkBox" selected="true"/>
 		<mx:Label click="checkBox.selected=!checkBox.selected"
 				  text="{fileName}[{IOUtil.getFileSize(fileSize)}]({DateUtil.getTimeLabel(dateCreated)})"/>
 	</mx:HBox>
-	<mx:LinkButton visible="{deletable}" label="删除" click="remove()"/>
+	<mx:LinkButton id="deleteLink" label="删除"
+				   click="MessageUtil.actionYes('确认删除？',remove)"/>
 	<mx:LinkButton label="下载" click="download()" visible="{!_file}"/>
 </mx:HBox>

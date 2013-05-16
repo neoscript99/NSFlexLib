@@ -16,14 +16,16 @@ package ns.flex.file
 		public var service:RemoteObject;
 		private var _ownerId:String;
 
-		public function Downloader(destination:String)
+		public function Downloader(destination:String=null)
 		{
 			super();
-			this.destination=destination;
+			if (destination)
+				this.destination=destination;
 		}
 
 		public function set dataProdiver(list:*):void
 		{
+			removeAllChildren();
 			for each (var fileInfo:Object in ArrayUtil.toArray(list))
 			{
 				var fileItem:FileItem=new FileItem;

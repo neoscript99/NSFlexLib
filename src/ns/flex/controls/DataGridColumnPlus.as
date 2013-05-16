@@ -97,6 +97,7 @@ package ns.flex.controls
 		{
 			asControl='Uploader';
 			/*{ownerIdField:'附件所属对象ID',
+			   ownerIdPrefix:'ID前缀，防止重复',
 			   destination:'attachmentService',
 			   maxFileNumber:5,
 			   maxFileSize:1024 * 1024 * 10,

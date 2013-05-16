@@ -4,7 +4,6 @@ package ns.flex.controls
 	import flash.events.MouseEvent;
 	import flash.net.URLRequest;
 	import flash.net.navigateToURL;
-	
 	import mx.binding.utils.BindingUtils;
 	import mx.collections.ArrayCollection;
 	import mx.containers.FormItem;
@@ -14,7 +13,6 @@ package ns.flex.controls
 	import mx.core.UIComponent;
 	import mx.rpc.events.ResultEvent;
 	import mx.rpc.remoting.mxml.Operation;
-	
 	import ns.flex.file.Downloader;
 	import ns.flex.file.Uploader;
 	import ns.flex.util.DateUtil;
@@ -249,8 +247,8 @@ package ns.flex.controls
 
 			BindingUtils.bindSetter(function(value:Object):void
 			{
-				ud['ownerId']=
-					String(ObjectUtils.getValue(value, colp.controlProps.ownerIdField));
+				var id:Object=ObjectUtils.getValue(value, colp.controlProps.ownerIdField);
+				ud['ownerId']=id ? (colp.controlProps.ownerIdPrefix + '_' + id) : null;
 			}, dgp, 'showItemProxy');
 			return ud;
 		}

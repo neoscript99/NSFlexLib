@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:Panel xmlns:mx="http://www.adobe.com/2006/mxml"
-		  title="文件上传/下载[{max_fileNumber}×{IOUtil.getFileSize(maxFileSize)}]"
-		  paddingLeft="5" xmlns:file="ns.flex.file.*" creationComplete="cc()">
+<mx:Accordion xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:file="ns.flex.file.*"
+			  creationComplete="cc()" resizeToContent="true">
 	<mx:Metadata>
 		[Event(name="change")]
 	</mx:Metadata>
@@ -15,6 +14,8 @@
 			import ns.flex.util.MessageUtil;
 			import ns.flex.util.RemoteUtil;
 
+			public const TEMP_ID:String='TEMP_' + UIDUtil.createUID();
+
 			//ex:[new FileFilter("Images", "*.jpg;*.gif;*.png"),new FileFilter("Documents", "*.pdf;*.doc;*.txt")]
 			public var fileTypeFilter:Array;
 			[Bindable]
@@ -23,7 +24,6 @@
 			public var maxNameLength:uint=128;
 			[Bindable]
 			public var max_fileNumber:uint=5;
-
 			[Bindable]
 			private var _fileNumber:uint=0;
 			[Bindable]
@@ -53,14 +53,18 @@
 
 			public function get ownerId():String
 			{
-				return ownerId;
+				return _ownerId;
 			}
 
 			public function set ownerId(ownerId:String):void
 			{
+				eachFileItem(function(item:FileItem):void
+				{
+					item.remove(false);
+				}, false);
 				//所属对象id未生成时，没有ownerId,先用临时id，生成后再替换
-				_ownerId=ownerId ? ownerId : UIDUtil.createUID();
-				if (service && _ownerId)
+				_ownerId=ownerId ? ownerId : TEMP_ID; //用一个客户端可以识别的id
+				if (service)
 					service.queryByOwner(_ownerId);
 			}
 
@@ -72,8 +76,7 @@
 
 			private function countFile(item:DisplayObject):void
 			{
-				if (item is FileItem)
-					_fileNumber++;
+				_fileNumber++;
 			}
 
 			private function deleteSelected():void
@@ -81,18 +84,28 @@
 				eachFileItem(removeItem)
 			}
 
-			private function eachFileItem(fun:Function):void
+			private function eachFileItem(fun:Function, includeDown:Boolean=true):void
 			{
-				ContainerUtil.eachChild(this, fun)
-				ContainerUtil.eachChild(downloader, fun)
+				if (vbox)
+					ContainerUtil.eachChild(vbox, function(item:DisplayObject):void
+					{
+						if (item is FileItem)
+							fun(item)
+					})
+				if (downloader && includeDown)
+					ContainerUtil.eachChild(downloader, function(item:DisplayObject):void
+					{
+						if (item is FileItem)
+							fun(item)
+					})
 			}
 
-			private function removeItem(item:DisplayObject):void
+			private function removeItem(item:FileItem):void
 			{
-				if (item is FileItem && FileItem(item).checkBox.selected)
+				if (item.checkBox.selected)
 				{
-					trace('removeItem - ', FileItem(item).fileName)
-					FileItem(item).remove();
+					trace('removeItem - ', item.fileName)
+					item.remove();
 				}
 			}
 
@@ -121,6 +134,11 @@
 									IOUtil.getFileSize(maxFileSize), '\n');
 								continue;
 							}
+							if (file.size == 0)
+							{
+								str=str.concat(file.name, ' 为空文件\n');
+								continue;
+							}
 							if (file.name.length > maxNameLength)
 							{
 								str=str.concat(file.name, ' 名字长度大于', maxNameLength, '\n');
@@ -134,7 +152,7 @@
 							fileItem.fileSize=file.size;
 							fileItem.dateCreated=new Date();
 							fileItem.file=file;
-							addChild(fileItem);
+							vbox.addChild(fileItem);
 							file.load();
 							_fileNumber++;
 							dispatchEvent(new Event('change'));
@@ -150,21 +168,28 @@
 				});
 			}
 
-			private function setSelectValue(item:DisplayObject):void
+			private function setSelectValue(item:FileItem):void
 			{
-				if (item is FileItem)
-					FileItem(item).checkBox.selected=selectValue;
+				item.checkBox.selected=selectValue;
 			}
 		]]>
 	</mx:Script>
-	<file:Downloader id="downloader" service="{service}"
-					 dataProdiver="{service.queryByOwner.lastResult}" deletable="true"/>
-	<mx:ControlBar>
-		<mx:Button label="全选" click="selectValue=true;eachFileItem(setSelectValue)"/>
-		<mx:Button label="全不选" click="selectValue=false;eachFileItem(setSelectValue)"/>
-		<mx:Button label="删除选择项" click="MessageUtil.actionYes('确认删除？',deleteSelected)"/>
-		<mx:HBox width="100%" horizontalAlign="right">
-			<mx:Button label="添加文件" click="selectFiles()"/>
+	<mx:VBox label="文件上传/下载[{max_fileNumber}×{IOUtil.getFileSize(maxFileSize)}]"
+			 paddingLeft="5">
+		<file:Downloader id="downloader" service="{service}"
+						 dataProdiver="{service.queryByOwner.lastResult}" deletable="true"/>
+		<mx:VBox id="vbox"/>
+		<mx:HBox width="100%">
+			<mx:LinkButton label="全选"
+						   click="selectValue=true;eachFileItem(setSelectValue)"/>
+			<mx:LinkButton label="全不选"
+						   click="selectValue=false;eachFileItem(setSelectValue)"/>
+			<mx:LinkButton label="删除选择项"
+						   click="MessageUtil.actionYes('确认删除？',deleteSelected)"/>
+			<mx:HBox width="100%" horizontalAlign="right">
+				<mx:LinkButton label="添加文件" click="selectFiles()"
+							   enabled="{_ownerId!=null}"/>
+			</mx:HBox>
 		</mx:HBox>
-	</mx:ControlBar>
-</mx:Panel>
+	</mx:VBox>
+</mx:Accordion>
