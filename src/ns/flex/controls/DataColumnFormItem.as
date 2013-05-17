@@ -249,6 +249,9 @@ package ns.flex.controls
 			{
 				var id:Object=ObjectUtils.getValue(value, colp.controlProps.ownerIdField);
 				ud['ownerId']=id ? (colp.controlProps.ownerIdPrefix + '_' + id) : null;
+				if (editable)
+					ObjectUtils.setValue(dgp.showItemProxy, colp.dataField,
+						{ownerId: ud['ownerId']});
 			}, dgp, 'showItemProxy');
 			return ud;
 		}
