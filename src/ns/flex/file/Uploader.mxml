@@ -51,6 +51,11 @@
 				return _fileNumber;
 			}
 
+			public function get info():Object
+			{
+				return {fileNumber: _fileNumber, ownerId: _ownerId};
+			}
+
 			public function get ownerId():String
 			{
 				return _ownerId;

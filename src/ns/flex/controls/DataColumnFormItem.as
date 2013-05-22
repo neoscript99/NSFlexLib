@@ -237,8 +237,7 @@ package ns.flex.controls
 				ud=up;
 				up.addEventListener('change', function(e:Event):void
 				{
-					ObjectUtils.setValue(dgp.showItemProxy, colp.dataField,
-						{fileNumber: up.fileNumber, ownerId: up.ownerId});
+					ObjectUtils.setValue(dgp.showItemProxy, colp.dataField, up.info);
 				});
 				ObjectUtils.copyProperties(ud, colp.controlProps);
 			}
@@ -250,8 +249,7 @@ package ns.flex.controls
 				var id:Object=ObjectUtils.getValue(value, colp.controlProps.ownerIdField);
 				ud['ownerId']=id ? (colp.controlProps.ownerIdPrefix + '_' + id) : null;
 				if (editable)
-					ObjectUtils.setValue(dgp.showItemProxy, colp.dataField,
-						{ownerId: ud['ownerId']});
+					ObjectUtils.setValue(dgp.showItemProxy, colp.dataField, ud['info']);
 			}, dgp, 'showItemProxy');
 			return ud;
 		}
