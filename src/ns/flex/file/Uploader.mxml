@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:Accordion xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:file="ns.flex.file.*"
-			  creationComplete="cc()" resizeToContent="true">
+			  resizeToContent="true">
 	<mx:Metadata>
 		[Event(name="change")]
 	</mx:Metadata>
@@ -25,8 +25,6 @@
 			[Bindable]
 			public var max_fileNumber:uint=5;
 			[Bindable]
-			private var _fileNumber:uint=0;
-			[Bindable]
 			private var _ownerId:String;
 			[Bindable]
 			private var selectValue:Boolean;
@@ -41,19 +39,27 @@
 
 			public function set destination(destination:String):void
 			{
-				service=RemoteUtil.createRemoteObject(destination, null, null, true);
+				service=
+					RemoteUtil.createRemoteObject(destination,
+					[{method: 'queryByOwner', listener: fireChange}], null, true);
 				if (_ownerId)
 					service.queryByOwner(_ownerId);
 			}
 
 			public function get fileNumber():uint
 			{
-				return _fileNumber;
+				var nums:uint=0;
+
+				eachFileItem(function(item:FileItem):void
+				{
+					nums++;
+				});
+				return nums;
 			}
 
 			public function get info():Object
 			{
-				return {fileNumber: _fileNumber, ownerId: _ownerId};
+				return {fileNumber: fileNumber, ownerId: _ownerId};
 			}
 
 			public function get ownerId():String
@@ -73,17 +79,6 @@
 					service.queryByOwner(_ownerId);
 			}
 
-			private function cc():void
-			{
-				if (service && _ownerId)
-					service.queryByOwner(_ownerId);
-			}
-
-			private function countFile(item:DisplayObject):void
-			{
-				_fileNumber++;
-			}
-
 			private function deleteSelected():void
 			{
 				eachFileItem(removeItem)
@@ -91,8 +86,8 @@
 
 			private function eachFileItem(fun:Function, includeDown:Boolean=true):void
 			{
-				if (vbox)
-					ContainerUtil.eachChild(vbox, function(item:DisplayObject):void
+				if (fileBox)
+					ContainerUtil.eachChild(fileBox, function(item:DisplayObject):void
 					{
 						if (item is FileItem)
 							fun(item)
@@ -103,6 +98,12 @@
 						if (item is FileItem)
 							fun(item)
 					})
+			}
+
+			private function fireChange(e:Event=null):void
+			{
+				trace('uploader change')
+				dispatchEvent(new Event('change'));
 			}
 
 			private function removeItem(item:FileItem):void
@@ -121,11 +122,10 @@
 				frl.addEventListener(Event.SELECT, function(e:Event):void
 				{
 					var str:String='';
-					_fileNumber=0;
-					eachFileItem(countFile);
+					var nums:uint=fileNumber;
 					for each (var file:FileReference in frl.fileList)
 					{
-						if (_fileNumber >= max_fileNumber)
+						if (nums >= max_fileNumber)
 						{
 							str=str.concat('文件数不能多于', max_fileNumber, '个\n');
 							break;
@@ -157,10 +157,9 @@
 							fileItem.fileSize=file.size;
 							fileItem.dateCreated=new Date();
 							fileItem.file=file;
-							vbox.addChild(fileItem);
+							fileBox.addChild(fileItem);
+							nums++;
 							file.load();
-							_fileNumber++;
-							dispatchEvent(new Event('change'));
 						}
 						catch (e:Error)
 						{
@@ -182,8 +181,9 @@
 	<mx:VBox label="文件上传/下载[{max_fileNumber}×{IOUtil.getFileSize(maxFileSize)}]"
 			 paddingLeft="5">
 		<file:Downloader id="downloader" service="{service}"
-						 dataProdiver="{service.queryByOwner.lastResult}" deletable="true"/>
-		<mx:VBox id="vbox"/>
+						 dataProdiver="{service.queryByOwner.lastResult}" deletable="true"
+						 resize="fireChange()"/>
+		<mx:VBox id="fileBox" resize="fireChange()"/>
 		<mx:HBox width="100%">
 			<mx:LinkButton label="全选"
 						   click="selectValue=true;eachFileItem(setSelectValue)"/>
