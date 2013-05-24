@@ -14,7 +14,8 @@
 			import ns.flex.util.MessageUtil;
 			import ns.flex.util.RemoteUtil;
 
-			public const TEMP_ID:String='TEMP_' + UIDUtil.createUID();
+			//临时id，前缀防止重复
+			public const TEMP_ID:String='T3E2M1P_' + UIDUtil.createUID();
 
 			//ex:[new FileFilter("Images", "*.jpg;*.gif;*.png"),new FileFilter("Documents", "*.pdf;*.doc;*.txt")]
 			public var fileTypeFilter:Array;
