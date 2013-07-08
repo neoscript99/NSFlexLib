@@ -15,6 +15,7 @@ package ns.flex.controls
 	import mx.containers.HBox;
 	import mx.controls.Button;
 	import mx.controls.DataGrid;
+	import mx.controls.Text;
 	import mx.controls.dataGridClasses.DataGridColumn;
 	import mx.events.DataGridEvent;
 	import mx.events.FlexEvent;
@@ -73,6 +74,8 @@ package ns.flex.controls
 		public var modifyEnabled:Boolean=false;
 		[Inspectable(category="General")]
 		public var multCreateEnabled:Boolean=false;
+		[Inspectable(category="General")]
+		public var multEditEnabled:Boolean=false;
 		[Inspectable(category="General")]
 		public var multiDelete:Boolean=true;
 		//如果有嵌套字段，排序顺序无法保证，不要使用
@@ -387,6 +390,13 @@ package ns.flex.controls
 				multCreateInput=new PopMultInput;
 				multCreateInput.addEventListener('confirm', multCreateConfirm);
 				enableMenu("批量新增", multCreate, (separatorCount++ > 0), true);
+			}
+
+			if (multEditEnabled)
+			{
+				separatorCount++;
+				multCreateInput=new PopMultInput;
+				enableMenu("批量修改", multCreate, !multCreateEnabled);
 			}
 
 			curdMenuPosition=exportMenuPosition=separatorCount;
@@ -723,12 +733,17 @@ package ns.flex.controls
 
 		private function multCreate(evt:ContextMenuEvent):void
 		{
+			var ht:String='';
+			for each (var col:Object in editableColumns)
+				ht=ht.concat(col.headerText, '\t');
+			multCreateInput.headerTexts=ht;
 			PopUpManager.addPopUp(multCreateInput, this, true)
 		}
 
 		private function multCreateConfirm(e:Event):void
 		{
 			var newList:Array=[];
+			var eCols:Array=editableColumns;
 			for each (var row:String in multCreateInput.tta.text.split(/[\r\n]/))
 			{
 				row=StringUtil.trim(row);
@@ -738,9 +753,9 @@ package ns.flex.controls
 					var newItem:Object={};
 					for (var i:String in cols)
 					{
-						if (int(i) >= editableColumns.length)
+						if (int(i) >= eCols.length)
 							break;
-						var colp:DataGridColumnPlus=editableColumns[i];
+						var colp:DataGridColumnPlus=eCols[i];
 						if (colp.dataField)
 						{
 							if (colp.asControl == 'ComboBox')

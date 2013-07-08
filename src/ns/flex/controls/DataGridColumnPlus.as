@@ -34,7 +34,7 @@ package ns.flex.controls
 		// @see TextInputPlus,TextAreaPlus,DateFieldPlus
 		private var _constraints:Object;
 		private var _multiplier:Number=1;
-		private var _percision:int;
+		private var _precision:int;
 
 		public function DataGridColumnPlus(columnName:String=null)
 		{
@@ -46,7 +46,7 @@ package ns.flex.controls
 		public static function getNumberLabel(item:Object,
 			column:DataGridColumnPlus):String
 		{
-			return StringUtil.formatNumber(column.getValue(item), column._percision,
+			return StringUtil.formatNumber(column.getValue(item), column._precision,
 				column.isSeparateThousands, column._multiplier ? column._multiplier : 1);
 		}
 
@@ -153,14 +153,14 @@ package ns.flex.controls
 			wordWrap=wordWrap; //refresh by owner.invalidateList();
 		}
 
-		public function get percision():int
+		public function get precision():int
 		{
-			return _percision;
+			return _precision;
 		}
 
-		public function set percision(p:int):void
+		public function set precision(p:int):void
 		{
-			_percision=p;
+			_precision=p;
 			asNumber=true;
 			if (!groupMethod)
 				groupMethod='sum';

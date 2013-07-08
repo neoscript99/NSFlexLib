@@ -4,9 +4,10 @@
 	<mx:Script>
 		<![CDATA[
 			import mx.binding.utils.BindingUtils;
-			import ns.flex.controls.DataGridColumnPlus;
 			import mx.charts.series.LineSeries;
+			import ns.flex.controls.DataGridColumnPlus;
 			import ns.flex.util.LabelUtil;
+
 			[Bindable]
 			public var categoryField:String='';
 			[Bindable]
@@ -41,7 +42,7 @@
 					dgc=new DataGridColumnPlus
 					dgc.dataField=s.yField
 					dgc.headerText=s.displayName
-					dgc.percision=2
+					dgc.precision=2
 					dgpColumnsTemp.push(dgc)
 				}
 				lineSeries=lineSeriesTemp

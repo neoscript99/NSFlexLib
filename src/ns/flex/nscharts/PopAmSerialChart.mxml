@@ -72,7 +72,7 @@
 					dgc=new DataGridColumnPlus
 					dgc.dataField=info.valueField
 					dgc.headerText=info.title
-					dgc.percision=2
+					dgc.precision=2
 					dgpColumns.push(dgc)
 				}
 			}
