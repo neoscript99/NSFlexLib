@@ -18,7 +18,8 @@ package ns.flex.util
 		{
 			if (fromObject)
 				for (var prop:String in fromObject)
-					if (toObject.hasOwnProperty(prop) || isDynamic)
+					if ((toObject.hasOwnProperty(prop) || isDynamic) &&
+						prop != 'mx_internal_uid') //mx_internal_uid是内部识别码，复制会有问题
 						toObject[prop]=fromObject[prop];
 		}
 

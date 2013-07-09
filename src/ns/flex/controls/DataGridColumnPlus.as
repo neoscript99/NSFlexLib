@@ -33,6 +33,7 @@ package ns.flex.controls
 		public var viewable:Boolean=true;
 		// @see TextInputPlus,TextAreaPlus,DateFieldPlus
 		private var _constraints:Object;
+		private var _multEditable:Boolean=true;
 		private var _multiplier:Number=1;
 		private var _precision:int;
 
@@ -137,6 +138,17 @@ package ns.flex.controls
 			if (value != DataGridColumnPlus.getNumberLabel && asNumber)
 				complexSort=true;
 			super.labelFunction=value;
+		}
+
+		public function get multEditable():Boolean
+		{
+			return editable && _multEditable;
+		}
+
+		[Inspectable(category="General")]
+		public function set multEditable(b:Boolean):void
+		{
+			_multEditable=b;
 		}
 
 		//乘数，显示万元、千元时有用

@@ -7,6 +7,7 @@ package ns.flex.controls
 	import mx.binding.utils.BindingUtils;
 	import mx.collections.ArrayCollection;
 	import mx.containers.FormItem;
+	import mx.containers.HBox;
 	import mx.controls.CheckBox;
 	import mx.controls.LinkButton;
 	import mx.controls.dataGridClasses.DataGridColumn;
@@ -21,9 +22,10 @@ package ns.flex.controls
 
 	public class DataColumnFormItem extends FormItem
 	{
+		public static const MULT_EDIT_FLAG:String='MULT22EDIT55COLUMN.';
 
 		public function DataColumnFormItem(dgp:DataGridPlus, col:DataGridColumn,
-			editable:Boolean)
+			editable:Boolean, multEditable:Boolean)
 		{
 			super();
 			var uic:UIComponent;
@@ -33,6 +35,7 @@ package ns.flex.controls
 			if (col is DataGridColumnPlus)
 			{
 				var colp:DataGridColumnPlus=DataGridColumnPlus(col)
+				multEditable=(editable && multEditable && colp.multEditable);
 
 				if ('CheckBox' == colp.asControl && col.dataField)
 					uic=asCheckBox(dgp, col, editable);
@@ -51,11 +54,37 @@ package ns.flex.controls
 					uic=asText(dgp, col, editable, 'TextArea' == colp.asControl);
 			}
 			else
+			{
+				multEditable=false;
 				uic=asText(dgp, col, editable);
+			}
 
 			label=StringUtil.toLine(DataGridPlus.getCleanHeader(col));
 			uic.name=label;
-			addChild(uic);
+
+			//批量修改，后面加个选择框
+			if (multEditable)
+			{
+				var mhbox:HBox=new HBox;
+				var mcb:CheckBox=new CheckBox();
+				BindingUtils.bindSetter(function(value:Boolean):void
+				{
+					//加后缀进行区别，防止冲突
+					ObjectUtils.setValue(dgp.showItemProxy,
+						MULT_EDIT_FLAG + col.dataField, value);
+					uic.enabled=value;
+				}, mcb, 'selected');
+
+				BindingUtils.bindSetter(function(value:Object):void
+				{
+					mcb.selected=false;
+				}, dgp, 'showItemProxy');
+				mhbox.addChild(uic);
+				mhbox.addChild(mcb);
+				addChild(mhbox);
+			}
+			else
+				addChild(uic);
 		}
 
 		private function asAutoComplete(dgp:DataGridPlus, colp:DataGridColumnPlus,
@@ -101,7 +130,7 @@ package ns.flex.controls
 			}, dgp, 'showItemProxy');
 
 			if (editable)
-				BindingUtils.bindSetter(function(value:String):void
+				BindingUtils.bindSetter(function(value:Boolean):void
 				{
 					ObjectUtils.setValue(dgp.showItemProxy, col.dataField, value);
 				}, cb, 'selected');

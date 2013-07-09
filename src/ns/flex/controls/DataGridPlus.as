@@ -9,13 +9,13 @@ package ns.flex.controls
 	import flash.system.System;
 	import flash.ui.ContextMenuItem;
 	import flash.utils.ByteArray;
+	import mx.binding.utils.BindingUtils;
 	import mx.collections.IList;
 	import mx.containers.Form;
 	import mx.containers.FormItem;
 	import mx.containers.HBox;
 	import mx.controls.Button;
 	import mx.controls.DataGrid;
-	import mx.controls.Text;
 	import mx.controls.dataGridClasses.DataGridColumn;
 	import mx.events.DataGridEvent;
 	import mx.events.FlexEvent;
@@ -26,6 +26,7 @@ package ns.flex.controls
 	import mx.utils.UIDUtil;
 	import ns.flex.event.MultCreateEvent;
 	import ns.flex.event.SaveItemEvent;
+	import ns.flex.event.SaveMultItemEvent;
 	import ns.flex.event.ShowItemEvent;
 	import ns.flex.popup.PopMultInput;
 	import ns.flex.support.MenuSupport;
@@ -40,6 +41,7 @@ package ns.flex.controls
 	[Event(name="createItem")]
 	[Event(name="showItem", type="ns.flex.event.ShowItemEvent")]
 	[Event(name="saveItem", type="ns.flex.event.SaveItemEvent")]
+	[Event(name="saveMultItem", type="ns.flex.event.SaveMultItemEvent")]
 	[Event(name="modifyItem")]
 	[Event(name="deleteItems")]
 	[Event(name="deleteAll")]
@@ -86,6 +88,7 @@ package ns.flex.controls
 		public var popEditing:PopWindow;
 		[Inspectable(category="General")]
 		public var popEnterSubmit:Boolean=true;
+		public var popMultEditing:PopWindow;
 		public var popTitleFunciton:Function;
 		public var popView:PopWindow;
 		//自动生成的popView和popEditing是否重用，如果字段稳定，应该重用
@@ -132,6 +135,11 @@ package ns.flex.controls
 			addEventListener(ListEvent.ITEM_ROLL_OUT, dgItemRollOut);
 			addEventListener(FlexEvent.INITIALIZE, init);
 			addEventListener(DataGridEvent.HEADER_RELEASE, onHeaderRelease);
+
+			addEventListener('resetEditItem', function(e:Event):void
+			{
+				showItemProxy=new ObjectProxy(ObjectUtil.copy(showItem));
+			});
 		}
 
 		public static function getCleanHeader(col:DataGridColumn):String
@@ -196,6 +204,8 @@ package ns.flex.controls
 		{
 			if (popEditing)
 				popEditing.close();
+			if (popMultEditing)
+				popMultEditing.close();
 
 			if (popView)
 				popView.close();
@@ -205,6 +215,8 @@ package ns.flex.controls
 		{
 			if (popEditing)
 				popEditing.closeProgress();
+			if (popMultEditing)
+				popMultEditing.closeProgress();
 		}
 
 		[Inspectable(category="Data", defaultValue="undefined")]
@@ -271,11 +283,15 @@ package ns.flex.controls
 			if (popEditing && reusePop)
 				return popEditing;
 			popEditing=initPop(true);
-			addEventListener('resetEditItem', function(e:Event):void
-			{
-				showItemProxy=new ObjectProxy(ObjectUtil.copy(showItem));
-			});
 			return popEditing;
+		}
+
+		public function initPopMultEditing():PopWindow
+		{
+			if (popMultEditing && reusePop)
+				return popMultEditing;
+			popMultEditing=initPop(true, true);
+			return popMultEditing;
 		}
 
 		public function initPopView():PopWindow
@@ -395,8 +411,10 @@ package ns.flex.controls
 			if (multEditEnabled)
 			{
 				separatorCount++;
-				multCreateInput=new PopMultInput;
-				enableMenu("批量修改", multCreate, !multCreateEnabled);
+				enableMenu("批量修改", function(evt:Event):void
+				{
+					showItemDetail(selectedItem, true, false, true);
+				}, !multCreateEnabled);
 			}
 
 			curdMenuPosition=exportMenuPosition=separatorCount;
@@ -521,7 +539,7 @@ package ns.flex.controls
 		 * @param evt
 		 */
 		public function showItemDetail(item:Object, editable:Boolean=false,
-			isClone:Boolean=false):void
+			isClone:Boolean=false, isMultEdit:Boolean=false):void
 		{
 			showItem=item;
 			showItemProxy=new ObjectProxy(ObjectUtil.copy(showItem));
@@ -530,7 +548,14 @@ package ns.flex.controls
 				showItemProxy.id=null;
 				showItemProxy[CLONE_KEY]=true;
 			}
-			if (editable)
+
+			if (editable && isMultEdit)
+			{
+				initPopMultEditing();
+				popMultEditing.show(root);
+				popMultEditing.title=String('批量修改').concat(selectedItems.length, '条记录');
+			}
+			else if (editable)
 			{
 				initPopEditing();
 				popEditing.show(root);
@@ -684,13 +709,14 @@ package ns.flex.controls
 			}
 		}
 
-		private function initPop(editable:Boolean=false):PopWindow
+		private function initPop(editable:Boolean=false,
+			multEditable:Boolean=false):PopWindow
 		{
 			var form:Form=new Form();
 			var pop:PopWindow=ContainerUtil.initPopUP('查看', form, -1, -1, 'center');
 			for each (var col:DataGridColumn in(editable ? editableColumns : viewableColumns))
 			{
-				form.addChild(new DataColumnFormItem(this, col, editable));
+				form.addChild(new DataColumnFormItem(this, col, editable, multEditable));
 			}
 
 			if (editable)
@@ -699,15 +725,20 @@ package ns.flex.controls
 				var hbox:HBox=new HBox;
 				var saveButton:Button=new Button();
 				saveButton.label='保存';
+				saveButton.name=multEditable ? 'saveMultItem' : 'saveItem'
+
 				var submit:Function=function(e:Event):void
 				{
 					if (!ContainerUtil.validate(form))
 					{
-						popEditing.playShake();
+						pop.playShake();
 						return;
 					}
-					popEditing.showProgress();
-					dispatchEvent(new SaveItemEvent(showItemProxy));
+					pop.showProgress();
+					if (saveButton.name == 'saveItem')
+						dispatchEvent(new SaveItemEvent(showItemProxy));
+					else
+						multEditFire();
 				}
 				saveButton.addEventListener('click', submit);
 				if (popEnterSubmit)
@@ -722,6 +753,35 @@ package ns.flex.controls
 				hbox.addChild(resetButton);
 				buttonItem.addChild(hbox);
 				form.addChild(buttonItem);
+			}
+			else
+			{
+				var naviItem:FormItem=new FormItem();
+				var navibox:HBox=new HBox;
+				var postButton:Button=new Button();
+				postButton.label='上一个';
+				postButton.addEventListener('click', function(e:Event):void
+				{
+					selectedIndex--;
+					showItemDetail(selectedItem, false);
+				});
+				var nextButton:Button=new Button();
+				nextButton.label='下一个';
+				nextButton.addEventListener('click', function(e:Event):void
+				{
+					selectedIndex++;
+					showItemDetail(selectedItem, false);
+				});
+				BindingUtils.bindSetter(function(value:int):void
+				{
+					postButton.enabled=(value > 0);
+					nextButton.enabled=(value < dataProvider.length - 1);
+				}, this, 'selectedIndex');
+
+				navibox.addChild(postButton);
+				navibox.addChild(nextButton);
+				naviItem.addChild(navibox);
+				form.addChild(naviItem);
 			}
 			return pop;
 		}
@@ -782,6 +842,33 @@ package ns.flex.controls
 			if (newList.length > 0)
 				dispatchEvent(new MultCreateEvent(newList));
 			PopUpManager.removePopUp(multCreateInput);
+		}
+
+		private function multEditFire():void
+		{
+			var newItem:Object={};
+			for each (var colp:DataGridColumnPlus in editableColumns)
+			{
+				if (colp.dataField && colp.multEditable &&
+					ObjectUtils.getValue(showItemProxy,
+					DataColumnFormItem.MULT_EDIT_FLAG + colp.dataField))
+				{
+					if (colp.asControl == 'ComboBox' && !colp.controlProps.dataField)
+					{
+						var f:String=colp.dataField.split('.')[0];
+						newItem[f]=showItemProxy[f];
+					}
+					else
+						ObjectUtils.setValue(newItem, colp.dataField,
+							ObjectUtils.getValue(showItemProxy, colp.dataField));
+				}
+			}
+
+			var sis:Array=[];
+			for each (var it:Object in selectedItems)
+				sis.push(ObjectUtils.mergeObject(it, newItem));
+
+			dispatchEvent(new SaveMultItemEvent(sis));
 		}
 
 		private function onHeaderRelease(event:DataGridEvent):void
