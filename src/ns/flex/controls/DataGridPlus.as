@@ -571,7 +571,7 @@ package ns.flex.controls
 			else
 			{
 				initPopView()
-				popView.show(root);
+				popView.show(root, false);
 			}
 			dispatchEvent(new ShowItemEvent(item, editable,
 				editable ? popEditing : popView));

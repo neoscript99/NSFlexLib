@@ -12,7 +12,7 @@
 			private const info:String='按上面顺序输入多行记录，用逗号或制表符分隔各列(可以从Excel复制粘贴)。';
 		]]>
 	</mx:Script>
-	<mx:TextInput text="{headerTexts}" enabled="false" width="{tta.width}"/>
+	<mx:Label text="{headerTexts}" fontWeight="bold" width="{tta.width}"/>
 	<mx:TextArea id="tta" width="320" height="100%" toolTip="{info}"/>
 	<mx:ControlBar horizontalAlign="right">
 		<mx:Button label="确认" click="dispatchEvent(new Event('confirm'))"/>
