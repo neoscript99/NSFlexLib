@@ -11,6 +11,7 @@ package ns.flex.controls
 	import flash.utils.ByteArray;
 	import mx.binding.utils.BindingUtils;
 	import mx.collections.IList;
+	import mx.containers.ControlBar;
 	import mx.containers.Form;
 	import mx.containers.FormItem;
 	import mx.containers.HBox;
@@ -756,8 +757,8 @@ package ns.flex.controls
 			}
 			else
 			{
-				var naviItem:FormItem=new FormItem();
-				var navibox:HBox=new HBox;
+				var naviBar:ControlBar=new ControlBar;
+				naviBar.setStyle('horizontalAlign', 'center')
 				var postButton:Button=new Button();
 				postButton.label='上一个';
 				postButton.addEventListener('click', function(e:Event):void
@@ -778,10 +779,9 @@ package ns.flex.controls
 					nextButton.enabled=(value < dataProvider.length - 1);
 				}, this, 'selectedIndex');
 
-				navibox.addChild(postButton);
-				navibox.addChild(nextButton);
-				naviItem.addChild(navibox);
-				form.addChild(naviItem);
+				naviBar.addChild(postButton);
+				naviBar.addChild(nextButton);
+				pop.addChild(naviBar);
 			}
 			return pop;
 		}
