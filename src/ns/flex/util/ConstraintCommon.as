@@ -3,6 +3,12 @@ package ns.flex.util
 
 	public class ConstraintCommon
 	{
+		public static const ID_CARD_EXP:String=
+			'^[1-9][0-7]\\d{4}(18|19|20)?\\d{2}(0[1-9]|1[012]])[0-3]\\d\\d{3}(\\d|X|x)?$';
+		public static const ID_CARD_NO:Object=
+			{noSpace: true, expression: ID_CARD_EXP, required: true, imeDisabled: true,
+				restrict: '0-9X', maxChars: 18};
+
 		public static const account:Object=
 			{expression: "\\w{2}", required: true, noSpace: true, imeDisabled: true,
 				restrict: '0-9A-Za-z_'}

@@ -759,6 +759,8 @@ package ns.flex.controls
 			{
 				var naviBar:ControlBar=new ControlBar;
 				naviBar.setStyle('horizontalAlign', 'center')
+				naviBar.setStyle('paddingTop', 6)
+				naviBar.setStyle('paddingBottom', 6)
 				var postButton:Button=new Button();
 				postButton.label='上一个';
 				postButton.addEventListener('click', function(e:Event):void

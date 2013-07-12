@@ -76,6 +76,17 @@ package ns.flex.util
 				return _timeFormatter.format(item);
 		}
 
+		public static function isLeapYear(nFullYear:Number):Boolean
+		{
+			if (0 == (nFullYear % 400))
+				return true;
+			if (0 == (nFullYear % 100))
+				return false;
+			if (0 == (nFullYear % 4))
+				return true;
+			return false;
+		}
+
 		public static function shiftDays(date:Date, value:int):Date
 		{
 			return new Date(date.getTime() + value * millisecondsPerDay);
