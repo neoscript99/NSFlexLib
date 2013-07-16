@@ -24,11 +24,12 @@ package ns.flex.controls
 	{
 		public static const MULT_EDIT_FLAG:String='MULT22EDIT55COLUMN.';
 
+		private var _component:UIComponent;
+
 		public function DataColumnFormItem(dgp:DataGridPlus, col:DataGridColumn,
 			editable:Boolean, multEditable:Boolean)
 		{
 			super();
-			var uic:UIComponent;
 			percentWidth=100;
 			editable=(editable && col.dataField);
 
@@ -38,30 +39,29 @@ package ns.flex.controls
 				multEditable=(editable && multEditable && colp.multEditable);
 
 				if ('CheckBox' == colp.asControl && col.dataField)
-					uic=asCheckBox(dgp, col, editable);
+					_component=asCheckBox(dgp, col, editable);
 				else if ('ComboBox' == colp.asControl && editable)
-					uic=asComboBox(dgp, colp);
+					_component=asComboBox(dgp, colp);
 				else if ('AutoComplete' == colp.asControl)
-					uic=asAutoComplete(dgp, colp, editable);
+					_component=asAutoComplete(dgp, colp, editable);
 				else if ('LinkButton' == colp.asControl && !editable)
-					uic=asLinkButton(dgp, colp);
+					_component=asLinkButton(dgp, colp);
 				else if ('Uploader' == colp.asControl)
-					uic=asUploader(dgp, colp, editable);
+					_component=asUploader(dgp, colp, editable);
 				else if (('DateField' == colp.asControl || 'DateString' == colp.asControl) &&
 					editable)
-					uic=asDateField(dgp, colp);
+					_component=asDateField(dgp, colp);
 				else
-					uic=asText(dgp, col, editable, 'TextArea' == colp.asControl);
+					_component=asText(dgp, col, editable, 'TextArea' == colp.asControl);
 			}
 			else
 			{
 				multEditable=false;
-				uic=asText(dgp, col, editable);
+				_component=asText(dgp, col, editable);
 			}
 
 			label=StringUtil.toLine(DataGridPlus.getCleanHeader(col));
-			uic.name=label;
-
+			_component.name=label;
 			//批量修改，后面加个选择框
 			if (multEditable)
 			{
@@ -72,19 +72,24 @@ package ns.flex.controls
 					//加后缀进行区别，防止冲突
 					ObjectUtils.setValue(dgp.showItemProxy,
 						MULT_EDIT_FLAG + col.dataField, value);
-					uic.enabled=value;
+					_component.enabled=value;
 				}, mcb, 'selected');
 
 				BindingUtils.bindSetter(function(value:Object):void
 				{
 					mcb.selected=false;
 				}, dgp, 'showItemProxy');
-				mhbox.addChild(uic);
+				mhbox.addChild(_component);
 				mhbox.addChild(mcb);
 				addChild(mhbox);
 			}
 			else
-				addChild(uic);
+				addChild(_component);
+		}
+
+		public function get component():UIComponent
+		{
+			return _component;
 		}
 
 		private function asAutoComplete(dgp:DataGridPlus, colp:DataGridColumnPlus,

@@ -52,6 +52,10 @@ package ns.flex.controls
 	{
 		public static const CLONE_KEY:String='ObjectCreateByClone';
 
+		public var appBar:AppBarPlus;
+		[Inspectable(category="General")]
+		public var appBarSearchEnabled:Boolean=false;
+
 		[Inspectable(category="General")]
 		public var cloneEnabled:Boolean=false;
 
@@ -114,6 +118,7 @@ package ns.flex.controls
 		 * @default
 		 */
 		private var _menuEnableChecker:Function;
+		private var _showItem:Object;
 		private var curdMenuPosition:int;
 		private var exportMenuPosition:int;
 		private var indexColumn:DataGridColumnPlus;
@@ -122,7 +127,6 @@ package ns.flex.controls
 		private var multCreateInput:PopMultInput;
 		private var orderList:ArrayCollectionPlus=new ArrayCollectionPlus();
 		private var replacableDoubleClickHandler:Function;
-		private var showItem:Object;
 
 		public function DataGridPlus()
 		{
@@ -139,7 +143,7 @@ package ns.flex.controls
 
 			addEventListener('resetEditItem', function(e:Event):void
 			{
-				showItemProxy=new ObjectProxy(ObjectUtil.copy(showItem));
+				showItemProxy=new ObjectProxy(ObjectUtil.copy(_showItem));
 			});
 		}
 
@@ -418,6 +422,15 @@ package ns.flex.controls
 				}, !multCreateEnabled);
 			}
 
+			if (appBarSearchEnabled)
+			{
+				separatorCount++;
+				enableMenu("查询相似", function(evt:Event):void
+				{
+					appBar.searchItem=selectedItem;
+				}, true);
+			}
+
 			curdMenuPosition=exportMenuPosition=separatorCount;
 			if (copyToExcelEnabled)
 			{
@@ -535,6 +548,13 @@ package ns.flex.controls
 				selectedItem.uniqueIdForSumItem == uid) ? null : selectedItem;
 		}
 
+		public function set showItem(o:Object):void
+		{
+
+			_showItem=o;
+			showItemProxy=new ObjectProxy(ObjectUtil.copy(_showItem));
+		}
+
 		/**
 		 * 生成默认的详细对话框
 		 * @param evt
@@ -543,7 +563,6 @@ package ns.flex.controls
 			isClone:Boolean=false, isMultEdit:Boolean=false):void
 		{
 			showItem=item;
-			showItemProxy=new ObjectProxy(ObjectUtil.copy(showItem));
 			if (isClone)
 			{
 				showItemProxy.id=null;
@@ -560,9 +579,9 @@ package ns.flex.controls
 			{
 				initPopEditing();
 				popEditing.show(root);
-				if (showItem)
+				if (_showItem)
 					popEditing.title=
-						(isClone ? '克隆' : '修改') + (popTitleFunciton ? ' ' + popTitleFunciton(showItem) : '');
+						(isClone ? '克隆' : '修改') + (popTitleFunciton ? ' ' + popTitleFunciton(_showItem) : '');
 				else
 				{
 					popEditing.title='新增';
@@ -813,9 +832,9 @@ package ns.flex.controls
 				{
 					var cols:Array=row.split(/[\t|\,]/);
 					var newItem:Object={};
-					for (var i:String in cols)
+					for (var i:int=0; i <= cols.length; i++)
 					{
-						if (int(i) >= eCols.length)
+						if (i >= eCols.length)
 							break;
 						var colp:DataGridColumnPlus=eCols[i];
 						if (colp.dataField)
@@ -833,6 +852,9 @@ package ns.flex.controls
 								}
 								newItem[colp.dataField.split('.')[0]]=inBox;
 							}
+							else if (colp.asControl == 'CheckBox')
+								ObjectUtils.setValue(newItem, colp.dataField,
+									(cols[i] != 'false' && cols[i] != '0'));
 							else
 								ObjectUtils.setValue(newItem, colp.dataField,
 									StringUtil.trim(cols[i]));

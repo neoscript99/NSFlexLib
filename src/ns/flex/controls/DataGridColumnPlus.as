@@ -15,7 +15,7 @@ package ns.flex.controls
 	 */
 	public class DataGridColumnPlus extends DataGridColumn
 	{
-		[Inspectable(enumeration="Text,TextArea,CheckBox,DateString,AutoComplete,LinkButton,Uploader",
+		[Inspectable(enumeration="Text,TextArea,CheckBox,DateField,DateString,AutoComplete,LinkButton,Uploader",
 			defaultValue="Text", category="General")]
 		public var asControl:String='Text';
 		[Inspectable(category="General")]
@@ -26,6 +26,10 @@ package ns.flex.controls
 		public var groupMethod:String;
 		[Inspectable(category="General")]
 		public var isSeparateThousands:Boolean=true;
+		[Inspectable(enumeration="equal,%like%,like%,%like", defaultValue="none",
+			category="General")]
+		public var searchMethod:String='none';
+		public var searchControlIndex:int=-1;
 		//use for set visiable,not work if is '*ignore*'
 		public var type:String;
 		//能否显示在datagrid的view pop中
