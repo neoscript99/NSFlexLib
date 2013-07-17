@@ -2,8 +2,11 @@ package ns.flex.util
 {
 	import flash.display.DisplayObject;
 	import flash.events.Event;
+	
 	import mx.rpc.events.ResultEvent;
 	import mx.rpc.remoting.mxml.RemoteObject;
+	
+	import ns.flex.common.Messages;
 	import ns.flex.controls.ProgressBox;
 
 	public class DictManager
@@ -79,7 +82,7 @@ package ns.flex.util
 				if (labelField && (withAll || withAskToChoose))
 				{
 					var first:Object={};
-					first[labelField]=withAll ? '全部' : '请选择';
+					first[labelField]=withAll ? Messages.ALL : Messages.ASK_TO_CHOOSE;
 					listMap[key]=
 						ArrayCollectionPlus.withFirst(_dictionaryService.getOperation(operationName).lastResult,
 						first);

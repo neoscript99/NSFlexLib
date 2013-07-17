@@ -132,6 +132,7 @@ package ns.flex.controls
 			BindingUtils.bindSetter(function(value:Object):void
 			{
 				cb.selected=value[col.dataField];
+				value[col.dataField]=cb.selected;
 			}, dgp, 'showItemProxy');
 
 			if (editable)

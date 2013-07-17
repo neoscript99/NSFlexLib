@@ -1,6 +1,8 @@
 package ns.flex.util
 {
 	import mx.collections.ArrayCollection;
+	
+	import ns.flex.common.Messages;
 
 	/**
 	 * 集合类
@@ -19,7 +21,7 @@ package ns.flex.util
 			labelField:String):ArrayCollectionPlus
 		{
 			var all:Object={}
-			all[labelField]='全部';
+			all[labelField]=Messages.ALL;
 			return withFirst(source, all);
 		}
 
