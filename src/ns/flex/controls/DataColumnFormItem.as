@@ -14,6 +14,7 @@ package ns.flex.controls
 	import mx.core.UIComponent;
 	import mx.rpc.events.ResultEvent;
 	import mx.rpc.remoting.mxml.Operation;
+	import ns.flex.common.Constants;
 	import ns.flex.file.Downloader;
 	import ns.flex.file.Uploader;
 	import ns.flex.util.DateUtil;
@@ -22,8 +23,6 @@ package ns.flex.controls
 
 	public class DataColumnFormItem extends FormItem
 	{
-		public static const MULT_EDIT_FLAG:String='MULT22EDIT55COLUMN.';
-
 		private var _component:UIComponent;
 
 		public function DataColumnFormItem(dgp:DataGridPlus, col:DataGridColumn,
@@ -71,7 +70,7 @@ package ns.flex.controls
 				{
 					//加后缀进行区别，防止冲突
 					ObjectUtils.setValue(dgp.showItemProxy,
-						MULT_EDIT_FLAG + col.dataField, value);
+						Constants.MULT_EDIT_FLAG + col.dataField, value);
 					_component.enabled=value;
 				}, mcb, 'selected');
 
@@ -272,7 +271,8 @@ package ns.flex.controls
 				ud=up;
 				up.addEventListener('change', function(e:Event):void
 				{
-					ObjectUtils.setValue(dgp.showItemProxy, colp.dataField, up.info);
+					ObjectUtils.setValue(dgp.showItemProxy, Constants.ATTACH_INFO_FIELD,
+						up.info);
 				});
 				ObjectUtils.copyProperties(ud, colp.controlProps);
 			}
@@ -282,7 +282,7 @@ package ns.flex.controls
 			BindingUtils.bindSetter(function(value:Object):void
 			{
 				var id:Object=ObjectUtils.getValue(value, colp.controlProps.ownerIdField);
-				ud['ownerId']=id ? (colp.controlProps.ownerIdPrefix + '_' + id) : null;
+				ud['ownerId']=id ? id : null;
 			}, dgp, 'showItemProxy');
 			return ud;
 		}

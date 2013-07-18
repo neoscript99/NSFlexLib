@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:net="flash.net.*"
-		 xmlns:utils="flash.utils.*" creationComplete="cc()">
+		 xmlns:utils="flash.utils.*" creationComplete="cc()" removedFromStage="destory()">
 	<mx:Script>
 		<![CDATA[
 			import mx.controls.Alert;
@@ -35,7 +35,7 @@
 			 * must has these methods:
 			 *     upload(String fileName,byte[] data,String uid)
 			 *     download(String uid)
-			 *     remove(String uid)
+			 *     removeAttach(String uid)
 			 */
 			private var _service:RemoteObject;
 
@@ -55,7 +55,7 @@
 					if (status == 'uploadStart')
 						_service.getOperation('upload').cancel();
 					status='deleted';
-					_service.remove(fileId);
+					_service.removeAttach(fileId);
 				}
 				parent.removeChild(this);
 			}
@@ -64,28 +64,28 @@
 			{
 				_service=s;
 				_service.getOperation('upload').addEventListener(ResultEvent.RESULT,
-					function(e:ResultEvent):void
-				{
-					if (e.result == fileId)
-					{
-						status='uploadComplete';
-						labelBox.setStyle('backgroundColor', 0xB8F88D);
-					}
-				});
+					afterUpload);
 				_service.getOperation('download').addEventListener(ResultEvent.RESULT,
-					function(e:ResultEvent):void
-				{
-					if (e.result.fileId == fileId)
-					{
-						progressBox.close();
-						IOUtil.saveFileWithAlert(e.result.data, e.result.name,
-							Sprite(parent));
-					}
-				});
-				_service.addEventListener(FaultEvent.FAULT, function(e:FaultEvent):void
+					afterDownload);
+				_service.addEventListener(FaultEvent.FAULT, onFault)
+			}
+
+			private function afterDownload(e:ResultEvent):void
+			{
+				if (e.result.fileId == fileId)
 				{
 					progressBox.close();
-				})
+					IOUtil.saveFileWithAlert(e.result.data, e.result.name, Sprite(parent));
+				}
+			}
+
+			private function afterUpload(e:ResultEvent):void
+			{
+				if (e.result == fileId)
+				{
+					status='uploadComplete';
+					labelBox.setStyle('backgroundColor', 0xB8F88D);
+				}
 			}
 
 			private function cc():void
@@ -97,10 +97,24 @@
 				}
 			}
 
+			private function destory():void
+			{
+				_service.getOperation('upload').removeEventListener(ResultEvent.RESULT,
+					afterUpload);
+				_service.getOperation('download').removeEventListener(ResultEvent.RESULT,
+					afterDownload);
+				_service.removeEventListener(FaultEvent.FAULT, onFault)
+			}
+
 			private function download():void
 			{
 				progressBox.show(parent);
 				_service.download(fileId);
+			}
+
+			private function onFault(e:FaultEvent):void
+			{
+				progressBox.close();
 			}
 
 			private function upload():void

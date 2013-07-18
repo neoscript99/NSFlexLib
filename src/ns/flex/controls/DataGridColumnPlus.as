@@ -4,6 +4,7 @@ package ns.flex.controls
 	import mx.controls.dataGridClasses.DataGridColumn;
 	import mx.core.ClassFactory;
 	import mx.utils.ObjectUtil;
+	import ns.flex.common.Constants;
 	import ns.flex.util.DateUtil;
 	import ns.flex.util.ObjectUtils;
 	import ns.flex.util.StringUtil;
@@ -26,10 +27,10 @@ package ns.flex.controls
 		public var groupMethod:String;
 		[Inspectable(category="General")]
 		public var isSeparateThousands:Boolean=true;
+		public var searchControlIndex:int=-1;
 		[Inspectable(enumeration="equal,%like%,like%,%like", defaultValue="none",
 			category="General")]
 		public var searchMethod:String='none';
-		public var searchControlIndex:int=-1;
 		//use for set visiable,not work if is '*ignore*'
 		public var type:String;
 		//能否显示在datagrid的view pop中

@@ -3,12 +3,14 @@ package ns.flex.controls
 	import com.as3xls.xls.Cell;
 	import com.as3xls.xls.ExcelFile;
 	import com.as3xls.xls.Sheet;
+	
 	import flash.events.ContextMenuEvent;
 	import flash.events.Event;
 	import flash.net.FileFilter;
 	import flash.system.System;
 	import flash.ui.ContextMenuItem;
 	import flash.utils.ByteArray;
+	
 	import mx.binding.utils.BindingUtils;
 	import mx.collections.IList;
 	import mx.containers.ControlBar;
@@ -25,6 +27,8 @@ package ns.flex.controls
 	import mx.utils.ObjectProxy;
 	import mx.utils.ObjectUtil;
 	import mx.utils.UIDUtil;
+	
+	import ns.flex.common.Constants;
 	import ns.flex.event.MultCreateEvent;
 	import ns.flex.event.SaveItemEvent;
 	import ns.flex.event.SaveMultItemEvent;
@@ -875,7 +879,7 @@ package ns.flex.controls
 			{
 				if (colp.dataField && colp.multEditable &&
 					ObjectUtils.getValue(showItemProxy,
-					DataColumnFormItem.MULT_EDIT_FLAG + colp.dataField))
+					Constants.MULT_EDIT_FLAG + colp.dataField))
 				{
 					if (colp.asControl == 'ComboBox' && !colp.controlProps.dataField)
 					{
