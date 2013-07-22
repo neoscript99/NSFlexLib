@@ -271,8 +271,7 @@ package ns.flex.controls
 				ud=up;
 				up.addEventListener('change', function(e:Event):void
 				{
-					ObjectUtils.setValue(dgp.showItemProxy, Constants.ATTACH_INFO_FIELD,
-						up.info);
+					ObjectUtils.setValue(dgp.showItemProxy, colp.dataField, up.info);
 				});
 				ObjectUtils.copyProperties(ud, colp.controlProps);
 			}

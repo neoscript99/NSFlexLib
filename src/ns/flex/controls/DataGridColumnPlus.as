@@ -16,7 +16,8 @@ package ns.flex.controls
 	 */
 	public class DataGridColumnPlus extends DataGridColumn
 	{
-		[Inspectable(enumeration="Text,TextArea,CheckBox,DateField,DateString,AutoComplete,LinkButton,Uploader",
+		//部分不可选择，通过单独方法操作，如asAutoComplete、asComboBox
+		[Inspectable(enumeration="Text,TextArea,CheckBox,DateString,LinkButton",
 			defaultValue="Text", category="General")]
 		public var asControl:String='Text';
 		[Inspectable(category="General")]
@@ -61,6 +62,7 @@ package ns.flex.controls
 		{
 			asControl='AutoComplete';
 			controlProps=props;
+			visible=false;
 		}
 
 		/**
@@ -89,6 +91,14 @@ package ns.flex.controls
 		}
 
 		[Inspectable(category="General")]
+		public function set asLabelInput(props:Object):void
+		{
+			asAutoComplete=props;
+			//标签，使用固定field
+			dataField=Constants.LABEL_FIELD;
+		}
+
+		[Inspectable(category="General")]
 		public function set asTime(b:Boolean):void
 		{
 			if (b)
@@ -102,6 +112,8 @@ package ns.flex.controls
 		public function set asUploader(props:Object):void
 		{
 			asControl='Uploader';
+			dataField=Constants.ATTACH_INFO_FIELD;
+			visible=false;
 			/*{ownerIdField:'附件所属对象ID',
 			   ownerIdPrefix:'ID前缀，防止重复',
 			   destination:'attachmentService',
