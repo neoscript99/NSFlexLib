@@ -22,11 +22,11 @@
 			//ex:[new FileFilter("Images", "*.jpg;*.gif;*.png"),new FileFilter("Documents", "*.pdf;*.doc;*.txt")]
 			public var fileTypeFilter:Array;
 			[Bindable]
+			public var maxFileNumber:uint=5;
+			[Bindable]
 			public var maxFileSize:uint=1024 * 1024 * 10;
 			[Bindable]
 			public var maxNameLength:uint=128;
-			[Bindable]
-			public var max_fileNumber:uint=5;
 			[Bindable]
 			private var _ownerId:String;
 			[Bindable]
@@ -128,9 +128,9 @@
 					var nums:uint=fileNumber;
 					for each (var file:FileReference in frl.fileList)
 					{
-						if (nums >= max_fileNumber)
+						if (nums >= maxFileNumber)
 						{
-							str=str.concat('文件数不能多于', max_fileNumber, '个\n');
+							str=str.concat('文件数不能多于', maxFileNumber, '个\n');
 							break;
 						}
 						try
@@ -181,7 +181,7 @@
 			}
 		]]>
 	</mx:Script>
-	<mx:VBox label="文件上传/下载[{max_fileNumber}×{IOUtil.getFileSize(maxFileSize)}]"
+	<mx:VBox label="文件上传/下载[{maxFileNumber}×{IOUtil.getFileSize(maxFileSize)}]"
 			 paddingLeft="5">
 		<file:Downloader id="downloader" service="{service}"
 						 dataProdiver="{service.queryAttachByOwner.lastResult}"

@@ -21,8 +21,8 @@
 			[Bindable("change")]
 			public function get monthLabel():String
 			{
-				return String(yearSelect.selectedItem).concat('年',
-					monthSelect.selectedItem, '月');
+				return yearSelect ? String(yearSelect.selectedItem).concat('年',
+					monthSelect.selectedItem, '月') : '';
 			}
 
 			private function init():void
