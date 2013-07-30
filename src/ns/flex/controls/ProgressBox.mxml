@@ -13,7 +13,8 @@
 
 			public function show(parent:DisplayObject):void
 			{
-				PopUpManager.addPopUp(this, parent, true);
+				if (!this.isPopUp)
+					PopUpManager.addPopUp(this, parent, true);
 			}
 
 			private function cc():void

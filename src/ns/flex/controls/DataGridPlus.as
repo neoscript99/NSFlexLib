@@ -3,14 +3,12 @@ package ns.flex.controls
 	import com.as3xls.xls.Cell;
 	import com.as3xls.xls.ExcelFile;
 	import com.as3xls.xls.Sheet;
-	
 	import flash.events.ContextMenuEvent;
 	import flash.events.Event;
 	import flash.net.FileFilter;
 	import flash.system.System;
 	import flash.ui.ContextMenuItem;
 	import flash.utils.ByteArray;
-	
 	import mx.binding.utils.BindingUtils;
 	import mx.collections.IList;
 	import mx.containers.ControlBar;
@@ -27,7 +25,6 @@ package ns.flex.controls
 	import mx.utils.ObjectProxy;
 	import mx.utils.ObjectUtil;
 	import mx.utils.UIDUtil;
-	
 	import ns.flex.common.Constants;
 	import ns.flex.event.MultCreateEvent;
 	import ns.flex.event.SaveItemEvent;
@@ -789,14 +786,14 @@ package ns.flex.controls
 				postButton.addEventListener('click', function(e:Event):void
 				{
 					selectedIndex--;
-					showItemDetail(selectedItem, false);
+					showItem=selectedItem;
 				});
 				var nextButton:Button=new Button();
 				nextButton.label='下一个';
 				nextButton.addEventListener('click', function(e:Event):void
 				{
 					selectedIndex++;
-					showItemDetail(selectedItem, false);
+					showItem=selectedItem;
 				});
 				BindingUtils.bindSetter(function(value:int):void
 				{

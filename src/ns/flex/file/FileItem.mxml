@@ -13,6 +13,7 @@
 			import ns.flex.util.MessageUtil;
 
 			private static var progressBox:ProgressBox=new ProgressBox;
+			private static var progressCount:int=0;
 
 			[Bindable]
 			public var _file:FileReference;
@@ -83,6 +84,9 @@
 			{
 				if (e.result == fileId)
 				{
+					progressCount--;
+					if (progressCount <= 0)
+						progressBox.close();
 					status='uploadComplete';
 					labelBox.setStyle('backgroundColor', 0xB8F88D);
 				}
@@ -121,6 +125,8 @@
 			{
 				if (status == 'init')
 				{
+					progressCount++;
+					progressBox.show(parent);
 					status='uploadStart';
 					_service.upload(fileName, _file.data, fileId, ownerId);
 				}
