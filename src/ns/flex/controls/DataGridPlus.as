@@ -302,8 +302,13 @@ package ns.flex.controls
 
 		public function initPopView():PopWindow
 		{
-			if (popView && reusePop)
-				return popView;
+			if (popView)
+			{
+				if (reusePop)
+					return popView;
+				else
+					popView.close();
+			}
 			popView=initPop(false);
 			return popView;
 		}
