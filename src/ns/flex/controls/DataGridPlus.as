@@ -790,21 +790,17 @@ package ns.flex.controls
 				postButton.label='上一个';
 				postButton.addEventListener('click', function(e:Event):void
 				{
-					selectedIndex--;
+					selectedIndex=
+						(selectedIndex - 1 + dataProvider.length) % dataProvider.length;
 					showItem=selectedItem;
 				});
 				var nextButton:Button=new Button();
 				nextButton.label='下一个';
 				nextButton.addEventListener('click', function(e:Event):void
 				{
-					selectedIndex++;
+					selectedIndex=(selectedIndex + 1) % dataProvider.length;
 					showItem=selectedItem;
 				});
-				BindingUtils.bindSetter(function(value:int):void
-				{
-					postButton.enabled=(value > 0);
-					nextButton.enabled=(value < dataProvider.length - 1);
-				}, this, 'selectedIndex');
 
 				naviBar.addChild(postButton);
 				naviBar.addChild(nextButton);
