@@ -3,9 +3,10 @@
 		  height="400" xmlns:controls="ns.flex.controls.*">
 	<mx:Script>
 		<![CDATA[
-			import ns.flex.controls.DataGridColumnPlus;
 			import mx.charts.series.ColumnSeries;
+			import ns.flex.controls.DataGridColumnPlus;
 			import ns.flex.util.LabelUtil;
+
 			[Bindable]
 			public var categoryField:String;
 			[Bindable]
@@ -47,17 +48,20 @@
 	</mx:Script>
 	<mx:TabNavigator id="tn" width="100%" height="100%" paddingLeft="5" paddingBottom="5">
 		<mx:HBox horizontalAlign="center" width="100%" height="100%" label="图形">
-			<mx:ColumnChart id="columnChart" dataProvider="{chartData}" showDataTips="true"
-							height="100%" width="100%" series="{colSeries}">
+			<mx:ColumnChart id="columnChart" dataProvider="{chartData}"
+							showDataTips="true" height="100%" width="100%"
+							series="{colSeries}">
 				<mx:horizontalAxis>
 					<mx:CategoryAxis id="columnAxis" dataProvider="{chartData}"
-									 categoryField="{categoryField}" displayName="{categoryName}"/>
+									 categoryField="{categoryField}"
+									 displayName="{categoryName}"/>
 				</mx:horizontalAxis>
 			</mx:ColumnChart>
 			<LegendBox chart="{columnChart}" fileName="{title}"/>
 		</mx:HBox>
-		<mx:VBox label="数据" enabled="{showData}" height="100%">
-			<controls:DataGridPlus dataProvider="{chartData}" height="100%" columns="{dgpColumns}"/>
-		</mx:VBox>
+		<mx:HBox id="dataBox" label="数据" enabled="{showData}" height="100%">
+			<controls:DataGridPlus dataProvider="{chartData}" height="100%"
+								   columns="{dgpColumns}"/>
+		</mx:HBox>
 	</mx:TabNavigator>
 </PopChart>
