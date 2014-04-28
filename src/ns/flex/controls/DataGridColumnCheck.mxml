@@ -44,6 +44,18 @@
 				rp.dataProvider=typeList
 			}
 
+			public function selectByLabel(label:String):void
+			{
+				dgp.popView=null;
+				showAll.selected=true;
+				for each (var type:Object in typeList)
+				{
+					type.selected=(String(type.label).indexOf(label) > -1);
+					if (type.selected == false)
+						showAll.selected=false;
+				}
+			}
+
 			private function select(item:Object):void
 			{
 				dgp.popView=null;
