@@ -251,8 +251,10 @@ package ns.flex.controls
 			if (editable)
 				BindingUtils.bindSetter(function(value:String):void
 				{
+					var nv:Number=StringUtil.parseNumber(value);
+					//NaN传到后台无法处理，改为传null
 					ObjectUtils.setValue(dgp.showItemProxy, col.dataField,
-						col['asNumber'] ? Number(value) : value);
+						col['asNumber'] ? (isNaN(nv) ? null : nv) : value);
 					var head:String=StringUtil.toLine(DataGridPlus.getCleanHeader(col));
 					label=
 						textInput['maxChars'] ? head.concat('(', textInput['remainSize'],

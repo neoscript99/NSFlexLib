@@ -77,9 +77,27 @@ package ns.flex.util
 				return value;
 		}
 
+		/**
+		 * Number置为null自动转为0，如果希望返回0只能设为NaN
+		 * 测试案例：
+		 *
+				var s1:String=null;
+				trace('null:', StringUtil.parseNumber(s1));
+				var s1:String='';
+				trace('empty:', StringUtil.parseNumber(s1));
+				var s1:String='113,33';
+				trace('逗号:', StringUtil.parseNumber(s1));
+				var s1:String='113,a33';
+				trace('英文:', StringUtil.parseNumber(s1));
+		 * @param str
+		 * @return
+		 */
 		public static function parseNumber(str:String):Number
 		{
-			return Number(str ? str.replace(/\,/g, '') : str);
+			if (str == null || str.length == 0)
+				return NaN;
+
+			return Number(str.replace(/\,/g, ''));
 		}
 
 		public static function removeSpace(str:String):String
