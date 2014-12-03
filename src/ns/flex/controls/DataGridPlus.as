@@ -9,7 +9,6 @@ package ns.flex.controls
 	import flash.system.System;
 	import flash.ui.ContextMenuItem;
 	import flash.utils.ByteArray;
-	import mx.binding.utils.BindingUtils;
 	import mx.collections.IList;
 	import mx.containers.ControlBar;
 	import mx.containers.Form;
@@ -817,8 +816,12 @@ package ns.flex.controls
 		private function multCreate(evt:ContextMenuEvent):void
 		{
 			var ht:String='';
-			for each (var col:Object in editableColumns)
-				ht=ht.concat(col.headerText, '\t');
+			editableColumns.forEach(function(col:*, index:int, array:Array):void
+			{
+				ht=ht.concat(col.headerText);
+				if (index < array.length - 1)
+					ht=ht.concat(',');
+			})
 			multCreateInput.headerTexts=ht;
 			PopUpManager.addPopUp(multCreateInput, this, true)
 		}
@@ -832,7 +835,7 @@ package ns.flex.controls
 				row=StringUtil.trim(row);
 				if (row.length > 0)
 				{
-					var cols:Array=row.split(/[\t|\,]/);
+					var cols:Array=row.split(/[\t|\,|，]/);
 					var newItem:Object={};
 					for (var i:int=0; i <= cols.length; i++)
 					{
@@ -858,8 +861,17 @@ package ns.flex.controls
 								ObjectUtils.setValue(newItem, colp.dataField,
 									(cols[i] != 'false' && cols[i] != '0'));
 							else
-								ObjectUtils.setValue(newItem, colp.dataField,
-									StringUtil.trim(cols[i]));
+							{
+								var sv:String=StringUtil.trim(cols[i]);
+								if (colp.asNumber)
+								{
+									var nv:Number=StringUtil.parseNumber(sv);
+									ObjectUtils.setValue(newItem, colp.dataField,
+										(isNaN(nv) ? null : nv))
+								}
+								else
+									ObjectUtils.setValue(newItem, colp.dataField, sv)
+							}
 						}
 					}
 					newList.push(newItem);

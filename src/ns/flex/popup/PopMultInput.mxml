@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PopWindow xmlns="ns.flex.controls.*" xmlns:mx="http://www.adobe.com/2006/mxml"
-		   title="批量新增" width="400" height="300">
+		   title="批量新增（{info}）" width="500" height="350">
 	<mx:Metadata>
 		[Event(name="confirm")]
 	</mx:Metadata>
@@ -9,7 +9,7 @@
 			[Bindable]
 			public var headerTexts:String;
 
-			private const info:String='按上面顺序输入多行记录，用逗号或制表符分隔各列(可以从Excel复制粘贴)。';
+			private const info:String='必须用逗号或制表符分隔各列，支持从Excel复制粘贴';
 		]]>
 	</mx:Script>
 	<mx:Text text="{headerTexts}" fontWeight="bold" width="100%"/>
