@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:controls="ns.flex.controls.*">
+	<controls:DateFieldPlus id="dateField" formatString="YYYY-MM-DD"/>
+	<mx:NumericStepper id="hourField" minimum="0" maximum="23" stepSize="1" value="0"
+					   width="40"/>
+	<mx:Label text="："/>
+	<mx:NumericStepper id="minuteField" minimum="0" maximum="59" stepSize="1" value="0"
+					   width="40"/>
+</mx:HBox>

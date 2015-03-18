@@ -113,7 +113,7 @@ package ns.flex.util
 		{
 			return (left.getTime() - right.getTime()) / millisecondsPerDay;
 		}
-		_timeFormatter.formatString='YYYY-MM-DD HH:NN:SS';
+		_timeFormatter.formatString='YYYY-MM-DD JJ:NN:SS';
 		_dateFormatter.formatString='YYYYMMDD';
 	}
 }
