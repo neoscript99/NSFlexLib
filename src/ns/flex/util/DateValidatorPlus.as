@@ -25,9 +25,9 @@ package ns.flex.util
 			triggerEvent='valueCommit';
 			validateAsString="true";
 			inputFormat="YYYYMMDD";
-			allowedFormatChars='';
+			//allowedFormatChars='';
 			formatError="日期格式错误";
-			invalidCharError="请不要输入除数字外的字符"
+			invalidCharError="请不要输入除数字和分隔符外的字符"
 			wrongLengthError="日期长度不正确";
 			wrongDayError="根据当前月份，请输入正确的日期.";
 			wrongMonthError="请输入正确的月份 1 - 12.";

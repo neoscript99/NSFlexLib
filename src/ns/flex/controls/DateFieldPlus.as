@@ -1,13 +1,14 @@
 package ns.flex.controls
 {
 	import mx.controls.DateField;
-	import mx.events.FlexEvent;
+	
 	import ns.flex.util.DateUtil;
 	import ns.flex.util.DateValidatorPlus;
 	import ns.flex.util.ObjectUtils;
+	import ns.flex.util.Validatable;
 	import ns.flex.util.ValidatorUtil;
 
-	public class DateFieldPlus extends DateField
+	public class DateFieldPlus extends DateField implements Validatable
 	{
 		private var _defaultDate:String='today';
 		private var today:Date=new Date();
@@ -53,6 +54,14 @@ package ns.flex.controls
 			if (!validator)
 				validator=new DateValidatorPlus(this);
 
+		}
+
+		override public function set formatString(value:String):void
+		{
+			super.formatString=value;
+			if (!validator)
+				validator=new DateValidatorPlus(this);
+			validator.inputFormat=value;
 		}
 
 		public function getTomorrow():Date

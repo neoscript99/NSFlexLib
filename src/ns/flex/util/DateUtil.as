@@ -100,7 +100,7 @@ package ns.flex.util
 
 		public static function stringToTime(timeString:String):Date
 		{
-			return DateField.stringToDate(timeString, timeFormatter.formatString);
+			return DateFormatter.parseDateString(timeString);
 		}
 
 		/**
