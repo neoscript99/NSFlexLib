@@ -6,6 +6,7 @@ package ns.flex.controls
 	import mx.controls.ComboBox;
 	import mx.events.ListEvent;
 	import ns.flex.util.ArrayCollectionPlus;
+	import ns.flex.util.UIUtil;
 
 	[Event(name="levelDown")]
 	[Event(name="levelUp")]
@@ -15,6 +16,7 @@ package ns.flex.controls
 		public var repeatable:Boolean=true;
 		public var valueField:String;
 		private var _defaultLabel:String;
+		private var borderColorOrigin:String;
 		private var changeByWheel:Boolean=false;
 
 		public function ComboBoxPlus()
@@ -88,10 +90,7 @@ package ns.flex.controls
 			var vld:Boolean=false;
 			if (selectedItem)
 				vld=valueField ? selectedItem[valueField] : true;
-			if (vld)
-				this.setStyle('borderColor', '0xB7BABC');
-			else
-				this.setStyle('borderColor', 'red');
+			UIUtil.setBorderByValidate(this, vld)
 			return vld;
 		}
 

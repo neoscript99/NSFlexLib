@@ -4,26 +4,49 @@ package ns.flex.controls
 	import flash.events.KeyboardEvent;
 	import flash.ui.Keyboard;
 	import mx.collections.ArrayCollection;
+	import mx.validators.Validator;
 	import ns.flex.util.ContainerUtil;
 	import ns.flex.util.ObjectUtils;
 	import ns.flex.util.StringUtil;
+	import ns.flex.util.Validatable;
+	import ns.flex.util.ValidatorUtil;
 
-	public class AutoCompletePlus extends AutoComplete
+	public class AutoCompletePlus extends AutoComplete implements Validatable
 	{
 		protected var _editable:Boolean=true;
 		protected var _editableChanged:Boolean=false;
+		private var validator:Validator;
 
 		public function AutoCompletePlus()
 		{
 			super();
 			backspaceAction=BACKSPACE_REMOVE;
 			showRemoveIcon=true;
+			_dropDownRowCount=10;
 			prompt='使用逗号(,)或回车分隔多个项目';
 		}
 
 		public function get allowNewValues():Boolean
 		{
 			return _allowNewValues;
+		}
+
+		public function set constraints(value:Object):void
+		{
+			if (value)
+			{
+				if (!validator)
+				{
+					validator=new Validator();
+					validator.required=true;
+					validator.source=this;
+					validator.trigger=this;
+					validator.property='selectedLabels';
+					validator.requiredFieldError='请选择项目';
+				}
+				ObjectUtils.copyProperties(this, value);
+				ObjectUtils.copyProperties(validator, value);
+			}
 		}
 
 		[Bindable(event="change")]
@@ -74,6 +97,11 @@ package ns.flex.controls
 					}
 				}
 			return labels;
+		}
+
+		public function get validated():Boolean
+		{
+			return ValidatorUtil.validate(validator);
 		}
 
 		override protected function commitProperties():void

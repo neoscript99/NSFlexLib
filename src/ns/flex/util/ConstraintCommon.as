@@ -12,16 +12,25 @@ package ns.flex.util
 		public static const account:Object=
 			{expression: "\\w{2}", required: true, noSpace: true, imeDisabled: true,
 				restrict: '0-9A-Za-z_'}
+		public static const digitalString:Object=
+			{required: true, noSpace: true, imeDisabled: true, restrict: '0-9',
+				errorTip: '请输入数字'}
 		public static const english:Object=
 			{imeDisabled: true, required: true, expression: '^[\\x00-\\xff]*$',
 				errorTip: '请输入英文'};
 		public static const integer:Object=
 			{noSpace: true, expression: '^-{0,1}\\d*$', required: true, imeDisabled: true,
 				restrict: '\\-0-9', maxChars: 9};
+		public static const integerPositive:Object=
+			{noSpace: true, expression: '^\\d*$', required: true, imeDisabled: true,
+				restrict: '0-9', maxChars: 9};
 		public static const justRequired:Object={required: true};
 		public static const number:Object=
 			{noSpace: true, expression: '^-{0,1}\\d+\.{0,1}\\d*$', required: true,
 				imeDisabled: true, restrict: '\\-\\.0-9', maxChars: 18};
+		public static const numberPositive:Object=
+			{noSpace: true, expression: '^\\d+\.{0,1}\\d*$', required: true,
+				imeDisabled: true, restrict: '\\.0-9', maxChars: 18};
 		public static const password:Object=
 			{expression: "\\w{2}", required: true, noSpace: true, imeDisabled: true,
 				displayAsPassword: true, restrict: '\u0021-\u007E'};

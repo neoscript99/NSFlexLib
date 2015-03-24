@@ -17,6 +17,7 @@ package ns.flex.util
 	public class UIUtil
 	{
 		private static const tipMap:Dictionary=new Dictionary;
+		private static const borderMap:Dictionary=new Dictionary;
 
 		public static function destroyTip(e:Event):void
 		{
@@ -25,6 +26,15 @@ package ns.flex.util
 				ToolTipManager.destroyToolTip(tip);
 		}
 
+		public static function setBorderByValidate(uic:UIComponent,validated:Boolean):void
+		{
+			if (borderMap[uic])
+				borderMap[uic]=uic.getStyle('borderColor')
+			if (validated)
+				uic.setStyle('borderColor', borderMap[uic]);
+			else
+				uic.setStyle('borderColor', 'red');
+		}
 		/*
 		 * 隐藏amchart免费版链接
 		 */

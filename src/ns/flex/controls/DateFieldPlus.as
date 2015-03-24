@@ -1,7 +1,6 @@
 package ns.flex.controls
 {
 	import mx.controls.DateField;
-	
 	import ns.flex.util.DateUtil;
 	import ns.flex.util.DateValidatorPlus;
 	import ns.flex.util.ObjectUtils;
@@ -60,7 +59,10 @@ package ns.flex.controls
 		{
 			super.formatString=value;
 			if (!validator)
+			{
 				validator=new DateValidatorPlus(this);
+				validator.required=false;
+			}
 			validator.inputFormat=value;
 		}
 

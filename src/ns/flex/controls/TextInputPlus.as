@@ -4,10 +4,8 @@ package ns.flex.controls
 	import flash.events.FocusEvent;
 	import flash.events.MouseEvent;
 	import flash.system.IME;
-
 	import mx.controls.TextInput;
 	import mx.events.FlexEvent;
-
 	import ns.flex.util.ObjectUtils;
 	import ns.flex.util.RegExpValidatorPlus;
 	import ns.flex.util.StringUtil;

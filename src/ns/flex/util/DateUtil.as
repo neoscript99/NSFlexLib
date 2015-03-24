@@ -111,7 +111,10 @@ package ns.flex.util
 		 */
 		public static function sub(left:Date, right:Date):int
 		{
-			return (left.getTime() - right.getTime()) / millisecondsPerDay;
+			if (left == null || right == null)
+				return 0;
+			else
+				return (left.getTime() - right.getTime()) / millisecondsPerDay;
 		}
 		_timeFormatter.formatString='YYYY-MM-DD JJ:NN:SS';
 		_dateFormatter.formatString='YYYYMMDD';

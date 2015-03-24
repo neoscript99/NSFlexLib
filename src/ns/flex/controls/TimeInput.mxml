@@ -34,7 +34,7 @@
 			[Bindable("change")]
 			public function get text():String
 			{
-				return DateUtil.getTimeLabel(date);
+				return date ? DateUtil.getTimeLabel(date) : null;
 			}
 
 			public function set text(value:String):void
