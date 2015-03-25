@@ -22,7 +22,7 @@ package ns.flex.controls
 			super();
 			backspaceAction=BACKSPACE_REMOVE;
 			showRemoveIcon=true;
-			_dropDownRowCount=10;
+			_dropDownRowCount=12;
 			prompt='使用逗号(,)或回车分隔多个项目';
 		}
 
@@ -66,6 +66,13 @@ package ns.flex.controls
 				_editableChanged=true;
 				invalidateProperties();
 			}
+		}
+
+		override public function set selectedItem(value:Object):void
+		{
+			super.selectedItem=value;
+			if (!value)
+				removeAll();
 		}
 
 		//不要赋值空列表，否则prompt不显示
@@ -123,7 +130,8 @@ package ns.flex.controls
 
 		override protected function defaultLabelFunction(item:Object):String
 		{
-			return String(_labelField ? ObjectUtils.getValue(item, _labelField) : item);
+			var value:Object=ObjectUtils.getValue(item, _labelField);
+			return value ? String(value) : super.defaultLabelFunction(item);
 		}
 
 		//回车不要向上抛出，防止提交

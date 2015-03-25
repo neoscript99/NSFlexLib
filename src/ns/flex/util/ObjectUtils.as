@@ -28,8 +28,10 @@ package ns.flex.util
 			var cur:Object=obj;
 			var chain:Array=field.split('.');
 			for (var i:int=0; i < chain.length; i++)
-				if (cur)
+				if (cur && cur.hasOwnProperty(chain[i]))
 					cur=cur[chain[i]];
+				else
+					return null;
 			return cur;
 		}
 
