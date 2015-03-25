@@ -31,6 +31,11 @@
 				minuteField.value=value.minutes
 			}
 
+			public function set editable(value:Boolean):void
+			{
+				dateField.editable=value;
+			}
+
 			[Bindable("change")]
 			public function get text():String
 			{
@@ -55,8 +60,7 @@
 			}
 		]]>
 	</mx:Script>
-	<controls:DateFieldPlus id="dateField" editable="true" formatString="YYYY-MM-DD"
-							change="fireChange()"/>
+	<controls:DateFieldPlus id="dateField" formatString="YYYY-MM-DD" change="fireChange()"/>
 	<mx:NumericStepper id="hourField" minimum="0" maximum="23" stepSize="1" value="0"
 					   width="40" change="fireChange()"/>
 	<mx:Label text="："/>

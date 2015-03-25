@@ -130,7 +130,9 @@ package ns.flex.controls
 
 		override protected function defaultLabelFunction(item:Object):String
 		{
-			var value:Object=ObjectUtils.getValue(item, _labelField);
+			var value:Object;
+			if (_labelField)
+				value=ObjectUtils.getValue(item, _labelField);
 			return value ? String(value) : super.defaultLabelFunction(item);
 		}
 
