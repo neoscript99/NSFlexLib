@@ -1,5 +1,6 @@
 package ns.flex.util
 {
+	import com.hillelcoren.components.AutoComplete;
 	import flash.display.DisplayObject;
 	import flash.display.DisplayObjectContainer;
 	import mx.controls.ComboBox;
@@ -45,6 +46,10 @@ package ns.flex.util
 				{
 					DateField(diso).selectedDate=null;
 					DateField(diso).text='';
+				}
+				else if (diso is AutoComplete)
+				{
+					AutoComplete(diso).clear();
 				}
 			}
 		}
