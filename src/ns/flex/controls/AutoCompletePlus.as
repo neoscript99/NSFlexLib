@@ -26,6 +26,12 @@ package ns.flex.controls
 			prompt='使用逗号(,)或回车分隔多个项目';
 		}
 
+		override public function set allowMultipleSelection(value:Boolean):void
+		{
+			super.allowMultipleSelection=value;
+			prompt=value ? '使用逗号(,)或回车分隔多个项目' : '请输入或选择';
+		}
+
 		public function get allowNewValues():Boolean
 		{
 			return _allowNewValues;
