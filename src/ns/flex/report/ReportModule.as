@@ -17,6 +17,7 @@ package ns.flex.report
 	import ns.flex.util.ContainerUtil;
 	import ns.flex.util.RemoteUtil;
 	import ns.flex.util.SQLUtil;
+	import ns.flex.util.Session;
 
 	public class ReportModule extends AbstractModule
 	{
@@ -31,8 +32,10 @@ package ns.flex.report
 		protected var popProgress:ProgressBox=new ProgressBox;
 		[Bindable]
 		protected var reportService:RemoteObject;
+		protected var sessionUserChange:Boolean=false;
 		private var drillHist:Array=[];
 		private var drillPageHist:Array=[];
+		private var sessionUser:Object;
 
 		/**
 		 * 必须在继承的类中初始化reportService
@@ -40,6 +43,20 @@ package ns.flex.report
 		public function ReportModule()
 		{
 			addEventListener(FlexEvent.CREATION_COMPLETE, cc);
+		}
+
+		override public function beforeDisplay():void
+		{
+			//如果第一次登录
+			if (!sessionUser)
+				sessionUser=Session['LoginUser'];
+			//如果用户已存在但不同于新用户
+			else if (sessionUser && sessionUser != Session['LoginUser'])
+			{
+				sessionUser=Session['LoginUser'];
+				sessionUserChange=true;
+				invalidateProperties();
+			}
 		}
 
 		public function query(first:int=-1):void
@@ -66,6 +83,16 @@ package ns.flex.report
 			query();
 			if (drillable)
 				drillInit();
+		}
+
+		override protected function commitProperties():void
+		{
+			super.commitProperties();
+			if (sessionUserChange)
+			{
+				query();
+				sessionUserChange=false;
+			}
 		}
 
 		protected function get dgp():DataGridPlus
@@ -167,10 +194,10 @@ package ns.flex.report
 			});
 			reportService.getOperation('save').addEventListener(ResultEvent.RESULT,
 				function(e:ResultEvent):void
-				{
-					dgp.closePop();
-					refresh();
-				});
+			{
+				dgp.closePop();
+				refresh();
+			});
 			reportService.getOperation('deleteByIds').addEventListener(ResultEvent.RESULT,
 				refresh);
 			reportService.getOperation('deleteByStringList').addEventListener(ResultEvent.RESULT,
