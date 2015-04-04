@@ -1,6 +1,7 @@
 package ns.flex.controls
 {
 	import com.hillelcoren.components.AutoComplete;
+	import flash.events.FocusEvent;
 	import flash.events.KeyboardEvent;
 	import flash.ui.Keyboard;
 	import mx.collections.ArrayCollection;
@@ -35,6 +36,13 @@ package ns.flex.controls
 		public function get allowNewValues():Boolean
 		{
 			return _allowNewValues;
+		}
+
+		//清空后，应该刷新下拉列表
+		override public function clear():void
+		{
+			super.clear();
+			search();
 		}
 
 		public function set constraints(value:Object):void
@@ -74,11 +82,13 @@ package ns.flex.controls
 			}
 		}
 
+		//基类将selectedItem添加到 selectedItems，就置为null,如果再传入null将不做任何处理，我觉得传入null应该清空选择项
 		override public function set selectedItem(value:Object):void
 		{
-			super.selectedItem=value;
-			if (!value)
-				removeAll();
+			_selectedItem=value;
+			_selectedItemChanged=true;
+
+			invalidateProperties();
 		}
 
 		//不要赋值空列表，否则prompt不显示
