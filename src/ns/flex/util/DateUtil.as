@@ -107,14 +107,15 @@ package ns.flex.util
 		 * 计算两个日期间隔天数
 		 * @param left
 		 * @param right
+		 * @param mathMethod -- floor round ceil
 		 * @return
 		 */
-		public static function sub(left:Date, right:Date):int
+		public static function sub(left:Date, right:Date, mathMethod:String='round'):int
 		{
 			if (left == null || right == null)
 				return 0;
 			else
-				return (left.getTime() - right.getTime()) / millisecondsPerDay;
+				return Math[mathMethod]((left.getTime() - right.getTime()) / millisecondsPerDay);
 		}
 		_timeFormatter.formatString='YYYY-MM-DD JJ:NN:SS';
 		_dateFormatter.formatString='YYYYMMDD';
