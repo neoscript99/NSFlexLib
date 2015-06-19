@@ -245,7 +245,10 @@ package ns.flex.controls
 			textInput['editable']=editable;
 			BindingUtils.bindSetter(function(value:Object):void
 			{
-				textInput['text']=col.itemToLabel(value);
+				if (col['asNumber'] && col['isSeparateThousands'])
+					textInput['text']=col.itemToLabel(value).replace(',', '');
+				else
+					textInput['text']=col.itemToLabel(value);
 			}, dgp, 'showItemProxy');
 
 			if (editable)

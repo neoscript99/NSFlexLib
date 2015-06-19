@@ -567,6 +567,9 @@ package ns.flex.controls
 		public function showItemDetail(item:Object, editable:Boolean=false,
 			isClone:Boolean=false, isMultEdit:Boolean=false):void
 		{
+			//汇总行不能修改直接返回
+			if (isSumItem(item) && editable)
+				return;
 			showItem=item;
 			if (isClone)
 			{
