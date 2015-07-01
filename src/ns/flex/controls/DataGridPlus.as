@@ -314,7 +314,7 @@ package ns.flex.controls
 
 		public function isSumItem(item:Object):Boolean
 		{
-			return item.uniqueIdForSumItem == uid;
+			return item && item.uniqueIdForSumItem == uid;
 		}
 
 		public function set menuEnableChecker(fun:Function):void
