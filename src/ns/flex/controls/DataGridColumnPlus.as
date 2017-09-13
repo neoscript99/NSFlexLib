@@ -62,7 +62,6 @@ package ns.flex.controls
 		{
 			asControl='AutoComplete';
 			controlProps=props;
-			visible=false;
 		}
 
 		/**
