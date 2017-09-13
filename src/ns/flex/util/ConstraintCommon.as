@@ -64,6 +64,14 @@ public class ConstraintCommon
                 errorTip: '请输入正确的网址'
             };
 
+    /**
+     * 限制输入字符最少数量
+     * @param len 最少数
+     * @param required
+     * @param noSpace
+     * @param imeDisabled
+     * @return
+     */
     public static function forLength(len:int, required:Boolean = true,
                                      noSpace:Boolean = true, imeDisabled:Boolean = true):Object
     {

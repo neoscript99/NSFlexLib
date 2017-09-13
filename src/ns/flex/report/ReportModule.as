@@ -30,6 +30,13 @@ public class ReportModule extends AbstractModule
     [Inspectable(category="General")]
     [Bindable]
     public var drillable:Boolean = false;
+
+    /**
+     * 后台是否已有默认domain，如果有调用远程方法时无需送domain参数
+     */
+    [Inspectable(category="General")]
+    [Bindable]
+    public var hasDefaultDomain:Boolean = false;
     protected var drillLast:Object;
     protected var popProgress:ProgressBox = new ProgressBox;
     [Bindable]
@@ -107,7 +114,10 @@ public class ReportModule extends AbstractModule
 
     protected function get domain():String
     {
-        return this.className;
+        if (hasDefaultDomain)
+            return null;
+        else
+            return this.className;
     }
 
     protected function drillDown(e:Event):void
