@@ -99,6 +99,7 @@ public class DataColumnFormItem extends FormItem
         var ac:AutoCompletePlus = new AutoCompletePlus;
         ObjectUtils.copyProperties(ac, colp.controlProps);
         ac.editable = editable;
+        ac.constraints = colp.constraints;
         var getSelected:Operation = colp.controlProps.getSelected;
         //原选择项可以来自两个地方：1、远程查询；2、当前对象数据。 1优先
         //1、远程查询需指定getSelected，该属性为远程方法

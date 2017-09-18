@@ -6,16 +6,18 @@ package ns.flex.util
 
 	public class DateUtil
 	{
-		private static var _dateFormatter:DateFormatter=new DateFormatter();
-
-		public static function get dateFormatter():DateFormatter
-		{
-			return _dateFormatter;
-		}
 		public static const millisecondsPerDay:int=1000 * 60 * 60 * 24;
 		public static const millisecondsPerHour:int=1000 * 60 * 60;
 		public static const millisecondsPerMinute:int=1000 * 60;
 		private static var _timeFormatter:DateFormatter=new DateFormatter();
+        private static var _dateFormatter:DateFormatter=new DateFormatter();
+        _dateFormatter.formatString='YYYYMMDD';
+        _timeFormatter.formatString='YYYY-MM-DD JJ:NN:SS';
+
+        public static function get dateFormatter():DateFormatter
+        {
+            return _dateFormatter;
+        }
 
 		public static function get timeFormatter():DateFormatter
 		{
@@ -117,8 +119,6 @@ package ns.flex.util
 			else
 				return Math[mathMethod]((left.getTime() - right.getTime()) / millisecondsPerDay);
 		}
-		_timeFormatter.formatString='YYYY-MM-DD JJ:NN:SS';
-		_dateFormatter.formatString='YYYYMMDD';
 	}
 }
 

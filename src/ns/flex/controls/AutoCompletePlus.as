@@ -2,16 +2,17 @@ package ns.flex.controls
 {
 import com.hillelcoren.components.AutoComplete;
 
-import flash.events.FocusEvent;
 import flash.events.KeyboardEvent;
+import flash.events.MouseEvent;
 import flash.ui.Keyboard;
 
 import mx.collections.ArrayCollection;
-import mx.validators.Validator;
+import mx.validators.StringValidator;
 
 import ns.flex.util.ContainerUtil;
 import ns.flex.util.ObjectUtils;
 import ns.flex.util.StringUtil;
+import ns.flex.util.UIUtil;
 import ns.flex.util.Validatable;
 import ns.flex.util.ValidatorUtil;
 
@@ -19,7 +20,9 @@ public class AutoCompletePlus extends AutoComplete implements Validatable
 {
     protected var _editable:Boolean = true;
     protected var _editableChanged:Boolean = false;
-    private var validator:Validator;
+    private var _showDropDownOnClick:Boolean = false;
+    private var _showDropDownOnClickChanged:Boolean = false;
+    private var validator:StringValidator;
 
     public function AutoCompletePlus()
     {
@@ -65,14 +68,14 @@ public class AutoCompletePlus extends AutoComplete implements Validatable
         {
             if (!validator)
             {
-                validator = new Validator();
+                //Validator仅检查是否为null，StringValidator可检查是否为空
+                validator = new StringValidator();
                 validator.required = true;
                 validator.source = this;
                 validator.trigger = this;
                 validator.property = 'selectedLabels';
                 validator.requiredFieldError = '请选择项目';
             }
-            ObjectUtils.copyProperties(this, value);
             ObjectUtils.copyProperties(validator, value);
         }
     }
@@ -136,9 +139,13 @@ public class AutoCompletePlus extends AutoComplete implements Validatable
         return labels;
     }
 
+    [Bindable(event="valueCommit")]
     public function get validated():Boolean
     {
-        return ValidatorUtil.validate(validator);
+        var vld:Boolean = ValidatorUtil.validate(validator);
+
+        UIUtil.setBorderByValidate(this, vld);
+        return vld;
     }
 
     override protected function commitProperties():void
@@ -155,7 +162,22 @@ public class AutoCompletePlus extends AutoComplete implements Validatable
                 if (child.hasOwnProperty('editable'))
                     child.editable = _editable;
             }, true);
+            _editableChanged = false;
         }
+        if (_showDropDownOnClickChanged)
+        {
+            if (_showDropDownOnClick)
+                addEventListener(MouseEvent.CLICK, handleShowDropDownOnClick);
+            else
+                removeEventListener(MouseEvent.CLICK, handleShowDropDownOnClick);
+            _showDropDownOnClickChanged = false;
+        }
+    }
+
+    protected function handleShowDropDownOnClick(evt:MouseEvent):void
+    {
+        if (dataProvider && dataProvider.length > 0)
+            showDropDown();
     }
 
     override protected function defaultLabelFunction(item:Object):String
@@ -178,6 +200,17 @@ public class AutoCompletePlus extends AutoComplete implements Validatable
     override protected function isPerfectMatch():Boolean
     {
         return false;
+    }
+
+    [Inspectable(category="General")]
+    public function set showDropDownOnClick(value:Boolean):void
+    {
+        if (_showDropDownOnClick != value)
+        {
+            _showDropDownOnClick = value;
+            _showDropDownOnClickChanged = true;
+            invalidateProperties();
+        }
     }
 }
 }
