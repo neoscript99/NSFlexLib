@@ -12,6 +12,7 @@ import flash.ui.ContextMenuItem;
 import flash.utils.ByteArray;
 
 import mx.collections.IList;
+import mx.containers.ApplicationControlBar;
 import mx.containers.ControlBar;
 import mx.containers.Form;
 import mx.containers.FormItem;
@@ -35,6 +36,7 @@ import ns.flex.event.ShowItemEvent;
 import ns.flex.popup.PopMultInput;
 import ns.flex.support.MenuSupport;
 import ns.flex.util.ArrayCollectionPlus;
+import ns.flex.util.ComponentUtil;
 import ns.flex.util.ContainerUtil;
 import ns.flex.util.IOUtil;
 import ns.flex.util.MathUtil;
@@ -751,14 +753,12 @@ public class DataGridPlus extends DataGrid
             form.addChild(new DataColumnFormItem(this, col, editable, multEditable));
         }
 
+        var controlBar:ControlBar = new ControlBar;
+        controlBar.setStyle('horizontalAlign', 'center')
+        controlBar.setStyle('paddingTop', 6)
+        controlBar.setStyle('paddingBottom', 6)
         if (editable)
         {
-            var buttonItem:FormItem = new FormItem();
-            var hbox:HBox = new HBox;
-            var saveButton:Button = new Button();
-            saveButton.label = '保存';
-            saveButton.name = multEditable ? 'saveMultItem' : 'saveItem'
-
             var submit:Function = function (e:Event):void
             {
                 if (!ContainerUtil.validate(form))
@@ -767,51 +767,35 @@ public class DataGridPlus extends DataGrid
                     return;
                 }
                 pop.showProgress();
-                if (saveButton.name == 'saveItem')
+                if (!multEditable)
                     dispatchEvent(new SaveItemEvent(showItemProxy));
                 else
                     multEditFire();
             }
-            saveButton.addEventListener('click', submit);
             if (popEnterSubmit)
                 pop.addEventListener('enterKeyDown', submit);
-            var resetButton:Button = new Button();
-            resetButton.label = '重置';
-            resetButton.addEventListener('click', function (e:Event):void
+            var reset:Function = function (e:Event):void
             {
                 dispatchEvent(new Event('resetEditItem'));
-            });
-            hbox.addChild(saveButton);
-            hbox.addChild(resetButton);
-            buttonItem.addChild(hbox);
-            form.addChild(buttonItem);
+            };
+            controlBar.addChild(ComponentUtil.createButton('保存', submit, {name: multEditable ? 'saveMultItem' : 'saveItem'}));
+            controlBar.addChild(ComponentUtil.createButton('重置', reset));
         }
         else
         {
-            var naviBar:ControlBar = new ControlBar;
-            naviBar.setStyle('horizontalAlign', 'center')
-            naviBar.setStyle('paddingTop', 6)
-            naviBar.setStyle('paddingBottom', 6)
-            var postButton:Button = new Button();
-            postButton.label = '上一个';
-            postButton.addEventListener('click', function (e:Event):void
+            controlBar.addChild(ComponentUtil.createButton('上一个', function (e:Event):void
             {
                 selectedIndex =
                         (selectedIndex - 1 + dataProvider.length) % dataProvider.length;
                 showItem = selectedItem;
-            });
-            var nextButton:Button = new Button();
-            nextButton.label = '下一个';
-            nextButton.addEventListener('click', function (e:Event):void
+            }));
+            controlBar.addChild(ComponentUtil.createButton('下一个', function (e:Event):void
             {
                 selectedIndex = (selectedIndex + 1) % dataProvider.length;
                 showItem = selectedItem;
-            });
-
-            naviBar.addChild(postButton);
-            naviBar.addChild(nextButton);
-            pop.addChild(naviBar);
+            }));
         }
+        pop.addChild(controlBar);
         return pop;
     }
 

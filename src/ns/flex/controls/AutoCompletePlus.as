@@ -166,7 +166,7 @@ public class AutoCompletePlus extends AutoComplete implements Validatable
         }
         if (_showDropDownOnClickChanged)
         {
-            if (_showDropDownOnClick)
+            if (_showDropDownOnClick && _editable)
                 addEventListener(MouseEvent.CLICK, handleShowDropDownOnClick);
             else
                 removeEventListener(MouseEvent.CLICK, handleShowDropDownOnClick);

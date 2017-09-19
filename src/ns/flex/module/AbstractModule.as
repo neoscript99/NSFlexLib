@@ -9,6 +9,10 @@ package ns.flex.module
 	{
 		protected var map:Object={};
 
+        /**
+		 * 部分服务可能在每次显示界面前执行，可以重载本方法，Views.mxml中会执行
+		 * @see Views
+         */
 		public function beforeDisplay():void
 		{
 		}
