@@ -1,0 +1,3 @@
+[submodule "flex-autocomplete"]
+	path = flex-autocomplete
+	url = https://github.com/hillelcoren/flex-autocomplete.git
