@@ -95,6 +95,7 @@ package ns.flex.controls
 			asAutoComplete=props;
 			//标签，使用固定field
 			dataField=Constants.LABEL_FIELD;
+            visible=false;
 		}
 
 		[Inspectable(category="General")]
