@@ -26,7 +26,8 @@ public class RemoteUtil
 
         ro.addEventListener(ResultEvent.RESULT, function (e:ResultEvent):void
         {
-            if (e.result.hasMessage)
+            //对返回结果为{hasMessage:true,message:'some text'},自动显示提示对话框
+            if (e.result && e.result.hasOwnProperty('hasMessage'))
                 MessageUtil.showMessage(e.result.message)
         });
 
