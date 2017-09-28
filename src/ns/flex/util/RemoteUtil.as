@@ -28,7 +28,7 @@ public class RemoteUtil
         {
             //对返回结果为{hasMessage:true,message:'some text'},自动显示提示对话框
             if (e.result && e.result.hasOwnProperty('hasMessage'))
-                MessageUtil.showMessage(e.result.message)
+                MessageUtil.showMessage(e.result.message, e.result.isError ? '错误信息' : '提示信息')
         });
 
         if (resultListeners)
