@@ -24,12 +24,7 @@ public class RemoteUtil
         ro.addEventListener(FaultEvent.FAULT,
                 faultListener == null ? MessageUtil.showError : faultListener);
 
-        ro.addEventListener(ResultEvent.RESULT, function (e:ResultEvent):void
-        {
-            //对返回结果为{hasMessage:true,message:'some text'},自动显示提示对话框
-            if (e.result && e.result.hasOwnProperty('hasMessage'))
-                MessageUtil.showMessage(e.result.message, e.result.isError ? '错误信息' : '提示信息')
-        });
+        ro.addEventListener(ResultEvent.RESULT, messageHandler);
 
         if (resultListeners)
             resultListeners.forEach(function (item:*, index:int, array:Array):void
@@ -38,6 +33,13 @@ public class RemoteUtil
                         item.listener);
             });
         return ro;
+    }
+
+    static public function messageHandler(e:ResultEvent):void
+    {
+        //对返回结果为{hasMessage:true,message:'some text'},自动显示提示对话框
+        if (e.result && e.result.hasOwnProperty('hasMessage'))
+            MessageUtil.showMessage(e.result.message, e.result.isError ? '错误信息' : '提示信息')
     }
 }
 }
