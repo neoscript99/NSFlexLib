@@ -63,6 +63,7 @@ public class DataColumnFormItem extends FormItem
 
         label = StringUtil.toLine(DataGridPlus.getCleanHeader(col));
         _component.name = label;
+        this.name = label+'.FormItem';
         //批量修改，后面加个选择框
         if (multEditable)
         {

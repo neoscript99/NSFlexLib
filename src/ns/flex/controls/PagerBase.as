@@ -1,6 +1,8 @@
 package ns.flex.controls
 {
-	import mx.containers.ControlBar;
+import flash.events.Event;
+
+import mx.containers.ControlBar;
 	import mx.controls.NumericStepper;
 	import ns.flex.event.PageChangeEvent;
 	import ns.flex.util.ContainerUtil;
