@@ -144,6 +144,17 @@ public class ArrayCollectionPlus extends ArrayCollection
     }
 
     /**
+     * 删除某一对象
+     */
+    public function removeItem(item:Object):ArrayCollectionPlus
+    {
+        var index:int = getItemIndex(item);
+        if (index > -1)
+            this.removeItemAt(index);
+        return this;
+    }
+
+    /**
      * 相加每个集合项对应的计算值
      * @param f 函数f(item)为计算结果
      * @return 总和
