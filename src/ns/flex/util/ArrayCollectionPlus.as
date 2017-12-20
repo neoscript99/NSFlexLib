@@ -1,6 +1,7 @@
 package ns.flex.util
 {
 import mx.collections.ArrayCollection;
+import mx.collections.ArrayList;
 
 import ns.flex.common.Messages;
 
@@ -194,6 +195,16 @@ public class ArrayCollectionPlus extends ArrayCollection
             array.push(innerArray);
         });
         return array;
+    }
+
+    public function addItems(...items):void
+    {
+        addAll(new ArrayList(items))
+    }
+
+    public function addItemArray(items:Array):void
+    {
+        addAll(new ArrayList(items))
     }
 }
 }

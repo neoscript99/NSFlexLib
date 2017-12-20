@@ -12,12 +12,8 @@ import flash.ui.ContextMenuItem;
 import flash.utils.ByteArray;
 
 import mx.collections.IList;
-import mx.containers.ApplicationControlBar;
 import mx.containers.ControlBar;
 import mx.containers.Form;
-import mx.containers.FormItem;
-import mx.containers.HBox;
-import mx.controls.Button;
 import mx.controls.DataGrid;
 import mx.controls.dataGridClasses.DataGridColumn;
 import mx.events.DataGridEvent;
@@ -29,12 +25,14 @@ import mx.utils.ObjectUtil;
 import mx.utils.UIDUtil;
 
 import ns.flex.common.Constants;
+import ns.flex.controls.radar.DataGridRadar;
 import ns.flex.event.MultCreateEvent;
 import ns.flex.event.SaveItemEvent;
 import ns.flex.event.SaveMultItemEvent;
 import ns.flex.event.ShowItemEvent;
 import ns.flex.popup.PopMultInput;
 import ns.flex.support.MenuSupport;
+import ns.flex.support.RadarSupport;
 import ns.flex.util.ArrayCollectionPlus;
 import ns.flex.util.ComponentUtil;
 import ns.flex.util.ContainerUtil;
@@ -117,6 +115,8 @@ public class DataGridPlus extends DataGrid
     [Inspectable(category="General")]
     public var showSum:Boolean = false;
     public var sumColumnLabel:String = '◆汇总◆';
+    [Inspectable(category="General")]
+    public var showRadar:Boolean = false;
 
     /**
      * 根据指向的item，判断当前菜单能否点击
@@ -133,6 +133,7 @@ public class DataGridPlus extends DataGrid
     private var multCreateInput:PopMultInput;
     private var orderList:ArrayCollectionPlus = new ArrayCollectionPlus();
     private var replacableDoubleClickHandler:Function;
+    private var radarSupport:RadarSupport;
 
     public function DataGridPlus()
     {
@@ -452,6 +453,11 @@ public class DataGridPlus extends DataGrid
         }
         if (openExcelEnabled)
             enableMenu("打开Excel", openExcel, true, true);
+
+        if(showRadar){
+            radarSupport=new RadarSupport(this);
+            radarSupport.init();
+        }
     }
 
     public function rowsToExcel(dataList:Object):ByteArray
@@ -556,7 +562,7 @@ public class DataGridPlus extends DataGrid
     public function get selectedOriItem():Object
     {
         return (selectedItem &&
-        selectedItem.uniqueIdForSumItem == uid) ? null : selectedItem;
+                selectedItem.uniqueIdForSumItem == uid) ? null : selectedItem;
     }
 
     public function set showItem(o:Object):void
